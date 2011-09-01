@@ -1,0 +1,4 @@
+org.parallelj.tools.constraint.BeginContraints
+org.parallelj.tools.constraint.ForEachContraints
+org.parallelj.tools.constraint.HandlerContraints
+org.parallelj.tools.constraint.WhileContraints

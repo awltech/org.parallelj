@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+		<groupId>org.parallelj</groupId>
+		<artifactId>parallelj</artifactId>
+		<version>0.5.0-SNAPSHOT</version>
+	</parent>
+	
+	<groupId>org.parallelj</groupId>
+	<artifactId>parallelj-archetype</artifactId>
+	<version>0.5.0-SNAPSHOT</version>
+	<name>ParallelJ - Archetype Project</name>
+	<packaging>maven-archetype</packaging>
+	
+	<url>http://www.parallelj.org</url>
+	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
+	<licenses>
+		<license>
+			<name>LGPL 2.1</name>
+			<url>http://www.gnu.org/licenses/lgpl-2.1.txt</url>
+			<distribution>repo</distribution>
+			<comments>GNU LESSER GENERAL PUBLIC LICENSE</comments>
+		</license>
+	</licenses>
+	<organization>
+		<name>Atos Worldline</name>
+	</organization>
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.archetype</groupId>
+        <artifactId>archetype-packaging</artifactId>
+        <version>2.0-alpha-4</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>
+        <artifactId>maven-archetype-plugin</artifactId>
+        <version>2.0-alpha-4</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

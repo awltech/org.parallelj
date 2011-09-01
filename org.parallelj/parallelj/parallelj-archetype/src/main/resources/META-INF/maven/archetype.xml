@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>parallelj-archetype</id>
+  <resources>
+    <resource>.project</resource>
+    <resource>src/main/resources/META-INF/ParallelJ/.touch</resource>
+  </resources>
+  <sources>
+    <source>src/main/java/foo/ForEachProgram.java</source>
+    <source>src/main/java/foo/MyRunnable.java</source>
+  </sources>
+  <testSources>
+    <source>src/test/java/foo/ForEachProgramTest.java</source>
+  </testSources>
+</archetype>

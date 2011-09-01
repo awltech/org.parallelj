@@ -1,0 +1,7 @@
+org.parallelj.internal.reflect.HandlerFactory
+org.parallelj.internal.reflect.JoinFactory
+org.parallelj.internal.reflect.SplitFactory
+org.parallelj.internal.reflect.ForEachFactory
+org.parallelj.internal.reflect.CapacityFactory
+org.parallelj.internal.reflect.WhileFactory
+
