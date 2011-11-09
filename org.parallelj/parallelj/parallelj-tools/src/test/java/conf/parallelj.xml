@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:parallelj xmlns:ns2="parallelj">
+    <ns2:procedures>
+        <procedure capacity="5" name="pr1"/>
+        <procedure capacity="10" name="pr2"/>
+    </ns2:procedures>
+</ns2:parallelj>
