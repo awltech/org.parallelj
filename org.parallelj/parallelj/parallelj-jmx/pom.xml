@@ -6,15 +6,13 @@
 		<groupId>org.parallelj</groupId>
 		<version>0.5.0-SNAPSHOT</version>
 	</parent>
-	<groupId>org.parallelj</groupId>
 	<artifactId>parallelj-jmx</artifactId>
 	<name>ParallelJ - JMX Project</name>
-	<version>0.5.0-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.parallelj</groupId>
 			<artifactId>parallelj-core</artifactId>
-			<version>0.5.0-SNAPSHOT</version>
+			<version>${parent.version}</version>
 		</dependency>
 		<!-- Gson: Java to Json conversion -->
 		<dependency>
