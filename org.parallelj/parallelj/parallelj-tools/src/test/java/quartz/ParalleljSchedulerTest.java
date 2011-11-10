@@ -44,6 +44,27 @@ public class ParalleljSchedulerTest {
 		
 		assertNotNull(scheduler);
 		assertEquals(scheduler.getClass(), ParalleljScheduler.class);
+		
+		
+		/*
+		 * A second call to ParalleljSchedulerFactory().getScheduler() must retrived
+		 * the same instance of ParalleljScheduler
+		 */
+		Scheduler _scheduler = null;
+		try {
+			_scheduler = factory.getScheduler();
+		} catch (SchedulerException e) {
+			fail("ParalleljShedulerFactory.getScheduler() Exception: "+e.getMessage());
+		}
+		
+		assertNotNull(scheduler);
+		assertEquals(scheduler.getClass(), ParalleljScheduler.class);
+		assertEquals(scheduler, _scheduler);
+		try {
+			assertEquals(scheduler.getSchedulerName(), _scheduler.getSchedulerName());
+		} catch (SchedulerException e) {
+			fail("ParalleljShedulerFactory.getScheduler().getSchedulerName() Exception: "+e.getMessage());
+		}
 	}
 
 }
