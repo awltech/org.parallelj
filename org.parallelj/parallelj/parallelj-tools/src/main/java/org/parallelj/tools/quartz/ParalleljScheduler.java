@@ -52,7 +52,7 @@ import org.quartz.spi.JobFactory;
  *
  */
 public class ParalleljScheduler implements Scheduler {
-	
+
 	/**
 	 * A Quartz Scheduler
 	 */
@@ -72,7 +72,6 @@ public class ParalleljScheduler implements Scheduler {
 		super();
 		SchedulerFactory schedFact = new StdSchedulerFactory();
 		this.scheduler = schedFact.getScheduler();
-		
 		initialize();
 	}
 
@@ -81,9 +80,10 @@ public class ParalleljScheduler implements Scheduler {
 	 */
 	private void initialize() {
 		// TODO 
-		// Load Parallelj Configuration file ?
+		// Load Parallelj Configuration file
 		
-		// And others... ?
+		// And others...
+		
 	}
 
 	@Override
@@ -390,6 +390,5 @@ public class ParalleljScheduler implements Scheduler {
 	public Configuration getConfiguration() {
 		return configuration;
 	}
-
 
 }

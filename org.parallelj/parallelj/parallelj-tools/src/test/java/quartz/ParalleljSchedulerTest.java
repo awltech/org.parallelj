@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.parallelj.tools.quartz.ParalleljScheduler;
-import org.parallelj.tools.quartz.ParalleljShedulerFactory;
+import org.parallelj.tools.quartz.ParalleljSchedulerFactory;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 
@@ -34,7 +34,7 @@ public class ParalleljSchedulerTest {
 
 	@Test
 	public void testGetScheduler() {
-		ParalleljShedulerFactory factory = new ParalleljShedulerFactory();
+		ParalleljSchedulerFactory factory = new ParalleljSchedulerFactory();
 		Scheduler scheduler = null;
 		try {
 			scheduler = factory.getScheduler();
