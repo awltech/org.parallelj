@@ -30,8 +30,8 @@ import java.util.List;
 import javax.xml.bind.JAXB;
 
 import org.junit.Test;
-import org.parallelj.tools.conf.Configuration;
-import org.parallelj.tools.conf.Procedures.Procedure;
+import org.parallelj.tools.conf.ParalleljConfiguration;
+import org.parallelj.tools.conf.CProcedures.Procedure;
 
 public class ConfigurationTest {
 
@@ -39,7 +39,7 @@ public class ConfigurationTest {
 	public void test() {
 		File file = new File("src/test/java/conf/parallelj.xml");
 		
-		Configuration conf = JAXB.unmarshal(file, Configuration.class);
+		ParalleljConfiguration conf = JAXB.unmarshal(file, ParalleljConfiguration.class);
 		
 		assertNotNull(conf);
 		assertNotNull(conf.getProcedures());

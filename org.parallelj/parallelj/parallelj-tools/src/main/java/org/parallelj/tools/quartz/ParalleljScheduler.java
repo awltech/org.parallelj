@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.parallelj.tools.conf.Configuration;
+import org.parallelj.tools.conf.ParalleljConfiguration;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -61,7 +61,7 @@ public class ParalleljScheduler implements Scheduler {
 	/**
 	 * The ParallelJ configuration Object
 	 */
-	private Configuration configuration;
+	private ParalleljConfiguration configuration;
 	
 	/**
 	 * Default constructor for the ParalleljScheduler
@@ -387,7 +387,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * 
 	 * @return the configuration
 	 */
-	public Configuration getConfiguration() {
+	public ParalleljConfiguration getConfiguration() {
 		return configuration;
 	}
 
