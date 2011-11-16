@@ -122,11 +122,22 @@ public class KWhileLoop extends KElement {
 				diff.consume(call.getProcess());
 				if ((diff.isEmpty(call.getProcess()))
 						&& !predicate.verify(call.getProcess())) {
-					reset(call.getProcess());
-					split.split(call);
+					complete(split, call);
 				}
 			}
 		};
+	}
+	
+	/**
+	 * Called at the end of a KWhileLoop
+	 * 
+	 * @param split
+	 * @param call
+	 * @return void
+	 */
+	private void complete(KSplit split, KCall call) {
+		reset(call.getProcess());
+		split.split(call);
 	}
 
 	/**
