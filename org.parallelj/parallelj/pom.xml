@@ -49,6 +49,7 @@
 		<module>parallelj-tools</module>
 		<module>parallelj-archetype</module>
 		<module>parallelj-jmx</module>
+		<module>parallelj-launching</module>
 	</modules>
 	
 	<build>
