@@ -22,24 +22,22 @@
 
 package conf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-
 import org.junit.Test;
-import org.parallelj.tools.conf.ParalleljConfiguration;
 import org.parallelj.tools.conf.CProcedures.Procedure;
+import org.parallelj.tools.conf.ParalleljConfiguration;
+import org.parallelj.tools.conf.ParalleljConfigurationManager;
 
 public class ConfigurationTest {
 
 	@Test
 	public void test() {
-		File file = new File("src/test/java/conf/parallelj.xml");
 		
-		ParalleljConfiguration conf = JAXB.unmarshal(file, ParalleljConfiguration.class);
+		ParalleljConfiguration conf = ParalleljConfigurationManager.getConfiguration();
 		
 		assertNotNull(conf);
 		assertNotNull(conf.getProcedures());

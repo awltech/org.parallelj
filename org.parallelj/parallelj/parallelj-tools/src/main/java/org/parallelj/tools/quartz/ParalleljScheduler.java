@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.parallelj.tools.conf.ParalleljConfiguration;
+import org.parallelj.tools.conf.ParalleljConfigurationManager;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -80,7 +81,9 @@ public class ParalleljScheduler implements Scheduler {
 	 */
 	private void initialize() {
 		// TODO 
+		
 		// Load Parallelj Configuration file
+		this.configuration = ParalleljConfigurationManager.getConfiguration();
 		
 		// And others...
 		
