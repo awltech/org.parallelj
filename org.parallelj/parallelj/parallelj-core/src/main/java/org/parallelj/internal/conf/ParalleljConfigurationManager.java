@@ -23,7 +23,6 @@
 package org.parallelj.internal.conf;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -56,8 +55,11 @@ public class ParalleljConfigurationManager {
 		InputStream inputStream = null;
 		InputStreamReader inputStreamReader = null;
 		Reader reader = null;
+		inputStream = ParalleljConfigurationManager.class.getResourceAsStream(CONFIGURATION_FILE);
+		if (inputStream == null) {
+			inputStream = ParalleljConfigurationManager.class.getClassLoader().getResourceAsStream(CONFIGURATION_FILE);
+		}
 		try {
-			inputStream = InputStream.class.getResourceAsStream(CONFIGURATION_FILE);
 			inputStreamReader = new InputStreamReader(inputStream);
 			reader = new BufferedReader(inputStreamReader);
 			configuration = JAXB.unmarshal(reader, ParalleljConfiguration.class);
@@ -66,7 +68,7 @@ public class ParalleljConfigurationManager {
 				reader.close();
 				inputStreamReader.close();
 				inputStream.close();
-			} catch (IOException e) {}
+			} catch (Exception e) {}
 		}
 	}
 }
