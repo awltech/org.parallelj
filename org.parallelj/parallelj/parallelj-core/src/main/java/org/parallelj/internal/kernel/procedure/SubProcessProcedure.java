@@ -60,8 +60,8 @@ public class SubProcessProcedure extends KProcedure {
 						.newProcess(SubProcessCall.this.getContext());
 				sub.setParentId(SubProcessCall.this.getId());
 				StateMachines.addStateListener(sub, this);
-				// TODO check if currentProcessor is not null!
-				KProcessor.currentProcessor().execute(sub);
+				if (KProcessor.currentProcessor() != null)
+					KProcessor.currentProcessor().execute(sub);
 			}
 
 			@Override
