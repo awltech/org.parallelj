@@ -1,16 +1,17 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<groupId>org.parallelj</groupId>
 		<artifactId>parallelj</artifactId>
 		<version>0.5.0-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>parallelj-launching</artifactId>
 	<name>ParallelJ - Launching Tools</name>
 	<packaging>jar</packaging>
-	
+
 	<url>http://www.parallelj.org</url>
 	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
 	<licenses>
@@ -26,6 +27,10 @@
 	</organization>
 
 	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
@@ -44,8 +49,23 @@
 			<artifactId>parallelj-jmx</artifactId>
 			<version>0.5.0-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.parallelj</groupId>
+			<artifactId>parallelj-tools</artifactId>
+			<version>0.5.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.sshd</groupId>
+			<artifactId>sshd-core</artifactId>
+			<version>0.6.0</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-lang3</artifactId>
+		  <version>3.1</version>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<testResources>
 			<testResource>
@@ -56,11 +76,11 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.1</version>
+<!-- 				<version>2.3.1</version> -->
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
-					<proc>none</proc>
+<!-- 					<proc>none</proc> -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -79,6 +99,24 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<ajdtVersion>1.5</ajdtVersion>
+					<additionalProjectnatures>
+						<additionalProjectnature>org.maven.ide.eclipse.maven2Nature</additionalProjectnature>
+					</additionalProjectnatures>
+					<additionalBuildcommands>
+						<buildCommand>
+							<name>org.maven.ide.eclipse.maven2Builder</name>
+							<arguments>
+							</arguments>
+						</buildCommand>
+					</additionalBuildcommands>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
