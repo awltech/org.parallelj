@@ -23,10 +23,10 @@
 package org.parallelj.launching.transport.tcp;
 
 public enum RemoteCommand {
-	quit,
-	help,
+	q,quit,
+	h,help,
 	ll,
-	signature,
+	s,signature,
 	stop,
 	dp;
 }

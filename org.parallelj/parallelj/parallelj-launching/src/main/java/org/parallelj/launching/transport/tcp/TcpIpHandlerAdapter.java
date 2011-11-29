@@ -43,32 +43,40 @@ extends IoHandlerAdapter {
 		
 		String str = message.toString();
 		switch (RemoteCommand.valueOf(str.toLowerCase())) {
+			case h:
 			case help:
 				session.write(Resources.help.format());
 				//session.
-				//session.write(LineDelimiter.CRLF);
+				//session.write(LineDelimiter.AUTO);
 				break;
 			case ll:
 				//TODO: Scan for all programs and write the welcome message 
 				
-				
-				
-				
 				break;
-			case quit:
-				session.close(true);
+			case s:
+			case signature:
+				//TODO
+				break;
+			case stop:
+				//TODO
 				break;
 			case dp:
 				//TODO: Call the IsmpDp...
 				break;
+			case q:
+			case quit:
+				session.close(true);
+				break;
 			default:
 				break;
 		}
+		session.write("\n\r>");
 	}
 	
 	@Override
 	public void sessionOpened(IoSession session) throws Exception {
 		session.write(Resources.welcome.format());
+		session.write("\n\r>");
 		super.sessionOpened(session);
 	}
 

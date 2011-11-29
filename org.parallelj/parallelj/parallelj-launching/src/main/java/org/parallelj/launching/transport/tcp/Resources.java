@@ -29,7 +29,6 @@ import java.io.InputStreamReader;
 
 
 
-
 public enum Resources {
 	welcome ("/org/parallelj/launching/welcome.txt"),
 	help ("/org/parallelj/launching/help.txt");
@@ -43,7 +42,7 @@ public enum Resources {
 	    String line = null;
 	    try {
 			while ((line = reader.readLine()) != null) {
-			  sb.append(line + "\n\r");
+			  sb.append(line).append("\n\r");
 			}
 		} catch (IOException e) {
 		} finally {
