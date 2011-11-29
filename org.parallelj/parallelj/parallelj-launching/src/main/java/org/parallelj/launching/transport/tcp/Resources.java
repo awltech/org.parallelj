@@ -20,14 +20,13 @@
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-package org.parallelj.launching;
+package org.parallelj.launching.transport.tcp;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 
 
 
@@ -44,7 +43,7 @@ public enum Resources {
 	    String line = null;
 	    try {
 			while ((line = reader.readLine()) != null) {
-			  sb.append(line + "\n");
+			  sb.append(line + "\n\r");
 			}
 		} catch (IOException e) {
 		} finally {
