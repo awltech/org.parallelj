@@ -6,5 +6,6 @@
 		<aspect name="org.parallelj.internal.util.sm.impl.KStateMachines$PerMachine"/>
 		<aspect name="org.parallelj.Executables$PerExecutable"/>
 		<aspect name="org.parallelj.internal.reflect.ProgramAdapter$PerProgram"/>
+		<aspect name="org.parallelj.internal.log.Logs"/>
     </aspects>
 </aspectj>
