@@ -65,6 +65,15 @@ public class ParalleljSchedulerTest {
 		} catch (SchedulerException e) {
 			fail("ParalleljShedulerFactory.getScheduler().getSchedulerName() Exception: "+e.getMessage());
 		}
+		
+		/*
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
 	}
 
 }

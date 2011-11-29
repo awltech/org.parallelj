@@ -1,0 +1,5 @@
+<aspectj>
+	<aspects>
+		<aspect name="org.parallelj.launching.quartz.AdapterJobs"/>
+    </aspects>
+</aspectj>

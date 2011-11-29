@@ -48,9 +48,9 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.spi.JobFactory;
 
 /**
- * This class is a Parallelj implementation of a Quartz Scheduler. 
- * It allows to enrich default Quartz Scheduler 
- *
+ * This class is a Parallelj implementation of a Quartz Scheduler. It allows to
+ * enrich default Quartz Scheduler
+ * 
  */
 public class ParalleljScheduler implements Scheduler {
 
@@ -58,12 +58,12 @@ public class ParalleljScheduler implements Scheduler {
 	 * A Quartz Scheduler
 	 */
 	private Scheduler scheduler;
-	
+
 	/**
 	 * The ParallelJ configuration Object
 	 */
 	private ParalleljConfiguration configuration;
-	
+
 	/**
 	 * Default constructor for the ParalleljScheduler
 	 * 
@@ -80,13 +80,11 @@ public class ParalleljScheduler implements Scheduler {
 	 * Method initialization for the ParalleljScheduler
 	 */
 	private void initialize() {
-		// TODO 
-		
 		// Load Parallelj Configuration file
 		this.configuration = ParalleljConfigurationManager.getConfiguration();
-		
-		// And others...
-		
+	}
+
+	private void stop() {
 	}
 
 	@Override
@@ -131,12 +129,14 @@ public class ParalleljScheduler implements Scheduler {
 
 	@Override
 	public void shutdown() throws SchedulerException {
+		stop();
 		scheduler.shutdown();
 	}
 
 	@Override
 	public void shutdown(boolean waitForJobsToComplete)
 			throws SchedulerException {
+		stop();
 		scheduler.shutdown(waitForJobsToComplete);
 	}
 
@@ -196,7 +196,7 @@ public class ParalleljScheduler implements Scheduler {
 
 	@Override
 	public void triggerJob(JobKey jobKey) throws SchedulerException {
-		scheduler.triggerJob(jobKey);		
+		scheduler.triggerJob(jobKey);
 	}
 
 	@Override

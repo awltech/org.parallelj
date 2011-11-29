@@ -37,11 +37,20 @@ import org.quartz.impl.StdSchedulerFactory;
  * 
  */
 public class ParalleljSchedulerFactory implements SchedulerFactory  {
+	
+	private StdSchedulerFactory stdChedulerFactory;
 
+    public ParalleljSchedulerFactory() {
+    	this.stdChedulerFactory = new StdSchedulerFactory();
+    }
+
+    public ParalleljSchedulerFactory(String fileName) throws SchedulerException {
+    	this.stdChedulerFactory = new StdSchedulerFactory(fileName);
+    }
+	
 	@Override
 	public ParalleljScheduler getScheduler() throws SchedulerException {
-		StdSchedulerFactory stdChedulerFactory = new StdSchedulerFactory();
-		Scheduler scheduler = stdChedulerFactory.getScheduler();
+		Scheduler scheduler = this.stdChedulerFactory.getScheduler();
 		ParalleljSchedulerRepository pSchedRep = ParalleljSchedulerRepository.getInstance();
 
 		ParalleljScheduler pScheduler = pSchedRep.lookup(scheduler.getSchedulerName());
@@ -74,6 +83,5 @@ public class ParalleljSchedulerFactory implements SchedulerFactory  {
 	public Collection<Scheduler> getAllSchedulers() throws SchedulerException {
 		 return SchedulerRepository.getInstance().lookupAll();
 	}
-
 
 }
