@@ -17,21 +17,20 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for CProcedures complex type.
+ * <p>Java class for CBeans complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CProcedures">
+ * &lt;complexType name="CBeans">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;choice maxOccurs="unbounded">
- *         &lt;element name="procedure">
+ *         &lt;element name="bean">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="capacity" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
@@ -45,40 +44,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "CProcedures", propOrder = {
-    "procedure"
+@XmlType(name = "CBeans", propOrder = {
+    "bean"
 })
-public class CProcedures {
+public class CBeans {
 
-    protected List<CProcedures.Procedure> procedure;
+    protected List<CBeans.Bean> bean;
 
     /**
-     * Gets the value of the procedure property.
+     * Gets the value of the bean property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the procedure property.
+     * This is why there is not a <CODE>set</CODE> method for the bean property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getProcedure().add(newItem);
+     *    getBean().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link CProcedures.Procedure }
+     * {@link CBeans.Bean }
      * 
      * 
      */
-    public List<CProcedures.Procedure> getProcedure() {
-        if (procedure == null) {
-            procedure = new ArrayList<CProcedures.Procedure>();
+    public List<CBeans.Bean> getBean() {
+        if (bean == null) {
+            bean = new ArrayList<CBeans.Bean>();
         }
-        return this.procedure;
+        return this.bean;
     }
 
 
@@ -91,8 +90,7 @@ public class CProcedures {
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
-     *       &lt;attribute name="capacity" type="{http://www.w3.org/2001/XMLSchema}int" />
+     *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
      * &lt;/complexType>
@@ -102,59 +100,33 @@ public class CProcedures {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "")
-    public static class Procedure {
+    public static class Bean {
 
-        @XmlAttribute
-        protected String name;
-        @XmlAttribute
-        protected Integer capacity;
+        @XmlAttribute(name = "class")
+        protected String clazz;
 
         /**
-         * Gets the value of the name property.
+         * Gets the value of the clazz property.
          * 
          * @return
          *     possible object is
          *     {@link String }
          *     
          */
-        public String getName() {
-            return name;
+        public String getClazz() {
+            return clazz;
         }
 
         /**
-         * Sets the value of the name property.
+         * Sets the value of the clazz property.
          * 
          * @param value
          *     allowed object is
          *     {@link String }
          *     
          */
-        public void setName(String value) {
-            this.name = value;
-        }
-
-        /**
-         * Gets the value of the capacity property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Integer }
-         *     
-         */
-        public Integer getCapacity() {
-            return capacity;
-        }
-
-        /**
-         * Sets the value of the capacity property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Integer }
-         *     
-         */
-        public void setCapacity(Integer value) {
-            this.capacity = value;
+        public void setClazz(String value) {
+            this.clazz = value;
         }
 
     }
