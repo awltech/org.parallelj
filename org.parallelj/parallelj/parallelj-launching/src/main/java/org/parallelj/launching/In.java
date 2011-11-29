@@ -32,8 +32,12 @@ import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.parser.Parser;
 
 /**
- * Specifies that the class is a Program.
+ * Specifies that a attribute of a class annotated with @Program
+ * id an arguments of the Program for remote launching.
  * 
+ * As remote launching only accept simple java type for arguments,
+ * the parser attribute allows to specify a class of a {@link Parser} to
+ * convert String to complex java type.
  *
  */
 @Documented
