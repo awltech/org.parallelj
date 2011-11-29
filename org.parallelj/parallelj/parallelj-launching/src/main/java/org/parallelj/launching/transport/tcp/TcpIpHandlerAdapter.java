@@ -51,7 +51,6 @@ extends IoHandlerAdapter {
 				break;
 			case ll:
 				//TODO: Scan for all programs and write the welcome message 
-				
 				break;
 			case s:
 			case signature:

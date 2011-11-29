@@ -27,8 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-
-
 public enum Resources {
 	welcome ("/org/parallelj/launching/welcome.txt"),
 	help ("/org/parallelj/launching/help.txt");
