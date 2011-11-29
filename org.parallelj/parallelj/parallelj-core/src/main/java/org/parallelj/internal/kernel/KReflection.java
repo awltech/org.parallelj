@@ -84,6 +84,7 @@ public class KReflection implements Reflection {
 			public Void call() throws Exception {
 				// TODO avoid while true if possible
 				while (true) {
+					System.out.println(KReflection.this.queue);
 					Event<?> event = KReflection.this.queue.take();
 					synchronized (KReflection.this.listeners) {
 						for (EventListener listener : KReflection.this.listeners) {

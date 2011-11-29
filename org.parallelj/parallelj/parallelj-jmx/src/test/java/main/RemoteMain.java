@@ -47,15 +47,15 @@ public class RemoteMain {
 	static void init() throws Exception {
 		MyProgram m = new MyProgram();
 		m.lower.add("a");
-		JAXB.marshal(m, System.out);
+//		JAXB.marshal(m, System.out);
 		
-		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
-		ObjectName name = new ObjectName("org.parallelj:type=Management");
-
-		Management management = new Management();
-
-		mbs.registerMBean(management, name);
+//		MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+//
+//		ObjectName name = new ObjectName("org.parallelj:type=Management");
+//
+//		Management management = new Management();
+//
+//		mbs.registerMBean(management, name);
 		
 	}
 

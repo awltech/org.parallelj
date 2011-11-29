@@ -35,14 +35,11 @@ import org.parallelj.Begin;
 import org.parallelj.ForEach;
 import org.parallelj.Program;
 
-@XmlRootElement
 @Program
 public class MyProgram {
 
-	@XmlElement
 	List<String> lower = new ArrayList<String>();
 
-	@XmlElement
 	List<String> upper = Collections.synchronizedList(new ArrayList<String>());
 
 	public MyProgram() {
