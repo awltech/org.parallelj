@@ -1,5 +1,5 @@
-            ? : Print this help
+         help : Print this help
             q : Quit.
          stop : Shutdown the Server.
-           ll : Lists available tasks and their associated IDs.
-  signature x : Displays the possible input parameters of a Task
+           ll : Lists available programs and their associated IDs.
+  signature x : Displays the possible input parameters of a Program
