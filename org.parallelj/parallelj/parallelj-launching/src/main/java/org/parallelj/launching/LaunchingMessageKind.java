@@ -83,6 +83,12 @@ public enum LaunchingMessageKind {
 	@Format("MBean %s unregistered")
 	I0008,
 	
+	/**
+	 * 
+	 */
+	@Format("QuartzScheduler started")
+	I0009,
+	
 	
 	/**
 	 * Error: Can not start the TciIpServer
@@ -111,7 +117,19 @@ public enum LaunchingMessageKind {
 	 * Error: Can't register MBean
 	 */
 	@Format("Error loading class %s for MBean registration")
-	E0005;
+	E0005,
+	
+	/**
+	 * Error: Can't start QuartzScheduler
+	 */
+	@Format("Error starting Quartz Scheduler")
+	E0006,
+	
+	/**
+	 * Error: Quartz Scheduler failed to shutdown cleanly
+	 */
+	@Format("Quartz Scheduler failed to shutdown cleanly")
+	E0007;
 	
 	/**
 	 * Method used to format a message
