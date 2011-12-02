@@ -48,6 +48,7 @@ import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.In;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.parser.Parser;
+import org.parallelj.launching.transport.ArgEntry;
 
 /**
  * Class representing a Parallelj JMX Server for remote launching 
@@ -66,7 +67,7 @@ public class JmxServer {
 	private List<ObjectName> beanNames = new ArrayList<ObjectName>();
 
 	/**
-	 * Contructor for a JMX Server
+	 * Constructor for a JMX Server
 	 * 
 	 * @param host the host ip
 	 * @param port the port the JMX Server to listen to
@@ -137,7 +138,7 @@ public class JmxServer {
 	}
 
 	/**
-	 * Try to register standard MBean class in the JMX server
+	 * Try to register standard MBean type in the JMX server
 	 * 
 	 * @param beanClass the class name of the MBean 
 	 */
@@ -166,7 +167,7 @@ public class JmxServer {
 	}
 
 	/**
-	 * This method try to register a class annotated with @Program as
+	 * This method try to register a type annotated with @Program as
 	 * a MBean in the JMX server
 	 * 
 	 * @param beanClass the class name of the Program 
@@ -188,7 +189,7 @@ public class JmxServer {
 				 */
 				List<ArgEntry> adapterArgs = new ArrayList<ArgEntry>();
 
-				// Search for annotation @ProgramParameter on attributes of
+				// Search for annotation @In on attributes of
 				// class clazz
 				for (Field field : clazz.getDeclaredFields()) {
 					// Search for an annotation @In

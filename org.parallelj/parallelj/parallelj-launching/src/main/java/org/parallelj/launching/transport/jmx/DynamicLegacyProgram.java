@@ -46,48 +46,60 @@ import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.quartz.AdapterJobsRunner;
 import org.parallelj.launching.quartz.ParalleljScheduler;
 import org.parallelj.launching.quartz.ParalleljSchedulerFactory;
+import org.parallelj.launching.transport.ArgEntry;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 
+/**
+ * Dynamic MBean to register a Program as a MBean
+ * 
+ */
 public class DynamicLegacyProgram implements DynamicMBean {
 
 	private Class<? extends Adapter> adapterClass;
 	private List<ArgEntry> adapterArgs;
 
+	/**
+	 * Default constructor
+	 * 
+	 * @param adapterClass
+	 *            the Program's adapter type
+	 * @param adapterArgs
+	 */
 	public DynamicLegacyProgram(Class<? extends Adapter> adapterClass,
 			List<ArgEntry> adapterArgs) {
 		this.adapterClass = adapterClass;
 		this.adapterArgs = adapterArgs;
 	}
 
-	private void addAdapterArgumentsToJobDataMap(JobDetail job, Object[] params, String[] signature) throws MBeanException {
+	private void addAdapterArgumentsToJobDataMap(JobDetail job,
+			Object[] params, String[] signature) throws MBeanException {
 		/*
-		 * if no restartId:
-		 * 	   this.adapterArgs.size() == params[].length == signature[].length
-		 * if a restartId:
-		 * 	   this.adapterArgs.size()+1 == params[].length == signature[].length
-		 * 	   In this case, params[0] is the restartId
-		 * If it is not the case, there is an error in
-		 * initializing JMX description methods for the Adpater MBean.
+		 * if no restartId: this.adapterArgs.size() == params[].length ==
+		 * signature[].length if a restartId: this.adapterArgs.size()+1 ==
+		 * params[].length == signature[].length In this case, params[0] is the
+		 * restartId If it is not the case, there is an error in initializing
+		 * JMX description methods for the Adpater MBean.
 		 */
 		try {
 			// Is there a restartId?
-			int ind=0;
-			if (params.length == this.adapterArgs.size()+1) {
+			int ind = 0;
+			if (params.length == this.adapterArgs.size() + 1) {
 				job.getJobDataMap().put("restartId", params[ind++]);
 			}
-			
-			for (ArgEntry arg:this.adapterArgs) {
+
+			for (ArgEntry arg : this.adapterArgs) {
 				// Do we have to use a Parser?
 				Object obj = null;
-				if (!arg.parser.equals(NopParser.class)) {
-					obj = arg.parser.newInstance().parse(String.valueOf(params[ind++]));
+				if (!arg.getParser().equals(NopParser.class)) {
+					obj = arg.getParser().newInstance()
+							.parse(String.valueOf(params[ind++]));
 				} else {
 					obj = params[ind++];
 				}
-				job.getJobDataMap().put(arg.name, obj);
+				job.getJobDataMap().put(arg.getName(), obj);
 			}
 		} catch (InstantiationException e) {
 			e.printStackTrace();
@@ -98,7 +110,13 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		} finally {
 		}
 	}
-	
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.management.DynamicMBean#invoke(java.lang.String,
+	 * java.lang.Object[], java.lang.String[])
+	 */
 	@Override
 	public Object invoke(String actionName, Object[] params, String[] signature)
 			throws MBeanException, ReflectionException {
@@ -112,13 +130,12 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			// define the job and tie it to our HelloJob class
 			@SuppressWarnings("unchecked")
 			JobBuilder jobBuilder = newJob((Class<Job>) adapterClass);
-			JobDetail job = jobBuilder.withIdentity(
-					String.valueOf(jobBuilder),
+			JobDetail job = jobBuilder.withIdentity(String.valueOf(jobBuilder),
 					String.valueOf(jobBuilder)).build();
 
 			// initialize arguments for Quartz
 			addAdapterArgumentsToJobDataMap(job, params, signature);
-		
+
 			if (isSync) {
 				result = AdapterJobsRunner.syncLaunch(scheduler, job);
 			} else {
@@ -128,10 +145,16 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			e.printStackTrace();
 		} finally {
 		}
-		
+
 		return result;
 	}
 
+	/**
+	 * Generate the available methods description for each Program registered as
+	 * a MBean with this dynamic MBean
+	 * 
+	 * @return
+	 */
 	private MBeanOperationInfo[] createMBeanOperationInfo() {
 		MBeanOperationInfo[] mbeansInfos = new MBeanOperationInfo[] {
 				new MBeanOperationInfo("syncLaunch",
@@ -163,6 +186,9 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		return mbeansInfos;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.management.DynamicMBean#getMBeanInfo()
+	 */
 	@Override
 	public MBeanInfo getMBeanInfo() {
 		MBeanAttributeInfo[] attrs = null;
@@ -175,27 +201,35 @@ public class DynamicLegacyProgram implements DynamicMBean {
 				notifs);
 	}
 
+	/**
+	 * Generate MBean parameter info for all Program field annotated with @In 
+	 * 
+	 * @return
+	 */
 	private MBeanParameterInfo[] createMBeanParameterInfos() {
 		int lg = this.adapterArgs.size();
 		int cpt = 0;
 		MBeanParameterInfo[] result = new MBeanParameterInfo[lg];
 		for (ArgEntry arg : adapterArgs) {
 			// Only simple Type are authorized
-			//System.out.println(arg);
-			String type = null; 
-			if (!arg.type.equals(String.class)
-					&& !arg.type.equals(int.class)
-					&& !arg.type.equals(long.class)
-					&& !arg.type.equals(boolean.class)) {
-				type =  String.class.getCanonicalName();
+			// System.out.println(arg);
+			String type = null;
+			if (!arg.getType().equals(String.class)
+					&& !arg.getType().equals(int.class)
+					&& !arg.getType().equals(long.class)
+					&& !arg.getType().equals(boolean.class)) {
+				type = String.class.getCanonicalName();
 			} else {
-				type =  arg.type.getCanonicalName();
+				type = arg.getType().getCanonicalName();
 			}
-			result[cpt++] = new MBeanParameterInfo(arg.name, type, "");
+			result[cpt++] = new MBeanParameterInfo(arg.getName(), type, "");
 		}
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.management.DynamicMBean#getAttribute(java.lang.String)
+	 */
 	@Override
 	public Object getAttribute(String attribute)
 			throws AttributeNotFoundException, MBeanException,
@@ -204,6 +238,9 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.management.DynamicMBean#setAttribute(javax.management.Attribute)
+	 */
 	@Override
 	public void setAttribute(Attribute attribute)
 			throws AttributeNotFoundException, InvalidAttributeValueException,
@@ -211,12 +248,18 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		// Do Nothing
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.management.DynamicMBean#getAttributes(java.lang.String[])
+	 */
 	@Override
 	public AttributeList getAttributes(String[] attributes) {
 		AttributeList list = new AttributeList();
 		return list;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.management.DynamicMBean#setAttributes(javax.management.AttributeList)
+	 */
 	@Override
 	public AttributeList setAttributes(AttributeList attributes) {
 		AttributeList list = new AttributeList();
