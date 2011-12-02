@@ -53,6 +53,9 @@ public class ServersInitializerListener implements ServletContextListener {
 
     private JmxServer jmxServer;
 
+    /* (non-Javadoc)
+     * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
+     */
     public void contextInitialized(ServletContextEvent sce) {
         try {
             // Get the configuration
@@ -110,10 +113,13 @@ public class ServersInitializerListener implements ServletContextListener {
 				LaunchingMessageKind.E0002.format();
 			}
         } catch (Exception e) {
-        	LaunchingMessageKind.E0006.format();
+        	LaunchingMessageKind.E0006.format(e);
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
+     */
     public void contextDestroyed(ServletContextEvent sce) {
 		// Stop the TciIpServer
 		if (this.tcpIpServer != null) {
