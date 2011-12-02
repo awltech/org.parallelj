@@ -34,14 +34,24 @@ import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.parallelj.launching.LaunchingMessageKind;
 
+/**
+ * Class representing a Parallelj RcpIpServer Server for remote launching 
+ */
 public class TcpIpServer {
 	private final IoAcceptor acceptor = new NioSocketAcceptor();
 	private String host;
 	private int port;
 
+	/**
+	 * Default constructor
+	 * 
+	 * @param host
+	 * @param port
+	 */
 	public TcpIpServer(String host, int port) {
 		this.host = host;
 		this.port = port;
+		
 		
 		// Initialize the acceptor
 		this.acceptor.getFilterChain().addLast("logger", new LoggingFilter());
@@ -55,6 +65,11 @@ public class TcpIpServer {
 		this.acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
 	}
 	
+	/**
+	 * Start the TcpIpServer
+	 * 
+	 * @throws IOException
+	 */
 	public synchronized void start() throws IOException {
 		if (acceptor != null) {
 			LaunchingMessageKind.I0001.format(this.host, this.port);
@@ -62,11 +77,13 @@ public class TcpIpServer {
 		}
 	}
 
+	/**
+	 * Stop the TcpIpServer
+	 */
 	public synchronized void stop() {
 		if (acceptor != null) {
 			LaunchingMessageKind.I0002.format();
 			acceptor.dispose(true);
 		}
 	}
-
 }

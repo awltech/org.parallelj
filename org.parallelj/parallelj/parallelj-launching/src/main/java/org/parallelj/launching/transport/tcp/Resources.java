@@ -27,12 +27,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+/**
+ * Define resources to use for Welcome and Help text.
+ * These text are printed to a client connecting to the TcpIpServer   
+ *
+ */
 public enum Resources {
 	welcome ("/org/parallelj/launching/welcome.txt"),
 	help ("/org/parallelj/launching/help.txt");
 	
 	private String text;
 
+	/**
+	 * Default constructor
+	 * 
+	 * @param resource
+	 */
 	private Resources(String resource) {
 		InputStream inputStream = TcpIpHandlerAdapter.class.getResourceAsStream(resource);
 	    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
