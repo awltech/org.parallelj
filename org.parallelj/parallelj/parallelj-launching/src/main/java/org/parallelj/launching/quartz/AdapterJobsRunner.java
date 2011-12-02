@@ -34,7 +34,18 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.matchers.KeyMatcher;
 
 
+/**
+ * Implementation for a Program launch
+ */
 public class AdapterJobsRunner {
+	/**
+	 * launch a Program and waits for the return status
+	 * 
+	 * @param scheduler the Parallelj scheduler to use for the launch
+	 * @param job the Job detail for the Program
+	 * @return
+	 * @throws SchedulerException
+	 */
 	public static synchronized Object syncLaunch(Scheduler scheduler,
 			JobDetail job) throws SchedulerException {
 		// Trigger the job to run on the next round minute
@@ -66,6 +77,13 @@ public class AdapterJobsRunner {
 		return result;
 	}
 
+	/**
+	 * launch a Program and returns
+	 * 
+	 * @param scheduler the Parallelj scheduler to use for the launch
+	 * @param job the Job detail for the Program
+	 * @throws SchedulerException
+	 */
 	public static void ayncLaunch(ParalleljScheduler scheduler, JobDetail job)
 			throws SchedulerException {
 		// Trigger the job to run on the next round minute
