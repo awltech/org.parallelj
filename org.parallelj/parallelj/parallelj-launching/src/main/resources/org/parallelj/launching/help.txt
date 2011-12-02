@@ -1,5 +1,6 @@
-         help : Print this help
-            q : Quit.
-         stop : Shutdown the Server.
-           ll : Lists available programs and their associated IDs.
-  signature x : Displays the possible input parameters of a Program
+              help, h : Print this help
+             list, ll : Lists available programs and their associated IDs.
+   synclaunch x, sl x : Launches a new Program instance with ID x, and waits till return status (synchronous launch).
+ asynclaunch x, asl x : Launches a new Program instance with ID x, and returns (asynchronous launch).
+              quit, q : Quit.
+  
