@@ -34,4 +34,21 @@ public class AlAsyncLaunch extends AsyncLaunch {
 	public String getType() {
 		return "asl";
 	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "         asl -id x -rid y params : Launches a new Program instance with ID x, and returns (asynchronous launch).";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AsyncLaunch#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return 69;
+	}
+
 }

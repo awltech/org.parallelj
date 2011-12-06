@@ -33,4 +33,20 @@ public class AlSyncLaunch extends SyncLaunch {
 	public String getType() {
 		return "sl";
 	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "          sl -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.SyncLaunch#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return 79;
+	}
 }

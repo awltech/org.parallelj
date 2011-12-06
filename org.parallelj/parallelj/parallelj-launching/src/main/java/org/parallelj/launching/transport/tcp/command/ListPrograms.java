@@ -45,7 +45,7 @@ public class ListPrograms extends AbstractTcpCommand {
 	 * Represents an available program to be print to the client
 	 *
 	 */
-	class ListEntry {
+	static class ListEntry {
 		private ListEntry(String program, List<ArgEntry> args) {
 			this.program = program;
 			this.args = args;
@@ -133,6 +133,22 @@ public class ListPrograms extends AbstractTcpCommand {
 	 */
 	public String getType() {
 		return RemoteCommand.list.name();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "                            list : Lists available programs and their associated IDs.";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return 90;
 	}
 
 }

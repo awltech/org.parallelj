@@ -52,7 +52,6 @@ public class TcpIpServer {
 		this.host = host;
 		this.port = port;
 		
-		
 		// Initialize the acceptor
 		this.acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 		this.acceptor.getFilterChain().addLast(
@@ -72,7 +71,7 @@ public class TcpIpServer {
 	 */
 	public synchronized void start() throws IOException {
 		if (acceptor != null) {
-			LaunchingMessageKind.I0001.format(this.host, this.port);
+			LaunchingMessageKind.ITCPIP0001.format(this.host, this.port);
 			this.acceptor.bind(new InetSocketAddress(this.host, this.port));
 		}
 	}
@@ -82,7 +81,7 @@ public class TcpIpServer {
 	 */
 	public synchronized void stop() {
 		if (acceptor != null) {
-			LaunchingMessageKind.I0002.format();
+			LaunchingMessageKind.ITCPIP0002.format();
 			acceptor.dispose(true);
 		}
 	}

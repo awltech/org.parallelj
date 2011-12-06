@@ -34,4 +34,21 @@ public class AlQuit extends Quit {
 	public String getType() {
 		return "q";
 	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "                               q : Quit ";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.Quit#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return 59;
+	}
+
 }

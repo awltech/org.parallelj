@@ -26,7 +26,7 @@ import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.quartz.Job;
-import org.quartz.JobDataMap;
+//import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
 /**
@@ -45,11 +45,13 @@ public aspect ProgramJobsAdapter {
 				&& args(context) && this(self) {
 
 		System.out.println("Running Jobs... : " + self);
+		/*
 		JobDataMap map = context.getJobDetail().getJobDataMap();
 		for (String key : map.keySet()) {
 			System.out.println("JobDatas => key:" + key + "  -  obj:"
 					+ map.get(key));
 		}
+		*/
 
 		System.out.println("Executing " + this);
 		ProcessHelper<?> p = Programs.as((Adapter) self).execute().join();

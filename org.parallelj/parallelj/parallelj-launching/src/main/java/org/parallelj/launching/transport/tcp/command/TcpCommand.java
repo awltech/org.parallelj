@@ -44,5 +44,19 @@ public interface TcpCommand {
 	 * @return
 	 */
 	public String getType();
+	
+	/**
+	 * Return a String explaining the usage of the command
+	 * 
+	 * @return the usage of the command
+	 */
+	public String getUsage();
+
+	/**
+	 * Return a int representing a priority for the usage of the command
+	 * 
+	 * @return the usage priority of the command
+	 */
+	public int getPriorityUsage();
 
 }

@@ -45,4 +45,20 @@ public class Quit extends AbstractTcpCommand {
 		return RemoteCommand.quit.name();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "                            quit : Quit ";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return 60;
+	}
+
 }

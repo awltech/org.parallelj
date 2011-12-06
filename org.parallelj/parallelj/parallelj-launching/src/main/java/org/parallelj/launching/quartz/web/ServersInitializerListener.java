@@ -34,8 +34,10 @@ import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.quartz.ParalleljScheduler;
 import org.parallelj.launching.quartz.ParalleljSchedulerFactory;
+import org.parallelj.launching.transport.AdaptersArguments;
 import org.parallelj.launching.transport.jmx.JmxServer;
 import org.parallelj.launching.transport.tcp.TcpIpServer;
+import org.quartz.SchedulerException;
 
 /**
  * <p>
@@ -64,7 +66,7 @@ public class ServersInitializerListener implements ServletContextListener {
             // Initialize the scheduler
 			this.scheduler = (new ParalleljSchedulerFactory()).getScheduler();
 			this.scheduler.start();
-			LaunchingMessageKind.I0009.format();
+			LaunchingMessageKind.IQUARTZ0001.format();
 			
 			// Initialize a TcpIpServer
 			if (configuration.getServers() != null
@@ -77,11 +79,11 @@ public class ServersInitializerListener implements ServletContextListener {
 					try {
 						this.tcpIpServer.start();
 					} catch (IOException e) {
-						LaunchingMessageKind.E0001.format(e);
+						LaunchingMessageKind.ETCPIP0001.format(e);
 					}
 				}
 			} else {
-				LaunchingMessageKind.E0001.format();
+				LaunchingMessageKind.ETCPIP0001.format();
 			}
 
 			// Initialize a JmxServer
@@ -95,26 +97,32 @@ public class ServersInitializerListener implements ServletContextListener {
 				if (this.jmxServer != null) {
 					try {
 						this.jmxServer.start();
-						
-						// Register all defined Program in parallej.xml as MBeans
-						if (configuration.getServers().getBeans() != null
-								&& configuration.getServers().getBeans().getBean() != null) {
-							for (Bean bean : configuration.getServers().getBeans().getBean()) {
-								// Register the Program as MBean
-								this.jmxServer.registerProgramAsMBean(bean.getClazz());
-							}
-						}
-
 					} catch (IOException e) {
-						LaunchingMessageKind.E0002.format(e);
+						LaunchingMessageKind.EJMX0001.format(e);
 					}
 				}
 			} else {
-				LaunchingMessageKind.E0002.format();
+				LaunchingMessageKind.EJMX0001.format();
 			}
-        } catch (Exception e) {
-        	LaunchingMessageKind.E0006.format(e);
+			
+			// Scan all defined Program in parallej.xml 
+			if (configuration.getServers().getBeans() != null
+					&& configuration.getServers().getBeans().getBean() != null) {
+				for (Bean bean : configuration.getServers().getBeans().getBean()) {
+					// Initialize the Arguments of the Programs in AdaptersArguments
+					AdaptersArguments.addAdapter(bean.getClazz());
+					
+					// Register the Program as MBean
+					if (this.jmxServer != null) {
+						this.jmxServer.registerProgramAsMBean(bean.getClazz());
+					}
+				}
+			}
+        } catch (SchedulerException e) {
+        	LaunchingMessageKind.EQUARTZ0001.format(e);
         }
+        
+
     }
 
     /* (non-Javadoc)
@@ -137,7 +145,7 @@ public class ServersInitializerListener implements ServletContextListener {
                 this.scheduler.shutdown();
             }
         } catch (Exception e) {
-        	LaunchingMessageKind.E0007.format(e);
+        	LaunchingMessageKind.EQUARTZ0002.format(e);
         }
     }
 }

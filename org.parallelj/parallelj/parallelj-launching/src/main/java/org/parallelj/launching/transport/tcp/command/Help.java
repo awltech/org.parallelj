@@ -21,8 +21,11 @@
  */
 package org.parallelj.launching.transport.tcp.command;
 
+import java.util.Arrays;
+
 import org.apache.mina.core.session.IoSession;
-import org.parallelj.launching.transport.tcp.Resources;
+import org.parallelj.launching.transport.tcp.TcpIpCommands;
+import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 
 /**
  * Help TcpCommand
@@ -30,12 +33,24 @@ import org.parallelj.launching.transport.tcp.Resources;
  */
 public class Help extends AbstractTcpCommand {
 	
+	private String message;
+	
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
 	@Override
 	public synchronized String process(IoSession session, String... args) {
-		return Resources.help.format();
+		if (this.message == null) {
+			StringBuffer strb = new StringBuffer();
+			// Get all available Commands and get its usage
+			TcpCommand[] cmds = TcpIpCommands.getCommands().values().toArray(new TcpCommand[]{});
+			Arrays.sort(cmds);
+			for (TcpCommand cmd : cmds) {
+				strb.append(cmd.getUsage()).append(TcpIpHandlerAdapter.ENDLINE);
+			}
+			this.message=strb.toString();
+		}
+		return this.message;
 	}
 	
 	/* (non-Javadoc)
@@ -43,6 +58,22 @@ public class Help extends AbstractTcpCommand {
 	 */
 	public String getType() {
 		return RemoteCommand.help.name();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "                            help : Print this help message";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return 100;
 	}
 
 }

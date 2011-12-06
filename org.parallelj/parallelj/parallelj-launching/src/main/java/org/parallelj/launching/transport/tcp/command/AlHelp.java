@@ -27,11 +27,27 @@ package org.parallelj.launching.transport.tcp.command;
  *
  */
 public class AlHelp extends Help {
-
+	
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.Help#getType()
 	 */
 	public String getType() {
 		return "h";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "                               h : Print this help message";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.Help#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return 99;
 	}
 }

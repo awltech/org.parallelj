@@ -46,7 +46,7 @@ public class AdapterJobsRunner {
 	 * @return
 	 * @throws SchedulerException
 	 */
-	public static synchronized Object syncLaunch(Scheduler scheduler,
+	public static Object syncLaunch(Scheduler scheduler,
 			JobDetail job) throws SchedulerException {
 		// Trigger the job to run on the next round minute
 		TriggerBuilder<Trigger> triggerBuilder = newTrigger();
@@ -84,7 +84,7 @@ public class AdapterJobsRunner {
 	 * @param job the Job detail for the Program
 	 * @throws SchedulerException
 	 */
-	public static void ayncLaunch(ParalleljScheduler scheduler, JobDetail job)
+	public static void asyncLaunch(ParalleljScheduler scheduler, JobDetail job)
 			throws SchedulerException {
 		// Trigger the job to run on the next round minute
 		TriggerBuilder<Trigger> triggerBuilder = newTrigger();

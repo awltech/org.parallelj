@@ -44,4 +44,17 @@ public class Stop extends AbstractTcpCommand {
 	public String getType() {
 		return RemoteCommand.stop.name();
 	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "                      stop -id x : stop the program with ID x";
+	}
+
+	@Override
+	public int getPriorityUsage() {
+		return 0;
+	}
 }

@@ -34,4 +34,20 @@ public class AlList extends ListPrograms {
 	public String getType() {
 		return "ll";
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "                              ll : Lists available programs and their associated IDs.";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.ListPrograms#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return 89;
+	}
 }

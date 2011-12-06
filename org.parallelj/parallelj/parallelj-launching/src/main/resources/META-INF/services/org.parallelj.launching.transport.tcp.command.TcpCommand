@@ -8,4 +8,4 @@ org.parallelj.launching.transport.tcp.command.AsyncLaunch
 org.parallelj.launching.transport.tcp.command.AlAsyncLaunch
 org.parallelj.launching.transport.tcp.command.Quit
 org.parallelj.launching.transport.tcp.command.AlQuit
-org.parallelj.launching.transport.tcp.command.Stop
+#org.parallelj.launching.transport.tcp.command.Stop
