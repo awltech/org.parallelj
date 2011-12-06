@@ -1,0 +1,87 @@
+/*
+ *     ParallelJ, framework for parallel computing
+ *
+ *     Copyright (C) 2010 Atos Worldline or third-party contributors as
+ *     indicated by the @author tags or express copyright attribution
+ *     statements applied by the authors.
+ *
+ *     This library is free software; you can redistribute it and/or
+ *     modify it under the terms of the GNU Lesser General Public
+ *     License as published by the Free Software Foundation; either
+ *     version 2.1 of the License.
+ *
+ *     This library is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *     Lesser General Public License for more details.
+ *
+ *     You should have received a copy of the GNU Lesser General Public
+ *     License along with this library; if not, write to the Free Software
+ *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+package org.parallelj.launching.transport.tcp.command;
+
+import org.apache.mina.core.session.IoSession;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.launching.parser.NopParser;
+import org.parallelj.launching.transport.ArgEntry;
+import org.parallelj.launching.transport.AdaptersArguments.AdapterArguments;
+import org.parallelj.launching.transport.tcp.TcpIpOptions;
+import org.quartz.JobDetail;
+
+
+/**
+ * Define a Program launch Command available in a TcpIpServer
+ */
+abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
+	 */
+	abstract public String process(IoSession session, String... args);
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#getType()
+	 */
+	abstract public String getType();
+	
+	public TcpIpOptions parseCommandLine(String... args) throws CmdLineException {
+		TcpIpOptions options = new TcpIpOptions();
+		CmdLineParser parser = new CmdLineParser(options);
+		parser.parseArgument(args);
+		return options;
+	}
+
+	
+	protected void addAdapterArgumentsToJobDataMap(JobDetail job, AdapterArguments adapterArguments,
+			Object[] params) {
+		/*
+		 * if no restartId: this.adapterArgs.size() == params[].length ==
+		 * signature[].length if a restartId: this.adapterArgs.size()+1 ==
+		 * params[].length == signature[].length In this case, params[0] is the
+		 * restartId If it is not the case, there is an error in initializing
+		 * JMX description methods for the Adpater MBean.
+		 */
+		try {
+			int ind = 0;
+			for (ArgEntry arg : adapterArguments.getAdapterArguments()) {
+				// Do we have to use a Parser?
+				Object obj = null;
+				if (!arg.getParser().equals(NopParser.class)) {
+					obj = arg.getParser().newInstance()
+							.parse(String.valueOf(params[ind++]));
+				} else {
+					obj = params[ind++];
+				}
+				job.getJobDataMap().put(arg.getName(), obj);
+			}
+		} catch (InstantiationException e) {
+			LaunchingMessageKind.EREMOTE0002.format(e);
+		} catch (IllegalAccessException e) {
+			LaunchingMessageKind.EREMOTE0002.format(e);
+		}
+	}
+}
