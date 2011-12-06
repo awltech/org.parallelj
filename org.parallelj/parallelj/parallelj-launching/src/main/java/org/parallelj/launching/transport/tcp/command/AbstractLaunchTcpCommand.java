@@ -41,12 +41,12 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
-	abstract public String process(IoSession session, String... args);
+	public abstract String process(IoSession session, String... args);
 	
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#getType()
 	 */
-	abstract public String getType();
+	public abstract String getType();
 	
 	public TcpIpOptions parseCommandLine(String... args) throws CmdLineException {
 		TcpIpOptions options = new TcpIpOptions();

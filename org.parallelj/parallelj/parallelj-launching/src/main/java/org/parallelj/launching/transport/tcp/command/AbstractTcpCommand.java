@@ -64,24 +64,24 @@ abstract class AbstractTcpCommand implements TcpCommand, Comparable<TcpCommand> 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
-	abstract public String process(IoSession session, String... args);
+	public abstract String process(IoSession session, String... args);
 	
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#getType()
 	 */
-	abstract public String getType();
+	public abstract String getType();
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#getUsage()
 	 */
 	@Override
-	abstract public String getUsage();
+	public abstract String getUsage();
 	
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#getPriorityUsage()
 	 */
 	@Override
-	abstract public int getPriorityUsage();
+	public abstract int getPriorityUsage();
 
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
