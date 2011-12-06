@@ -37,7 +37,13 @@ import org.quartz.impl.matchers.KeyMatcher;
 /**
  * Implementation for a Program launch
  */
-public class AdapterJobsRunner {
+public final class AdapterJobsRunner {
+	
+	private static final int SLEEPINGTIME = 100;
+	
+	private AdapterJobsRunner() {
+	}
+
 	/**
 	 * launch a Program and waits for the return status
 	 * 
@@ -67,7 +73,7 @@ public class AdapterJobsRunner {
 		// Waiting for the job completed...?
 		while (!listener.isJobTerminated()) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(SLEEPINGTIME);
 			} catch (InterruptedException e) {
 			}
 		}

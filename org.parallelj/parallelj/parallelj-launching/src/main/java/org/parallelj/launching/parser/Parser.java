@@ -23,5 +23,7 @@
 package org.parallelj.launching.parser;
 
 public interface Parser {
-	public Object parse(String value);
+	
+	Object parse(String value);
+	
 }
