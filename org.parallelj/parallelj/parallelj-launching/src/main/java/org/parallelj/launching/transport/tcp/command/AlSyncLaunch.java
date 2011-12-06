@@ -27,6 +27,9 @@ package org.parallelj.launching.transport.tcp.command;
  *
  */
 public class AlSyncLaunch extends SyncLaunch {
+	
+	private static final int PRIORITY=79;
+
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.SyncLaunch#getType()
 	 */
@@ -47,6 +50,6 @@ public class AlSyncLaunch extends SyncLaunch {
 	 */
 	@Override
 	public int getPriorityUsage() {
-		return 79;
+		return PRIORITY;
 	}
 }

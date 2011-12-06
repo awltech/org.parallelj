@@ -28,10 +28,12 @@ package org.parallelj.launching.transport.tcp.command;
  */
 public class AlHelp extends Help {
 	
+	private static final int PRIORITY=99;
+
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.Help#getType()
 	 */
-	public String getType() {
+	public final String getType() {
 		return "h";
 	}
 
@@ -39,7 +41,7 @@ public class AlHelp extends Help {
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
 	 */
 	@Override
-	public String getUsage() {
+	public final String getUsage() {
 		return "                               h : Print this help message";
 	}
 
@@ -47,7 +49,7 @@ public class AlHelp extends Help {
 	 * @see org.parallelj.launching.transport.tcp.command.Help#getPriorityUsage()
 	 */
 	@Override
-	public int getPriorityUsage() {
-		return 99;
+	public final int getPriorityUsage() {
+		return PRIORITY;
 	}
 }

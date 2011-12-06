@@ -35,7 +35,7 @@ public class TcpIpOptions {
 	 * 
 	 * @return the id of the program
 	 */
-	public int getId() {
+	public final int getId() {
 		return id;
 	}
 
@@ -45,7 +45,7 @@ public class TcpIpOptions {
 	 * @param the
 	 *            id of the program
 	 */
-	public void setId(int id) {
+	public final void setId(int id) {
 		this.id = id;
 	}
 
@@ -54,7 +54,7 @@ public class TcpIpOptions {
 	 * 
 	 * @return the rid of the program
 	 */
-	public String getRid() {
+	public final String getRid() {
 		return rid;
 	}
 
@@ -64,7 +64,7 @@ public class TcpIpOptions {
 	 * @param the
 	 *            rid of the program
 	 */
-	public void setRid(String rid) {
+	public final void setRid(String rid) {
 		this.rid = rid;
 	}
 
@@ -74,7 +74,7 @@ public class TcpIpOptions {
 	 * 
 	 * @return a List of String
 	 */
-	public List<String> getArguments() {
+	public final List<String> getArguments() {
 		return arguments;
 	}
 
@@ -84,7 +84,7 @@ public class TcpIpOptions {
 	 * 
 	 * @param arguments
 	 */
-	public void setArguments(List<String> arguments) {
+	public final void setArguments(List<String> arguments) {
 		this.arguments = arguments;
 	}
 }

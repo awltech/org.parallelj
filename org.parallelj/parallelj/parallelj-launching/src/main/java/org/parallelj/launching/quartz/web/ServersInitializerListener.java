@@ -58,7 +58,7 @@ public class ServersInitializerListener implements ServletContextListener {
     /* (non-Javadoc)
      * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
      */
-    public void contextInitialized(ServletContextEvent sce) {
+    public final void contextInitialized(ServletContextEvent sce) {
         try {
             // Get the configuration
             ParalleljConfiguration configuration = ParalleljConfigurationManager.getConfiguration();
@@ -121,14 +121,12 @@ public class ServersInitializerListener implements ServletContextListener {
         } catch (SchedulerException e) {
         	LaunchingMessageKind.EQUARTZ0001.format(e);
         }
-        
-
     }
 
     /* (non-Javadoc)
      * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
      */
-    public void contextDestroyed(ServletContextEvent sce) {
+    public final void contextDestroyed(ServletContextEvent sce) {
 		// Stop the TciIpServer
 		if (this.tcpIpServer != null) {
 			this.tcpIpServer.stop();

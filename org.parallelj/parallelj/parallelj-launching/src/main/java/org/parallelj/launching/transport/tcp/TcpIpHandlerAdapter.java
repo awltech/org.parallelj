@@ -42,7 +42,7 @@ extends IoHandlerAdapter {
 	
 	public static final String ENDLINE = "\n\r";
 	
-	private final String WELCOME_FILE = "/org/parallelj/launching/welcome.txt";
+	private static final String WELCOMEFILE = "/org/parallelj/launching/welcome.txt";
 	
 	private String welcome;
 	
@@ -50,7 +50,7 @@ extends IoHandlerAdapter {
 	 * Default constructor
 	 */
 	public TcpIpHandlerAdapter() {
-		InputStream inputStream = TcpIpHandlerAdapter.class.getResourceAsStream(WELCOME_FILE);
+		InputStream inputStream = TcpIpHandlerAdapter.class.getResourceAsStream(WELCOMEFILE);
 		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 	    BufferedReader reader = new BufferedReader(inputStreamReader);
 	    StringBuilder sb = new StringBuilder();
@@ -78,7 +78,7 @@ extends IoHandlerAdapter {
 	 * @see org.apache.mina.core.service.IoHandlerAdapter#exceptionCaught(org.apache.mina.core.session.IoSession, java.lang.Throwable)
 	 */
 	@Override
-	public void exceptionCaught(IoSession session, Throwable cause)
+	public final void exceptionCaught(IoSession session, Throwable cause)
 			throws Exception {
 		cause.printStackTrace();
 	}
@@ -87,7 +87,7 @@ extends IoHandlerAdapter {
 	 * @see org.apache.mina.core.service.IoHandlerAdapter#messageReceived(org.apache.mina.core.session.IoSession, java.lang.Object)
 	 */
 	@Override
-	public void messageReceived(IoSession session, Object message)
+	public final void messageReceived(IoSession session, Object message)
 			throws Exception {
 		String str = message.toString();
 		
@@ -123,7 +123,7 @@ extends IoHandlerAdapter {
 	 * @see org.apache.mina.core.service.IoHandlerAdapter#sessionOpened(org.apache.mina.core.session.IoSession)
 	 */
 	@Override
-	public void sessionOpened(IoSession session) throws Exception {
+	public final void sessionOpened(IoSession session) throws Exception {
 		session.write(this.welcome);
 		session.write(ENDLINE);
 		session.write(">");

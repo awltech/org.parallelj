@@ -28,10 +28,12 @@ package org.parallelj.launching.transport.tcp.command;
  */
 public class AlQuit extends Quit {
 
+	private static final int PRIORITY=59;
+
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.Quit#getType()
 	 */
-	public String getType() {
+	public final String getType() {
 		return "q";
 	}
 
@@ -39,7 +41,7 @@ public class AlQuit extends Quit {
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
 	 */
 	@Override
-	public String getUsage() {
+	public final String getUsage() {
 		return "                               q : Quit ";
 	}
 	
@@ -47,8 +49,8 @@ public class AlQuit extends Quit {
 	 * @see org.parallelj.launching.transport.tcp.command.Quit#getPriorityUsage()
 	 */
 	@Override
-	public int getPriorityUsage() {
-		return 59;
+	public final int getPriorityUsage() {
+		return PRIORITY;
 	}
 
 }

@@ -54,8 +54,8 @@ import org.parallelj.launching.transport.ArgEntry;
  * Class representing a Parallelj JMX Server for remote launching 
  */
 public class JmxServer {
-	private final static String DEFAULT_SERVER_URL_FORMAT = "service:jmx:rmi://%s/jndi/rmi://%s:%s/server";
-	private final static String DEFAULT_BEAN_NAME_FORMAT = "%s:type=%s";
+	private static final String DEFAULT_SERVER_URL_FORMAT = "service:jmx:rmi://%s/jndi/rmi://%s:%s/server";
+	private static final String DEFAULT_BEAN_NAME_FORMAT = "%s:type=%s";
 
 	private String host;
 	private int port;
@@ -84,7 +84,7 @@ public class JmxServer {
 	 * 
 	 * @throws IOException
 	 */
-	public synchronized void start() throws IOException {
+	public final synchronized void start() throws IOException {
 		LaunchingMessageKind.IJMX0001.format(this.host, this.port);
 		this.mbs = ManagementFactory.getPlatformMBeanServer();
 
@@ -118,7 +118,7 @@ public class JmxServer {
 	/**
 	 * Stop the JMX Server
 	 */
-	public synchronized void stop() {
+	public final synchronized void stop() {
 		LaunchingMessageKind.IJMX0003.format();
 		unRegisterMBeans();
 
@@ -141,7 +141,7 @@ public class JmxServer {
 	 * 
 	 * @param beanClass the class name of the MBean 
 	 */
-	public void registerMBean(String className) {
+	public final void registerMBean(String className) {
 		if (this.mbs != null && className != null) {
 			try {
 				Class<?> clazz = Class.forName(className);
@@ -171,7 +171,7 @@ public class JmxServer {
 	 * 
 	 * @param beanClass the class name of the Program 
 	 */
-	public void registerProgramAsMBean(String beanClass) {
+	public final void registerProgramAsMBean(String beanClass) {
 		if (this.mbs != null && beanClass != null) {
 			try {
 				@SuppressWarnings("unchecked")
@@ -233,11 +233,11 @@ public class JmxServer {
 	 */
 	private void unRegisterMBeans() {
 		if (beanNames != null) {
-			for (ObjectName _name : beanNames) {
+			for (ObjectName objectName : beanNames) {
 				// unRegister the bean in the JMX server...
 				try {
-					mbs.unregisterMBean(_name);
-					LaunchingMessageKind.IJMX0006.format(_name);
+					mbs.unregisterMBean(objectName);
+					LaunchingMessageKind.IJMX0006.format(objectName);
 				} catch (MBeanRegistrationException e) {
 					// Do nothing
 				} catch (InstanceNotFoundException e) {

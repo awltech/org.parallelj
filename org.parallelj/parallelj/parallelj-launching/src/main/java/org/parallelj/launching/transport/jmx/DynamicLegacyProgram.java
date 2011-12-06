@@ -131,7 +131,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * java.lang.Object[], java.lang.String[])
 	 */
 	@Override
-	public Object invoke(String actionName, Object[] params, String[] signature)
+	public final Object invoke(String actionName, Object[] params, String[] signature)
 			throws MBeanException, ReflectionException {
 		boolean isSync = actionName.startsWith("sync");
 		Object result = null;
@@ -201,7 +201,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @see javax.management.DynamicMBean#getMBeanInfo()
 	 */
 	@Override
-	public MBeanInfo getMBeanInfo() {
+	public final MBeanInfo getMBeanInfo() {
 		MBeanAttributeInfo[] attrs = null;
 		MBeanConstructorInfo[] ctors = null;
 		MBeanOperationInfo[] opers = createMBeanOperationInfo();
@@ -242,7 +242,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @see javax.management.DynamicMBean#getAttribute(java.lang.String)
 	 */
 	@Override
-	public Object getAttribute(String attribute)
+	public final Object getAttribute(String attribute)
 			throws AttributeNotFoundException, MBeanException,
 			ReflectionException {
 		// Do Nothing
@@ -263,7 +263,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @see javax.management.DynamicMBean#getAttributes(java.lang.String[])
 	 */
 	@Override
-	public AttributeList getAttributes(String[] attributes) {
+	public final AttributeList getAttributes(String[] attributes) {
 		AttributeList list = new AttributeList();
 		return list;
 	}
@@ -272,7 +272,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @see javax.management.DynamicMBean#setAttributes(javax.management.AttributeList)
 	 */
 	@Override
-	public AttributeList setAttributes(AttributeList attributes) {
+	public final AttributeList setAttributes(AttributeList attributes) {
 		AttributeList list = new AttributeList();
 		return list;
 	}

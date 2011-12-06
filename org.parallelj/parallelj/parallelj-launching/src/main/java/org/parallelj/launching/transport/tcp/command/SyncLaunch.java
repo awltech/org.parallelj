@@ -44,12 +44,14 @@ import org.quartz.SchedulerException;
  *
  */
 public class SyncLaunch extends AbstractLaunchTcpCommand {
+	
+	private static final int PRIORITY=80;
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
 	@Override
-	public String process(IoSession session, String... args) {
+	public final String process(IoSession session, String... args) {
 		String result = null;
 		TcpIpOptions options = null;
 		try {
@@ -124,7 +126,7 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 	 */
 	@Override
 	public int getPriorityUsage() {
-		return 80;
+		return PRIORITY;
 	}
 
 }

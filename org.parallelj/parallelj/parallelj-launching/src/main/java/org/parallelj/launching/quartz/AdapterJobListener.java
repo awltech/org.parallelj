@@ -9,21 +9,21 @@ public class AdapterJobListener implements JobListener {
 	private boolean isJobTerminated = false;
 	private Object result=null;
 	
-	public boolean isJobTerminated() {
+	public final boolean isJobTerminated() {
 		return isJobTerminated;
 	}
 
-	public Object getResult() {
+	public final Object getResult() {
 		return result;
 	}
 
 	@Override
-	public String getName() {
+	public final String getName() {
         return this.toString();
 	}
 
 	@Override
-	public void jobWasExecuted(JobExecutionContext context,
+	public final void jobWasExecuted(JobExecutionContext context,
 			JobExecutionException jobException) {
 		this.isJobTerminated = true;
 		this.result = context.getResult();

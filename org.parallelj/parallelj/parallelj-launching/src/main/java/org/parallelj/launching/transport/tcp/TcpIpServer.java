@@ -38,6 +38,10 @@ import org.parallelj.launching.LaunchingMessageKind;
  * Class representing a Parallelj RcpIpServer Server for remote launching 
  */
 public class TcpIpServer {
+	
+	private static final int BUFFER_READER_SIZE = 2048;
+	private static final int IDLE_TIME = 10;
+	
 	private final IoAcceptor acceptor = new NioSocketAcceptor();
 	private String host;
 	private int port;
@@ -59,9 +63,9 @@ public class TcpIpServer {
 				new ProtocolCodecFilter(new TextLineCodecFactory(Charset
 						.forName("UTF-8"))));
 		this.acceptor.setHandler(new TcpIpHandlerAdapter());
-		this.acceptor.getSessionConfig().setReadBufferSize(2048);
+		this.acceptor.getSessionConfig().setReadBufferSize(BUFFER_READER_SIZE);
 		//this.acceptor.getSessionConfig().set
-		this.acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 10);
+		this.acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE_TIME);
 	}
 	
 	/**
@@ -69,7 +73,7 @@ public class TcpIpServer {
 	 * 
 	 * @throws IOException
 	 */
-	public synchronized void start() throws IOException {
+	public final synchronized void start() throws IOException {
 		if (acceptor != null) {
 			LaunchingMessageKind.ITCPIP0001.format(this.host, this.port);
 			this.acceptor.bind(new InetSocketAddress(this.host, this.port));
@@ -79,7 +83,7 @@ public class TcpIpServer {
 	/**
 	 * Stop the TcpIpServer
 	 */
-	public synchronized void stop() {
+	public final synchronized void stop() {
 		if (acceptor != null) {
 			LaunchingMessageKind.ITCPIP0002.format();
 			acceptor.dispose(true);

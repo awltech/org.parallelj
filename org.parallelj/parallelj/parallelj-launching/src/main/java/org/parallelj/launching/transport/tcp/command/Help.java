@@ -33,13 +33,14 @@ import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
  */
 public class Help extends AbstractTcpCommand {
 	
+	private static final int PRIORITY=100;
+
 	private String message;
 	
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
-	@Override
-	public synchronized String process(IoSession session, String... args) {
+	public final synchronized String process(IoSession session, String... args) {
 		if (this.message == null) {
 			StringBuffer strb = new StringBuffer();
 			// Get all available Commands and get its usage
@@ -73,7 +74,7 @@ public class Help extends AbstractTcpCommand {
 	 */
 	@Override
 	public int getPriorityUsage() {
-		return 100;
+		return PRIORITY;
 	}
 
 }

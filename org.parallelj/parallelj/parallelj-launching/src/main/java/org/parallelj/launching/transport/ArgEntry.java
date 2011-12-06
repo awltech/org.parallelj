@@ -61,7 +61,7 @@ public class ArgEntry {
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "ArgEntry=>name["+this.name+"]_type["+this.type+"]_parser:["+this.parser+"]";
 	}
 
@@ -70,7 +70,7 @@ public class ArgEntry {
 	 * 
 	 * @return the name of the declared field in the Program class
 	 */
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
@@ -79,7 +79,7 @@ public class ArgEntry {
 	 * 
 	 * @return the type of the declared field in the Program class
 	 */
-	public Class<?> getType() {
+	public final Class<?> getType() {
 		return type;
 	}
 
@@ -89,7 +89,7 @@ public class ArgEntry {
 	 * 
 	 * @return the type of the parser defined for the declared field in the Program class
 	 */
-	public Class<? extends Parser> getParser() {
+	public final Class<? extends Parser> getParser() {
 		return parser;
 	}
 }
