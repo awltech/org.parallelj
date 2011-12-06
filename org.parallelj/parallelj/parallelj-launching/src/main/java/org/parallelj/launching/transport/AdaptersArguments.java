@@ -35,12 +35,12 @@ import org.parallelj.launching.parser.Parser;
  * Entry point for all defined arguments of Adapters for remote launching
  *
  */
-public class AdaptersArguments {
+public final class AdaptersArguments {
 	
 	/**
 	 * Define the arguments for an Adapter
 	 */
-	public static class AdapterArguments {
+	public static final class AdapterArguments {
 		/**
 		 *  The canonical name of the Adapter type
 		 */

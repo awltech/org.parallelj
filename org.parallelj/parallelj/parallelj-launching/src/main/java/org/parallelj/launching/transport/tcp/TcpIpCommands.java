@@ -32,7 +32,7 @@ import org.parallelj.launching.transport.tcp.command.TcpCommand;
  * Entry point for all available commands for remote launching
  *
  */
-public class TcpIpCommands {
+public final class TcpIpCommands {
 	
 	/**
 	 * Available commands
