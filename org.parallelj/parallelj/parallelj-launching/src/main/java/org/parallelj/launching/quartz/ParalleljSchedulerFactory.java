@@ -24,7 +24,6 @@ package org.parallelj.launching.quartz;
 
 import java.util.Collection;
 
-import org.parallelj.launching.quartz.ParalleljScheduler;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
