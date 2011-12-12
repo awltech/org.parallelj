@@ -3,6 +3,7 @@
   <resources>
     <resource>.project</resource>
     <resource>src/main/resources/META-INF/ParallelJ/.touch</resource>
+    <resource>src/main/resources/META-INF/quartz.properties</resource>
   </resources>
   <sources>
     <source>src/main/java/foo/ForEachProgram.java</source>
