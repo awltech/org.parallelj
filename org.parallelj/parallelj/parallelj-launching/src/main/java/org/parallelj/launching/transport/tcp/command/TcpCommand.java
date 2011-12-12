@@ -36,13 +36,27 @@ public interface TcpCommand {
 	 * @param args
 	 * @return
 	 */
-	public String process(IoSession session, String... args);
+	String process(IoSession session, String... args);
 
 	/**
 	 * Return the type of the command
 	 * 
 	 * @return
 	 */
-	public String getType();
+	String getType();
+	
+	/**
+	 * Return a String explaining the usage of the command
+	 * 
+	 * @return the usage of the command
+	 */
+	String getUsage();
+
+	/**
+	 * Return a int representing a priority for the usage of the command
+	 * 
+	 * @return the usage priority of the command
+	 */
+	int getPriorityUsage();
 
 }

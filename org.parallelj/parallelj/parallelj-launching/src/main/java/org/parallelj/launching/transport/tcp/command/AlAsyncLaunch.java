@@ -28,10 +28,29 @@ package org.parallelj.launching.transport.tcp.command;
  */
 public class AlAsyncLaunch extends AsyncLaunch {
 	
+	private static final int PRIORITY=69;
+
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AsyncLaunch#getType()
 	 */
-	public String getType() {
+	public final String getType() {
 		return "asl";
 	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public final String getUsage() {
+		return "         asl -id x -rid y params : Launches a new Program instance with ID x, and returns (asynchronous launch).";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AsyncLaunch#getPriorityUsage()
+	 */
+	@Override
+	public final int getPriorityUsage() {
+		return PRIORITY;
+	}
+
 }

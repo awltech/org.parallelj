@@ -29,11 +29,13 @@ import org.apache.mina.core.session.IoSession;
  */
 public class Stop extends AbstractTcpCommand {
 
+	private static final int PRIORITY=0;
+
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
 	@Override
-	public String process(IoSession session, String... args) {
+	public final String process(IoSession session, String... args) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -41,7 +43,20 @@ public class Stop extends AbstractTcpCommand {
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getType()
 	 */
-	public String getType() {
+	public final String getType() {
 		return RemoteCommand.stop.name();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public final String getUsage() {
+		return "                      stop -id x : stop the program with ID x";
+	}
+
+	@Override
+	public final int getPriorityUsage() {
+		return PRIORITY;
 	}
 }

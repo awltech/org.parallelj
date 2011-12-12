@@ -49,7 +49,7 @@ public class ParalleljSchedulerFactory implements SchedulerFactory  {
     }
 	
 	@Override
-	public ParalleljScheduler getScheduler() throws SchedulerException {
+	public final ParalleljScheduler getScheduler() throws SchedulerException {
 		Scheduler scheduler = this.stdChedulerFactory.getScheduler();
 		ParalleljSchedulerRepository pSchedRep = ParalleljSchedulerRepository.getInstance();
 
@@ -75,12 +75,12 @@ public class ParalleljSchedulerFactory implements SchedulerFactory  {
 	}
 
 	@Override
-	public Scheduler getScheduler(String schedName) throws SchedulerException {
+	public final Scheduler getScheduler(String schedName) throws SchedulerException {
 		return ParalleljSchedulerRepository.getInstance().lookup(schedName);
 	}
 
 	@Override
-	public Collection<Scheduler> getAllSchedulers() throws SchedulerException {
+	public final Collection<Scheduler> getAllSchedulers() throws SchedulerException {
 		 return SchedulerRepository.getInstance().lookupAll();
 	}
 

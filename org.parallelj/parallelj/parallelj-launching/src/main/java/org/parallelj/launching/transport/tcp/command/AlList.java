@@ -28,10 +28,28 @@ package org.parallelj.launching.transport.tcp.command;
  */
 public class AlList extends ListPrograms {
 
+	private static final int PRIORITY=89;
+
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.ListPrograms#getType()
 	 */
-	public String getType() {
+	public final String getType() {
 		return "ll";
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public final String getUsage() {
+		return "                              ll : Lists available programs and their associated IDs.";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.ListPrograms#getPriorityUsage()
+	 */
+	@Override
+	public final int getPriorityUsage() {
+		return PRIORITY;
 	}
 }

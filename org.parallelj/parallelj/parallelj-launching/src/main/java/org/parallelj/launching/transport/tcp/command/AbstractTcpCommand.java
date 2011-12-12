@@ -27,11 +27,12 @@ import org.apache.mina.core.session.IoSession;
 /**
  * Define a Command available in a TcpIpServer
  */
-abstract class AbstractTcpCommand implements TcpCommand {
+abstract class AbstractTcpCommand implements TcpCommand, Comparable<TcpCommand> {
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof String) {
 			return (this.getType().equals((String)obj));
@@ -53,19 +54,41 @@ abstract class AbstractTcpCommand implements TcpCommand {
 	}
 	
 	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return getType().hashCode();
+	}
+
+	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
-	abstract public String process(IoSession session, String... args);
+	public abstract String process(IoSession session, String... args);
 	
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#getType()
 	 */
-	abstract public String getType();
+	public abstract String getType();
 
 	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
+	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#getUsage()
 	 */
-	public int hashCode() {
-		return this.getType().hashCode();
+	@Override
+	public abstract String getUsage();
+	
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.TcpCommand#getPriorityUsage()
+	 */
+	@Override
+	public abstract int getPriorityUsage();
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(TcpCommand o) {
+		return o.getPriorityUsage()-this.getPriorityUsage();
 	}
+	
 }

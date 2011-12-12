@@ -23,9 +23,7 @@
 package org.parallelj.launching.transport.jmx;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.management.ManagementFactory;
-import java.lang.reflect.Field;
 import java.rmi.NoSuchObjectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -35,9 +33,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
@@ -45,17 +46,16 @@ import javax.management.remote.JMXServiceURL;
 
 import org.parallelj.internal.reflect.ProgramAdapter;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
-import org.parallelj.launching.In;
 import org.parallelj.launching.LaunchingMessageKind;
-import org.parallelj.launching.parser.Parser;
+import org.parallelj.launching.transport.AdaptersArguments;
 import org.parallelj.launching.transport.ArgEntry;
 
 /**
  * Class representing a Parallelj JMX Server for remote launching 
  */
 public class JmxServer {
-	private final static String DEFAULT_SERVER_URL_FORMAT = "service:jmx:rmi://%s/jndi/rmi://%s:%s/server";
-	private final static String DEFAULT_BEAN_NAME_FORMAT = "%s:type=%s";
+	private static final String DEFAULT_SERVER_URL_FORMAT = "service:jmx:rmi://%s/jndi/rmi://%s:%s/server";
+	private static final String DEFAULT_BEAN_NAME_FORMAT = "%s:type=%s";
 
 	private String host;
 	private int port;
@@ -84,8 +84,8 @@ public class JmxServer {
 	 * 
 	 * @throws IOException
 	 */
-	public synchronized void start() throws IOException {
-		LaunchingMessageKind.I0003.format(this.host, this.port);
+	public final synchronized void start() throws IOException {
+		LaunchingMessageKind.IJMX0001.format(this.host, this.port);
 		this.mbs = ManagementFactory.getPlatformMBeanServer();
 
 		String oldRmiServerName = System
@@ -107,20 +107,19 @@ public class JmxServer {
 
 		String serviceURL = String.format(serverUrlFormat, this.host,
 				this.host, this.port);
-		LaunchingMessageKind.I0004.format(serviceURL);
+		LaunchingMessageKind.IJMX0002.format(serviceURL);
 
 		JMXServiceURL url = new JMXServiceURL(serviceURL);
 		this.jmxConnectorServer = JMXConnectorServerFactory
 				.newJMXConnectorServer(url, null, mbs);
 		this.jmxConnectorServer.start();
-
 	}
 
 	/**
 	 * Stop the JMX Server
 	 */
-	public synchronized void stop() {
-		LaunchingMessageKind.I0005.format();
+	public final synchronized void stop() {
+		LaunchingMessageKind.IJMX0003.format();
 		unRegisterMBeans();
 
 		try {
@@ -142,7 +141,7 @@ public class JmxServer {
 	 * 
 	 * @param beanClass the class name of the MBean 
 	 */
-	public void registerMBean(String className) {
+	public final void registerMBean(String className) {
 		if (this.mbs != null && className != null) {
 			try {
 				Class<?> clazz = Class.forName(className);
@@ -154,15 +153,15 @@ public class JmxServer {
 				ObjectName objectName = new ObjectName(String.format(
 						beanNameFormat, domain, type));
 				if (!mbs.isRegistered(objectName)) {
-					LaunchingMessageKind.I0006.format(objectName);
+					LaunchingMessageKind.IJMX0004.format(objectName);
 					mbs.registerMBean(clazz.newInstance(), objectName);
-					LaunchingMessageKind.I0007.format(objectName);
+					LaunchingMessageKind.IJMX0005.format(objectName);
 				}
 			} catch (Exception e) {
-				LaunchingMessageKind.E0005.format(className, e);
+				LaunchingMessageKind.EJMX0004.format(className, e);
 			}
 		} else {
-			LaunchingMessageKind.E0003.format();
+			LaunchingMessageKind.EJMX0002.format();
 		}
 	}
 
@@ -172,7 +171,7 @@ public class JmxServer {
 	 * 
 	 * @param beanClass the class name of the Program 
 	 */
-	public void registerProgramAsMBean(String beanClass) {
+	public final void registerProgramAsMBean(String beanClass) {
 		if (this.mbs != null && beanClass != null) {
 			try {
 				@SuppressWarnings("unchecked")
@@ -187,21 +186,7 @@ public class JmxServer {
 				 * adapterArgs[0] : the attribute name adapterArgs[1] : the
 				 * canonical name of the corresponding parser class
 				 */
-				List<ArgEntry> adapterArgs = new ArrayList<ArgEntry>();
-
-				// Search for annotation @In on attributes of
-				// class clazz
-				for (Field field : clazz.getDeclaredFields()) {
-					// Search for an annotation @In
-					for (Annotation annotation : field.getAnnotations()) {
-						if (annotation.annotationType().equals(In.class)) {
-							// Add the attribute where is the @In annotation and
-							// the Parser class
-							Class<? extends Parser> parserClass = ((In)annotation).parser();
-							adapterArgs.add(new ArgEntry(field.getName(), field.getType(), parserClass));
-						}
-					}
-				}
+				List<ArgEntry> adapterArgs = AdaptersArguments.getAdapterArguments(clazz);
 
 				// Register the bean as a DynamicMBean in the JMX server...
 				Class<?>[] cls = clazz.getInterfaces();
@@ -218,18 +203,28 @@ public class JmxServer {
 					this.beanNames.add(objectName);
 
 					if (!mbs.isRegistered(objectName)) {
-						LaunchingMessageKind.I0006.format(objectName);
+						LaunchingMessageKind.IJMX0004.format(objectName);
 						mbs.registerMBean(dprogram, objectName);
-						LaunchingMessageKind.I0007.format(objectName);
+						LaunchingMessageKind.IJMX0005.format(objectName);
 					}
 				} else {
-					LaunchingMessageKind.E0004.format(clazz);
+					LaunchingMessageKind.EJMX0003.format(clazz);
 				}
-			} catch (Exception e) {
-				LaunchingMessageKind.E0005.format(beanClass, e);
+			} catch (ClassNotFoundException e) {
+				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			} catch (MalformedObjectNameException e) {
+				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			} catch (NullPointerException e) {
+				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			} catch (InstanceAlreadyExistsException e) {
+				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			} catch (MBeanRegistrationException e) {
+				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			} catch (NotCompliantMBeanException e) {
+				LaunchingMessageKind.EJMX0004.format(beanClass, e);
 			}
 		} else {
-			LaunchingMessageKind.E0003.format();
+			LaunchingMessageKind.EJMX0002.format();
 		}
 	}
 
@@ -238,11 +233,11 @@ public class JmxServer {
 	 */
 	private void unRegisterMBeans() {
 		if (beanNames != null) {
-			for (ObjectName _name : beanNames) {
+			for (ObjectName objectName : beanNames) {
 				// unRegister the bean in the JMX server...
 				try {
-					mbs.unregisterMBean(_name);
-					LaunchingMessageKind.I0008.format(_name);
+					mbs.unregisterMBean(objectName);
+					LaunchingMessageKind.IJMX0006.format(objectName);
 				} catch (MBeanRegistrationException e) {
 					// Do nothing
 				} catch (InstanceNotFoundException e) {

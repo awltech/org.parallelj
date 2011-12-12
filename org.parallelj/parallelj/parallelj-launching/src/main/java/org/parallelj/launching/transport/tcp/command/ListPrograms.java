@@ -41,18 +41,28 @@ import org.parallelj.launching.transport.ArgEntry;
  */
 public class ListPrograms extends AbstractTcpCommand {
 
+	private static final int PRIORITY=90;
+
 	/**
 	 * Represents an available program to be print to the client
 	 *
 	 */
-	class ListEntry {
+	static final class ListEntry {
 		private ListEntry(String program, List<ArgEntry> args) {
 			this.program = program;
 			this.args = args;
 		}
 
-		String program;
-		List<ArgEntry> args;
+		private String program;
+		private List<ArgEntry> args;
+		
+		public String getProgram() {
+			return program;
+		}
+		public List<ArgEntry> getArgs() {
+			return args;
+		}
+		
 	}
 
 	private List<ListEntry> listEntries = new ArrayList<ListPrograms.ListEntry>();
@@ -111,7 +121,7 @@ public class ListPrograms extends AbstractTcpCommand {
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
 	@Override
-	public String process(IoSession session, String... args) {
+	public final String process(IoSession session, String... args) {
 		StringBuffer stb = new StringBuffer();
 		for (int index = 0; index < this.listEntries.size(); index++) {
 			ListEntry listEntry = this.listEntries.get(index);
@@ -133,6 +143,22 @@ public class ListPrograms extends AbstractTcpCommand {
 	 */
 	public String getType() {
 		return RemoteCommand.list.name();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	 */
+	@Override
+	public String getUsage() {
+		return "                            list : Lists available programs and their associated IDs.";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getPriorityUsage()
+	 */
+	@Override
+	public int getPriorityUsage() {
+		return PRIORITY;
 	}
 
 }

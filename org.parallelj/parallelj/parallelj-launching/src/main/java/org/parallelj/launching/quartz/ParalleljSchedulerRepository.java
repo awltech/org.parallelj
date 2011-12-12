@@ -32,7 +32,7 @@ import org.quartz.SchedulerException;
  * This class is a Parallelj implementation of a Quartz scheduler repository. 
  * 
  */
-public class ParalleljSchedulerRepository {
+public final class ParalleljSchedulerRepository {
     private HashMap<String, ParalleljScheduler> schedulers;
     
     private static ParalleljSchedulerRepository inst;

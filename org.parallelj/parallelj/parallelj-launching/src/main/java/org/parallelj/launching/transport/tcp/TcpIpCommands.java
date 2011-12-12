@@ -22,47 +22,45 @@
 
 package org.parallelj.launching.transport.tcp;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ServiceLoader;
+
+import org.parallelj.launching.transport.tcp.command.TcpCommand;
 
 /**
- * Define resources to use for Welcome and Help text.
- * These text are printed to a client connecting to the TcpIpServer   
+ * Entry point for all available commands for remote launching
  *
  */
-public enum Resources {
-	welcome ("/org/parallelj/launching/welcome.txt"),
-	help ("/org/parallelj/launching/help.txt");
+public final class TcpIpCommands {
 	
-	private String text;
+	/**
+	 * Available commands
+	 */
+	private Map<String, TcpCommand> commands = new HashMap<String, TcpCommand>();
+	
+	/**
+	 * The instance of TcpIpCommands
+	 */
+	private static TcpIpCommands instance = new TcpIpCommands();
 
 	/**
 	 * Default constructor
-	 * 
-	 * @param resource
 	 */
-	private Resources(String resource) {
-		InputStream inputStream = TcpIpHandlerAdapter.class.getResourceAsStream(resource);
-	    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-	    StringBuilder sb = new StringBuilder();
-	    String line = null;
-	    try {
-			while ((line = reader.readLine()) != null) {
-			  sb.append(line).append("\n\r");
-			}
-		} catch (IOException e) {
-		} finally {
-		    try {
-				inputStream.close();
-			} catch (IOException e) {}
+	private TcpIpCommands() {
+		// Search for available commands
+		ServiceLoader<TcpCommand> loader = ServiceLoader.load(TcpCommand.class);
+		for (TcpCommand command:loader) {
+			this.commands.put(command.getType(), command);
 		}
-	    this.text = sb.toString();
-	}
-	
-	public String format() {
-		return this.text;
 	}
 
+	/**
+	 * Get the available commands
+	 * 
+	 * @return a Map of all available TcpIpCommand
+	 */
+	public static Map<String, TcpCommand> getCommands() {
+		return instance.commands;
+	}
 }

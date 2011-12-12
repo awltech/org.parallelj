@@ -34,103 +34,85 @@ import org.parallelj.internal.util.Formatter.Format;
 public enum LaunchingMessageKind {
 	
 	/**
-	 * 
+	 * Information messages for TcpIp
 	 */
 	@Format("Starting the TcpIpServer on [%s:%s]")
-	I0001,
+	ITCPIP0001,
 	
-	/**
-	 * 
-	 */
 	@Format("Stoping the TcpIpServer")
-	I0002,
+	ITCPIP0002,
 	
 	/**
-	 * 
-	 */
-	@Format("Starting the JmxServer on [%s:%s]")
-	I0003,
-	
-	/**
-	 * 
-	 */
-	@Format("JmxServer started! [%s]")
-	I0004,
-	
-	
-	/**
-	 * 
-	 */
-	@Format("Stoping the JmxServer")
-	I0005,
-	
-	/**
-	 * 
-	 */
-	@Format("Registering MBean %s...")
-	I0006,
-	
-	
-	/**
-	 * 
-	 */
-	@Format("MBean %s registered")
-	I0007,
-	
-	/**
-	 * 
-	 */
-	@Format("MBean %s unregistered")
-	I0008,
-	
-	/**
-	 * 
-	 */
-	@Format("QuartzScheduler started")
-	I0009,
-	
-	
-	/**
-	 * Error: Can not start the TciIpServer
+	 * Error messages for TcpIp
 	 */
 	@Format("TcpIpServer can't be started")
-	E0001,
+	ETCPIP0001,
 	
 	/**
-	 * Error: Can not start the JmxServer
+	 * Information messages for JMX
+	 */
+	@Format("Starting the JmxServer on [%s:%s]")
+	IJMX0001,
+	
+	@Format("JmxServer started! [%s]")
+	IJMX0002,
+	
+	@Format("Stoping the JmxServer")
+	IJMX0003,
+	
+	@Format("Registering MBean %s...")
+	IJMX0004,
+	
+	@Format("MBean %s registered")
+	IJMX0005,
+	
+	@Format("MBean %s unregistered")
+	IJMX0006,
+	
+	/**
+	 * Error messages for JMX
 	 */
 	@Format("JmxServer can't be started")
-	E0002,
+	EJMX0001,
 	
-	/**
-	 * Error: Can't register MBean
-	 */
 	@Format("Can't register any MBeans as JmxServer is not started")
-	E0003,
+	EJMX0002,
 	
-	/**
-	 * Error: Can't register MBean
-	 */
 	@Format("Can't register MBean : is class %s annotated with @Program ?")
-	E0004,
-	/**
-	 * Error: Can't register MBean
-	 */
+	EJMX0003,
+
 	@Format("Error loading class %s for MBean registration")
-	E0005,
+	EJMX0004,
 	
 	/**
-	 * Error: Can't start QuartzScheduler
+	 * Information messages for Quartz 
+	 */
+	@Format("QuartzScheduler started")
+	IQUARTZ0001,
+	
+	/**
+	 * Error messages for Quartz 
 	 */
 	@Format("Error starting Quartz Scheduler")
-	E0006,
+	EQUARTZ0001,
+	
+	@Format("Quartz Scheduler failed to shutdown cleanly")
+	EQUARTZ0002,
+	
+	@Format("Error invoking Program %")
+	EQUARTZ0003,
 	
 	/**
-	 * Error: Quartz Scheduler failed to shutdown cleanly
+	 * Error messages for remote access
 	 */
-	@Format("Quartz Scheduler failed to shutdown cleanly")
-	E0007;
+	@Format("Can't find class %")
+	EREMOTE0001,
 	
+	@Format("Can't parse command line when launching program [%s %s %s %s %s %s %s %s %s %s %s %s %s]")
+	EREMOTE0002,
+	
+	@Format("Can't instanciate class ?")
+	EREMOTE0003;
 	/**
 	 * Method used to format a message
 	 * 

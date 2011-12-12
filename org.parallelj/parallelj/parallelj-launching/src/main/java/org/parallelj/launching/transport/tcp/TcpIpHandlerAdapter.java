@@ -22,9 +22,11 @@
 
 package org.parallelj.launching.transport.tcp;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
@@ -37,24 +39,46 @@ import org.parallelj.launching.transport.tcp.command.TcpCommand;
  */
 public class TcpIpHandlerAdapter
 extends IoHandlerAdapter {
-	private Map<String, TcpCommand> commands = new HashMap<String, TcpCommand>();
+	
+	public static final String ENDLINE = "\n\r";
+	
+	private static final String WELCOMEFILE = "/org/parallelj/launching/welcome.txt";
+	
+	private String welcome;
 	
 	/**
 	 * Default constructor
 	 */
 	public TcpIpHandlerAdapter() {
-		// Search for available commands
-		ServiceLoader<TcpCommand> loader = ServiceLoader.load(TcpCommand.class);
-		for (TcpCommand command:loader) {
-			this.commands.put(command.getType(), command);
+		InputStream inputStream = TcpIpHandlerAdapter.class.getResourceAsStream(WELCOMEFILE);
+		InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+	    BufferedReader reader = new BufferedReader(inputStreamReader);
+	    StringBuilder sb = new StringBuilder();
+	    String line = null;
+	    try {
+			while ((line = reader.readLine()) != null) {
+			  sb.append(line).append(ENDLINE);
+			}
+		} catch (IOException e) {
+		} finally {
+		    try {
+				reader.close();
+			} catch (IOException e) {}
+		    try {
+		    	inputStream.close();
+			} catch (IOException e) {}
+		    try {
+		    	inputStreamReader.close();
+			} catch (IOException e) {}
 		}
+	    this.welcome = sb.toString();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.apache.mina.core.service.IoHandlerAdapter#exceptionCaught(org.apache.mina.core.session.IoSession, java.lang.Throwable)
 	 */
 	@Override
-	public void exceptionCaught(IoSession session, Throwable cause)
+	public final void exceptionCaught(IoSession session, Throwable cause)
 			throws Exception {
 		cause.printStackTrace();
 	}
@@ -63,9 +87,8 @@ extends IoHandlerAdapter {
 	 * @see org.apache.mina.core.service.IoHandlerAdapter#messageReceived(org.apache.mina.core.session.IoSession, java.lang.Object)
 	 */
 	@Override
-	public void messageReceived(IoSession session, Object message)
+	public final void messageReceived(IoSession session, Object message)
 			throws Exception {
-		
 		String str = message.toString();
 		
 		// Parse the command
@@ -76,12 +99,16 @@ extends IoHandlerAdapter {
 		}
 		
 		// Try to launch the command
-		TcpCommand command = this.commands.get(cmd);
+		TcpCommand command = TcpIpCommands.getCommands().get(cmd);
 		String result = null;
 		
 		// launch the command and get the result
-		if (command != null) { 
-			result = command.process(session, args);
+		if (command != null) {
+			if (args.length>1) {
+				result = command.process(session, Arrays.copyOfRange(args, 1, args.length));
+			} else {
+				result = command.process(session, new String[]{});
+			}
 		} else {
 			session.write("command unknown :"+cmd);
 		}
@@ -96,9 +123,10 @@ extends IoHandlerAdapter {
 	 * @see org.apache.mina.core.service.IoHandlerAdapter#sessionOpened(org.apache.mina.core.session.IoSession)
 	 */
 	@Override
-	public void sessionOpened(IoSession session) throws Exception {
-		session.write(Resources.welcome.format());
-		session.write("\n\r>");
+	public final void sessionOpened(IoSession session) throws Exception {
+		session.write(this.welcome);
+		session.write(ENDLINE);
+		session.write(">");
 		super.sessionOpened(session);
 	}
 

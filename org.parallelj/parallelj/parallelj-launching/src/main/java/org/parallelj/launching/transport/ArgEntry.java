@@ -29,8 +29,19 @@ import org.parallelj.launching.parser.Parser;
  *
  */
 public class ArgEntry {
+	/**
+	 * The name of the field declared in the Program class
+	 */
 	private String name;
+	
+	/**
+	 * The type of the field declared in the Program class 
+	 */
 	private Class<?> type;
+	
+	/**
+	 * The parser type for the field declared in the Program class 
+	 */
 	private Class<? extends Parser> parser;
 
 	/**
@@ -46,26 +57,29 @@ public class ArgEntry {
 		this.parser = parserClass;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
-	public String toString() {
+	public final String toString() {
 		return "ArgEntry=>name["+this.name+"]_type["+this.type+"]_parser:["+this.parser+"]";
 	}
 
 	/**
 	 * Get the name of the Program field corresponding to this ArgEntry 
 	 * 
-	 * @return
+	 * @return the name of the declared field in the Program class
 	 */
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
 	/**
 	 * Get the Type of the program field corresponding to this ArgEntry
 	 * 
-	 * @return
+	 * @return the type of the declared field in the Program class
 	 */
-	public Class<?> getType() {
+	public final Class<?> getType() {
 		return type;
 	}
 
@@ -73,9 +87,9 @@ public class ArgEntry {
 	 * Get the Type of the Parser to use to convert a String to a complex Type.
 	 * The String value comes from a remote launching. 
 	 * 
-	 * @return
+	 * @return the type of the parser defined for the declared field in the Program class
 	 */
-	public Class<? extends Parser> getParser() {
+	public final Class<? extends Parser> getParser() {
 		return parser;
 	}
 }

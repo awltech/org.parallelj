@@ -37,7 +37,13 @@ import org.quartz.impl.matchers.KeyMatcher;
 /**
  * Implementation for a Program launch
  */
-public class AdapterJobsRunner {
+public final class AdapterJobsRunner {
+	
+	private static final int SLEEPINGTIME = 100;
+	
+	private AdapterJobsRunner() {
+	}
+
 	/**
 	 * launch a Program and waits for the return status
 	 * 
@@ -46,7 +52,7 @@ public class AdapterJobsRunner {
 	 * @return
 	 * @throws SchedulerException
 	 */
-	public static synchronized Object syncLaunch(Scheduler scheduler,
+	public static Object syncLaunch(Scheduler scheduler,
 			JobDetail job) throws SchedulerException {
 		// Trigger the job to run on the next round minute
 		TriggerBuilder<Trigger> triggerBuilder = newTrigger();
@@ -67,7 +73,7 @@ public class AdapterJobsRunner {
 		// Waiting for the job completed...?
 		while (!listener.isJobTerminated()) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(SLEEPINGTIME);
 			} catch (InterruptedException e) {
 			}
 		}
@@ -84,7 +90,7 @@ public class AdapterJobsRunner {
 	 * @param job the Job detail for the Program
 	 * @throws SchedulerException
 	 */
-	public static void ayncLaunch(ParalleljScheduler scheduler, JobDetail job)
+	public static void asyncLaunch(ParalleljScheduler scheduler, JobDetail job)
 			throws SchedulerException {
 		// Trigger the job to run on the next round minute
 		TriggerBuilder<Trigger> triggerBuilder = newTrigger();

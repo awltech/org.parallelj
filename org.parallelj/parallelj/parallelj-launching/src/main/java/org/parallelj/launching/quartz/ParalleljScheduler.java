@@ -88,298 +88,298 @@ public class ParalleljScheduler implements Scheduler {
 	}
 
 	@Override
-	public String getSchedulerName() throws SchedulerException {
+	public final String getSchedulerName() throws SchedulerException {
 		return scheduler.getSchedulerName();
 	}
 
 	@Override
-	public String getSchedulerInstanceId() throws SchedulerException {
+	public final String getSchedulerInstanceId() throws SchedulerException {
 		return scheduler.getSchedulerInstanceId();
 	}
 
 	@Override
-	public SchedulerContext getContext() throws SchedulerException {
+	public final SchedulerContext getContext() throws SchedulerException {
 		return scheduler.getContext();
 	}
 
 	@Override
-	public void start() throws SchedulerException {
+	public final void start() throws SchedulerException {
 		scheduler.start();
 	}
 
 	@Override
-	public void startDelayed(int seconds) throws SchedulerException {
+	public final void startDelayed(int seconds) throws SchedulerException {
 		scheduler.startDelayed(seconds);
 	}
 
 	@Override
-	public boolean isStarted() throws SchedulerException {
+	public final boolean isStarted() throws SchedulerException {
 		return scheduler.isStarted();
 	}
 
 	@Override
-	public void standby() throws SchedulerException {
+	public final void standby() throws SchedulerException {
 		scheduler.standby();
 	}
 
 	@Override
-	public boolean isInStandbyMode() throws SchedulerException {
+	public final boolean isInStandbyMode() throws SchedulerException {
 		return scheduler.isInStandbyMode();
 	}
 
 	@Override
-	public void shutdown() throws SchedulerException {
+	public final void shutdown() throws SchedulerException {
 		stop();
 		scheduler.shutdown();
 	}
 
 	@Override
-	public void shutdown(boolean waitForJobsToComplete)
+	public final void shutdown(boolean waitForJobsToComplete)
 			throws SchedulerException {
 		stop();
 		scheduler.shutdown(waitForJobsToComplete);
 	}
 
 	@Override
-	public boolean isShutdown() throws SchedulerException {
+	public final boolean isShutdown() throws SchedulerException {
 		return scheduler.isShutdown();
 	}
 
 	@Override
-	public SchedulerMetaData getMetaData() throws SchedulerException {
+	public final SchedulerMetaData getMetaData() throws SchedulerException {
 		return scheduler.getMetaData();
 	}
 
 	@Override
-	public List<JobExecutionContext> getCurrentlyExecutingJobs()
+	public final List<JobExecutionContext> getCurrentlyExecutingJobs()
 			throws SchedulerException {
 		return scheduler.getCurrentlyExecutingJobs();
 	}
 
 	@Override
-	public void setJobFactory(JobFactory factory) throws SchedulerException {
+	public final void setJobFactory(JobFactory factory) throws SchedulerException {
 		scheduler.setJobFactory(factory);
 	}
 
 	@Override
-	public ListenerManager getListenerManager() throws SchedulerException {
+	public final ListenerManager getListenerManager() throws SchedulerException {
 		return scheduler.getListenerManager();
 	}
 
 	@Override
-	public boolean unscheduleJob(TriggerKey triggerKey)
+	public final boolean unscheduleJob(TriggerKey triggerKey)
 			throws SchedulerException {
 		return scheduler.unscheduleJob(triggerKey);
 	}
 
 	@Override
-	public boolean unscheduleJobs(List<TriggerKey> triggerKeys)
+	public final boolean unscheduleJobs(List<TriggerKey> triggerKeys)
 			throws SchedulerException {
 		return scheduler.unscheduleJobs(triggerKeys);
 	}
 
 	@Override
-	public void addJob(JobDetail jobDetail, boolean replace)
+	public final void addJob(JobDetail jobDetail, boolean replace)
 			throws SchedulerException {
 		scheduler.addJob(jobDetail, replace);
 	}
 
 	@Override
-	public boolean deleteJob(JobKey jobKey) throws SchedulerException {
+	public final boolean deleteJob(JobKey jobKey) throws SchedulerException {
 		return scheduler.deleteJob(jobKey);
 	}
 
 	@Override
-	public boolean deleteJobs(List<JobKey> jobKeys) throws SchedulerException {
+	public final boolean deleteJobs(List<JobKey> jobKeys) throws SchedulerException {
 		return scheduler.deleteJobs(jobKeys);
 	}
 
 	@Override
-	public void triggerJob(JobKey jobKey) throws SchedulerException {
+	public final void triggerJob(JobKey jobKey) throws SchedulerException {
 		scheduler.triggerJob(jobKey);
 	}
 
 	@Override
-	public void triggerJob(JobKey jobKey, JobDataMap data)
+	public final void triggerJob(JobKey jobKey, JobDataMap data)
 			throws SchedulerException {
 		scheduler.triggerJob(jobKey, data);
 	}
 
 	@Override
-	public void pauseJob(JobKey jobKey) throws SchedulerException {
+	public final void pauseJob(JobKey jobKey) throws SchedulerException {
 		scheduler.pauseJob(jobKey);
 	}
 
 	@Override
-	public void pauseJobs(GroupMatcher<JobKey> matcher)
+	public final void pauseJobs(GroupMatcher<JobKey> matcher)
 			throws SchedulerException {
 		scheduler.pauseJobs(matcher);
 	}
 
 	@Override
-	public void pauseTrigger(TriggerKey triggerKey) throws SchedulerException {
+	public final void pauseTrigger(TriggerKey triggerKey) throws SchedulerException {
 		scheduler.pauseTrigger(triggerKey);
 	}
 
 	@Override
-	public void pauseTriggers(GroupMatcher<TriggerKey> matcher)
+	public final void pauseTriggers(GroupMatcher<TriggerKey> matcher)
 			throws SchedulerException {
 		scheduler.pauseTriggers(matcher);
 	}
 
 	@Override
-	public void resumeJob(JobKey jobKey) throws SchedulerException {
+	public final void resumeJob(JobKey jobKey) throws SchedulerException {
 		scheduler.resumeJob(jobKey);
 	}
 
 	@Override
-	public void resumeJobs(GroupMatcher<JobKey> matcher)
+	public final void resumeJobs(GroupMatcher<JobKey> matcher)
 			throws SchedulerException {
 		scheduler.resumeJobs(matcher);
 	}
 
 	@Override
-	public void resumeTrigger(TriggerKey triggerKey) throws SchedulerException {
+	public final void resumeTrigger(TriggerKey triggerKey) throws SchedulerException {
 		scheduler.resumeTrigger(triggerKey);
 	}
 
 	@Override
-	public void resumeTriggers(GroupMatcher<TriggerKey> matcher)
+	public final void resumeTriggers(GroupMatcher<TriggerKey> matcher)
 			throws SchedulerException {
 		scheduler.resumeTriggers(matcher);
 	}
 
 	@Override
-	public void pauseAll() throws SchedulerException {
+	public final void pauseAll() throws SchedulerException {
 		scheduler.pauseAll();
 	}
 
 	@Override
-	public void resumeAll() throws SchedulerException {
+	public final void resumeAll() throws SchedulerException {
 		scheduler.resumeAll();
 	}
 
 	@Override
-	public List<String> getJobGroupNames() throws SchedulerException {
+	public final List<String> getJobGroupNames() throws SchedulerException {
 		return scheduler.getJobGroupNames();
 	}
 
 	@Override
-	public Set<JobKey> getJobKeys(GroupMatcher<JobKey> matcher)
+	public final Set<JobKey> getJobKeys(GroupMatcher<JobKey> matcher)
 			throws SchedulerException {
 		return scheduler.getJobKeys(matcher);
 	}
 
 	@Override
-	public List<String> getTriggerGroupNames() throws SchedulerException {
+	public final List<String> getTriggerGroupNames() throws SchedulerException {
 		return scheduler.getTriggerGroupNames();
 	}
 
 	@Override
-	public Set<TriggerKey> getTriggerKeys(GroupMatcher<TriggerKey> matcher)
+	public final Set<TriggerKey> getTriggerKeys(GroupMatcher<TriggerKey> matcher)
 			throws SchedulerException {
 		return scheduler.getTriggerKeys(matcher);
 	}
 
 	@Override
-	public Set<String> getPausedTriggerGroups() throws SchedulerException {
+	public final Set<String> getPausedTriggerGroups() throws SchedulerException {
 		return scheduler.getPausedTriggerGroups();
 	}
 
 	@Override
-	public JobDetail getJobDetail(JobKey jobKey) throws SchedulerException {
+	public final JobDetail getJobDetail(JobKey jobKey) throws SchedulerException {
 		return scheduler.getJobDetail(jobKey);
 	}
 
 	@Override
-	public TriggerState getTriggerState(TriggerKey triggerKey)
+	public final TriggerState getTriggerState(TriggerKey triggerKey)
 			throws SchedulerException {
 		return scheduler.getTriggerState(triggerKey);
 	}
 
 	@Override
-	public boolean deleteCalendar(String calName) throws SchedulerException {
+	public final boolean deleteCalendar(String calName) throws SchedulerException {
 		return scheduler.deleteCalendar(calName);
 	}
 
 	@Override
-	public List<String> getCalendarNames() throws SchedulerException {
+	public final List<String> getCalendarNames() throws SchedulerException {
 		return scheduler.getCalendarNames();
 	}
 
 	@Override
-	public boolean interrupt(JobKey jobKey)
+	public final boolean interrupt(JobKey jobKey)
 			throws UnableToInterruptJobException {
 		return scheduler.interrupt(jobKey);
 	}
 
 	@Override
-	public boolean interrupt(String fireInstanceId)
+	public final boolean interrupt(String fireInstanceId)
 			throws UnableToInterruptJobException {
 		return scheduler.interrupt(fireInstanceId);
 	}
 
 	@Override
-	public boolean checkExists(JobKey jobKey) throws SchedulerException {
+	public final boolean checkExists(JobKey jobKey) throws SchedulerException {
 		return scheduler.checkExists(jobKey);
 	}
 
 	@Override
-	public boolean checkExists(TriggerKey triggerKey) throws SchedulerException {
+	public final boolean checkExists(TriggerKey triggerKey) throws SchedulerException {
 		return scheduler.checkExists(triggerKey);
 	}
 
 	@Override
-	public void clear() throws SchedulerException {
+	public final void clear() throws SchedulerException {
 		scheduler.clear();
 	}
 
-	public void setScheduler(Scheduler scheduler) {
+	public final void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
 
 	@Override
-	public Date scheduleJob(JobDetail jobDetail, Trigger trigger)
+	public final Date scheduleJob(JobDetail jobDetail, Trigger trigger)
 			throws SchedulerException {
 		return scheduler.scheduleJob(jobDetail, trigger);
 	}
 
 	@Override
-	public Date scheduleJob(Trigger trigger) throws SchedulerException {
+	public final Date scheduleJob(Trigger trigger) throws SchedulerException {
 		return scheduler.scheduleJob(trigger);
 	}
 
 	@Override
-	public void scheduleJobs(Map<JobDetail, List<Trigger>> triggersAndJobs,
+	public final void scheduleJobs(Map<JobDetail, List<Trigger>> triggersAndJobs,
 			boolean replace) throws SchedulerException {
 		scheduler.scheduleJobs(triggersAndJobs, replace);
 	}
 
 	@Override
-	public Date rescheduleJob(TriggerKey triggerKey, Trigger newTrigger)
+	public final Date rescheduleJob(TriggerKey triggerKey, Trigger newTrigger)
 			throws SchedulerException {
 		return scheduler.rescheduleJob(triggerKey, newTrigger);
 	}
 
 	@Override
-	public List<? extends Trigger> getTriggersOfJob(JobKey jobKey)
+	public final List<? extends Trigger> getTriggersOfJob(JobKey jobKey)
 			throws SchedulerException {
 		return scheduler.getTriggersOfJob(jobKey);
 	}
 
 	@Override
-	public Trigger getTrigger(TriggerKey triggerKey) throws SchedulerException {
+	public final Trigger getTrigger(TriggerKey triggerKey) throws SchedulerException {
 		return scheduler.getTrigger(triggerKey);
 	}
 
 	@Override
-	public void addCalendar(String calName, org.quartz.Calendar calendar,
+	public final void addCalendar(String calName, org.quartz.Calendar calendar,
 			boolean replace, boolean updateTriggers) throws SchedulerException {
 		scheduler.addCalendar(calName, calendar, replace, updateTriggers);
 	}
 
 	@Override
-	public org.quartz.Calendar getCalendar(String calName)
+	public final org.quartz.Calendar getCalendar(String calName)
 			throws SchedulerException {
 		return scheduler.getCalendar(calName);
 	}
@@ -390,7 +390,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * 
 	 * @return the configuration
 	 */
-	public ParalleljConfiguration getConfiguration() {
+	public final ParalleljConfiguration getConfiguration() {
 		return configuration;
 	}
 
