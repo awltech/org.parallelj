@@ -1,4 +1,4 @@
-package org.parallelj.tracknrestart.test;
+package org.parallelj.tracknrestart.test.quartz.alone;
 
 import static org.junit.Assert.*;
 import static org.quartz.JobBuilder.newJob;
@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPlugin;
+import org.parallelj.tracknrestart.util.TrackNRestartLoader;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -32,6 +33,11 @@ public class AllTest {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+
+		TrackNRestartLoader.cleanTrackingDatabase("scripts/quartz-database-init-mysql.sql", "database.properties");
+
+		TrackNRestartLoader.cleanTrackingDatabase("scripts/quartz-track-database-init-mysql.sql", "database.properties");
+
 		SchedulerFactory sf = new StdSchedulerFactory("quartz.properties");
 
 		sched = sf.getScheduler();
@@ -63,7 +69,7 @@ public class AllTest {
 		sched.getListenerManager().removeJobListener(jl.getName());
 	}
 
-	@Test(timeout=10000)
+	//@Test(timeout=10000)
 	public void test1() {
 		JobDetail job = newJob(SimpleJob.class)
 				.withIdentity("TestJob1","DEFAULT")
@@ -98,7 +104,7 @@ public class AllTest {
 		}
 	}
 
-	@Test(timeout=100000)
+	//@Test(timeout=100000)
 	public void test2() {
 		JobDetail job = newJob(SimpleJob.class)
 				.withIdentity("TestJob1","DEFAULT")
@@ -125,7 +131,7 @@ public class AllTest {
 		}
 	}
 
-	@Test(timeout=100000)
+	//@Test(timeout=100000)
 	public void test3() {
 		JobDetail job = newJob(SimpleJob.class)
 				.withIdentity("NO_HISTORY_JOB","DEFAULT")
@@ -152,7 +158,7 @@ public class AllTest {
 		}
 	}
 
-	@Test(timeout=200000)
+	//@Test(timeout=200000)
 	public void test4() {
 		String rc = null;
 		int totalSuccess = 0;

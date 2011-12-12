@@ -4,16 +4,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KCall;
-import org.parallelj.internal.kernel.KReflection;
+import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
-import org.parallelj.mirror.Procedure;
-import org.parallelj.mirror.ProgramType;
 import org.parallelj.tracknrestart.annotations.TrackNRestart;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPlugin;
@@ -22,14 +19,17 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobPersistenceException;
 
-import java.lang.reflect.Field;
-
-
 privileged public aspect QuartzContextAdapter  {
 	
+	declare precedence :
+		org.parallelj.tracknrestart.aspects.QuartzContextAdapter,
+		org.parallelj.launching.quartz.JobsAdapter;
+
 	static Logger logger = Logger.getLogger("org.parallelj.tracknrestart.QuartzContextAdapter");
 	
 	private X root;
+
+	String result = "SUCCESS";
 	
 	//---------------------------------------------------------------------------------------------------
 	
@@ -38,6 +38,7 @@ privileged public aspect QuartzContextAdapter  {
 
 	public void Job.execute(JobExecutionContext context)
 			throws JobExecutionException {
+		
 		ProcessHelper<?> p = null;
 		logger.debug("-----------------------------------------------------------------------------------------------------");
 		logger.debug("STARTING //J Root Program "+this.getClass().getName());
@@ -45,6 +46,7 @@ privileged public aspect QuartzContextAdapter  {
 		p = Programs.as((Adapter) this);
 
 		try {
+			//TODO voir avec Christophe @IN
 			Field f = this.getClass().getDeclaredField("data1");
 			f.setAccessible(true);
 			f.set(this, context.getJobDetail().getJobDataMap().get("data1"));
@@ -77,10 +79,13 @@ privileged public aspect QuartzContextAdapter  {
 		(org.quartz.Job+ && !org.quartz.Job) implements X;    
 
 	declare parents:   
-		(org.parallelj.mirror.Element+) implements X;      
+		(org.parallelj.internal.kernel.KCall) implements X;      
 
-	declare parents:   
-		(org.parallelj.internal.kernel.callback.Entry+) implements X; 
+//	declare parents:   
+//		(org.parallelj.mirror.Element+) implements X;      
+
+//	declare parents:   
+//		(org.parallelj.internal.kernel.callback.Entry+) implements X; 
 	
 //	declare parents:   
 //		(org.parallelj.internal.kernel.callback.Exit+) implements X; 
@@ -108,51 +113,80 @@ privileged public aspect QuartzContextAdapter  {
 	//---------------------------------------------------------------------------------------------------
 	
 	//JobExecutionContext --> Job
-	//JobExecutionContext --> KProgram
-	//JobExecutionContext --> KProcedure
 	before(X self, JobExecutionContext jobExecutionContext): 
 		execution(public void Job+.execute(..) throws JobExecutionException) 
 		&& this(self) 
 		&& args(jobExecutionContext) {
 
-		this.root = self;
-
 		logger.debug("ASPECT BEFORE:execution(public void Job+.execute(..) throws JobExecutionException) && this(self) && args(jobExecutionContext)");
+
 		self.setRestartedFireInstanceId(jobExecutionContext.getJobDetail().getJobDataMap().getString(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID));
 		self.setForEachListener((ForEachListener) jobExecutionContext.getJobDetail().getJobDataMap().get(TrackNRestartPlugin.FOR_EACH_LISTENER));
 		logger.debug("job="+self); 
 		logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
 		logger.debug("forEachListener="+self.getForEachListener());
-		
-		for (ProgramType programType : (List<ProgramType>)KReflection.getInstance().getPrograms()) { 
-			logger.debug("..program="+programType);
-			((X)programType).setRestartedFireInstanceId(self.getRestartedFireInstanceId()); 
-			((X)programType).setForEachListener(self.getForEachListener());
-			logger.debug("..restartedFireInstanceId="+((X)programType).getRestartedFireInstanceId()); 
-			logger.debug("..forEachListener="+((X)programType).getForEachListener());
-			for (Procedure procedure : programType.getProcedures()) { 
-				logger.debug("....procedure="+procedure);
-				((X)procedure).setRestartedFireInstanceId(self.getRestartedFireInstanceId()); 
-				((X)procedure).setForEachListener(self.getForEachListener());
-				logger.debug("....restartedFireInstanceId="+((X)procedure).getRestartedFireInstanceId()); 
-				logger.debug("....forEachListener="+((X)procedure).getForEachListener());
-			}
-		}
+
+		this.root = self;
+
+//		for (ProgramType programType : (List<ProgramType>)KReflection.getInstance().getPrograms()) { 
+//			logger.debug("..program="+programType);
+//			((X)programType).setRestartedFireInstanceId(self.getRestartedFireInstanceId()); 
+//			((X)programType).setForEachListener(self.getForEachListener());
+//			logger.debug("..restartedFireInstanceId="+((X)programType).getRestartedFireInstanceId()); 
+//			logger.debug("..forEachListener="+((X)programType).getForEachListener());
+//			for (Procedure procedure : programType.getProcedures()) { 
+//				logger.debug("....procedure="+procedure);
+//				((X)procedure).setRestartedFireInstanceId(self.getRestartedFireInstanceId()); 
+//				((X)procedure).setForEachListener(self.getForEachListener());
+//				logger.debug("....restartedFireInstanceId="+((X)procedure).getRestartedFireInstanceId()); 
+//				logger.debug("....forEachListener="+((X)procedure).getForEachListener());
+//			}
+//		}
 	}
 
+	after(X self, JobExecutionContext jobExecutionContext): 
+		execution(public void Job+.execute(..) throws JobExecutionException) 
+		&& this(self) 
+		&& args(jobExecutionContext) {
 
-	before(X caller, X callee): 
-		call(* org.parallelj.internal.kernel.callback.Entry+.enter(..))
-		&& target(callee) && this(caller){
-
-		logger.debug("ASPECT BEFORE:call(* org.parallelj.internal.kernel.callback.Entry+.enter(..)) && target(callee) && this(caller)");
-		logger.debug("caller="+caller);
-		logger.debug("callee="+callee);
-		callee.setRestartedFireInstanceId(caller.getRestartedFireInstanceId()); 
-		callee.setForEachListener(caller.getForEachListener());
-		logger.debug("restartedFireInstanceId="+callee.getRestartedFireInstanceId()); 
-		logger.debug("forEachListener="+callee.getForEachListener());
+		logger.debug("ASPECT AFTER:execution(public void Job+.execute(..) throws JobExecutionException) && this(self) && args(jobExecutionContext)");
+		jobExecutionContext.setResult(result);
 	}
+	
+	after(X self): 
+		execution(protected KCall.new(..)) && this(self) {
+
+		logger.debug("ASPECT AFTER:protected execution(protected KCall.new(..)) && this(self)");
+		logger.debug("self="+self);
+		self.setRestartedFireInstanceId(root.getRestartedFireInstanceId()); 
+		self.setForEachListener(root.getForEachListener());
+		logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
+		logger.debug("forEachListener="+self.getForEachListener());
+	}
+
+	after(X self): 
+		execution(protected KProcess.new(..)) && this(self) {
+
+		logger.debug("ASPECT AFTER:protected execution(protected KProcess.new(..)) && this(self)");
+		logger.debug("self="+self);
+		self.setRestartedFireInstanceId(root.getRestartedFireInstanceId()); 
+		self.setForEachListener(root.getForEachListener());
+		logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
+		logger.debug("forEachListener="+self.getForEachListener());
+	}
+
+//	before(X caller, X callee): 
+//		call(* org.parallelj.internal.kernel.callback.Entry+.enter(..))
+//		&& target(callee) && this(caller){
+//
+//		logger.debug("ASPECT BEFORE:call(* org.parallelj.internal.kernel.callback.Entry+.enter(..)) && target(callee) && this(caller)");
+//		logger.debug("caller="+caller);
+//		logger.debug("callee="+callee);
+//		callee.setRestartedFireInstanceId(caller.getRestartedFireInstanceId()); 
+//		callee.setForEachListener(caller.getForEachListener());
+//		logger.debug("restartedFireInstanceId="+callee.getRestartedFireInstanceId()); 
+//		logger.debug("forEachListener="+callee.getForEachListener());
+//	}
 
 //	before(X caller, X callee): 
 //		call(* org.parallelj.internal.kernel.callback.Exit+.exit(..))
@@ -211,35 +245,50 @@ privileged public aspect QuartzContextAdapter  {
 //		}
 //	}
 
-	after(X self, Object oo) returning : 
-		withincode(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) 
-		&& call(public Object Method.invoke(Object, ..)) 
-		&& this(self) && args(oo, ..){
+    pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
+    pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(QuartzContextAdapter);
+    
+    after(Object oo, KCall _kCall) returning :
+    	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
 		
-		logger.debug("ASPECT AFTER RETURNING:withincode(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && call(public Object Method.invoke(Object, ..)) && this(self) && args(oo, ..)");
-		track(self, oo, true, null);
-	}
+		logger.debug("ASPECT AFTER RETURNING");
+		logger.debug("_KCall="+_kCall);
+		track(_kCall, oo, true, null);
+    }
 
-	after(X self, Object oo) throwing (InvocationTargetException ite) : 
-		withincode(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) 
-		&& call(public Object Method.invoke(Object, ..)) 
-		&& this(self) && args(oo, ..){
+    after(Object oo, KCall _kCall) throwing (InvocationTargetException ite) : 
+    	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
 		
-		logger.debug("ASPECT AFTER THROWING (InvocationTargetException):withincode(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && call(public Object Method.invoke(Object, ..)) && this(self) && args(oo, ..)");
-		track(self, oo, false, ite);
-	}
+		logger.debug("ASPECT AFTER THROWING (InvocationTargetException)");
+		logger.debug("_KCall="+_kCall);
+		this.result = "PARTIAL";
+		track(_kCall, oo, false, ite);
+    }
 
-	private void track(X self, Object program, boolean success, InvocationTargetException ite) {
+    
+    private void track(KCall _kCall, Object program, boolean success, InvocationTargetException ite) {
 		String oid = null;
+		
 		try {
 			if (program != null) {
-				if (program.getClass().isAnnotationPresent(TrackNRestart.class)){
-					Method m = program.getClass().getDeclaredMethod("getOID", new Class[]{});
+				Class<? extends Object> clazz = program.getClass();
+				if (clazz.isAnnotationPresent(TrackNRestart.class)){
+					Method m = clazz.getDeclaredMethod("getOID", new Class[]{});
 					oid = (String) m.invoke(program, new Object[] {});
 					if (oid != null) {
-						self.getForEachListener().forEachInstanceComplete(oid, success);
+						if (success == true) {
+							persist(_kCall, success, oid);
+						} else {
+							Class<? extends Throwable>[] filteredExceptions = clazz.getAnnotation(TrackNRestart.class).filteredExceptions();
+							if (isIteCausePermittedInList(ite, filteredExceptions)) {
+								persist(_kCall, success, oid);
+							} else {
+								abortAbruptly();
+								throw new TrackNRestartException("Exception thrown ("+ite.getCause().getClass().getName()+") is not in list of permitted exceptions "+filteredExceptionsAsString(filteredExceptions));
+							}
+						}
 						if (logger.isDebugEnabled()) {
-							logger.info("oid='" + oid + "' persisted with status='" + (success?"SUCCESS":"FAILURE") + "' "+(ite==null?"":", cause : "+ite.getCause()));
+							logger.info("oid='"	+ oid + "' persisted with status='"	+ (success ? "SUCCESS" : "FAILURE")	+ "' "+ (ite == null ? "" : ", cause : " + ite.getCause()));
 						}
 					} else {
 						abortAbruptly();
@@ -263,16 +312,40 @@ privileged public aspect QuartzContextAdapter  {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JobPersistenceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			abortAbruptly();
+			throw new TrackNRestartException("Unable to persist status ['" + (success?"SUCCESS":"FAILURE") + "'] for iteration '" + oid + "'.",e);
 		} catch (SQLException e) {
 			abortAbruptly();
 			throw new TrackNRestartException("Unable to persist status ['" + (success?"SUCCESS":"FAILURE") + "'] for iteration '" + oid + "'.",e);
 		}
 	}
 
+	private boolean isIteCausePermittedInList(InvocationTargetException ite, Class<? extends Throwable>[] filteredExceptions) {
+		for (int i = 0; i < filteredExceptions.length; i++) {
+			if (filteredExceptions[i].isAssignableFrom(ite.getCause().getClass()))
+				return true;
+		}
+		return false;
+	}
+	
+	private String filteredExceptionsAsString(Class<? extends Throwable>[] filteredExceptions) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("[");
+		for (int i = 0; i < filteredExceptions.length; i++) {
+			if (i>0) 
+				sb.append(", ");
+			sb.append(filteredExceptions[i].getName());
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+
+	private void persist(KCall _kCall, boolean success, String oid) throws JobPersistenceException, SQLException {
+		((X) _kCall).getForEachListener().forEachInstanceComplete(oid, success);
+	}
+
 	private void abortAbruptly() {
-//		this.jobExecutionContext.setResult("FAILURE");
+		this.result = "FAILURE";
 		Programs.as((Adapter) this.root).abort();
 	}
 

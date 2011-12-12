@@ -1,0 +1,13 @@
+<aspectj>
+	<aspects>
+<!-- 		<aspect name="org.parallelj.tracknrestart.aspects.QuartzContextAdapter"/> -->
+		<include within="org.parallelj..*" />
+    </aspects>
+
+<!-- 	<weaver options="-verbose -debug -showWeaveInfo -Xreweavable"> -->
+	<weaver options="-Xreweavable">
+		<include within="org.parallelj..*" />
+<!-- 		<dump within="tbr.groupid.jjp1..*" /> -->
+<!-- 		<dump within="org.parallelj..*" /> -->
+	</weaver>
+</aspectj>

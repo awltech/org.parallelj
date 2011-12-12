@@ -1,4 +1,4 @@
-package org.parallelj.tracknrestart.test;
+package org.parallelj.tracknrestart.test.quartz.alone;
 
 
 import org.parallelj.tracknrestart.listeners.ForEachListener;
