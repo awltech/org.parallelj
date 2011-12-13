@@ -25,7 +25,6 @@ package org.parallelj.launching.quartz;
 import java.util.Collection;
 import java.util.HashMap;
 
-import org.parallelj.launching.quartz.ParalleljScheduler;
 import org.quartz.SchedulerException;
 
 /**
@@ -51,7 +50,7 @@ public final class ParalleljSchedulerRepository {
 
     public synchronized void bind(ParalleljScheduler sched) throws SchedulerException {
 
-        if ((ParalleljScheduler) schedulers.get(sched.getSchedulerName()) != null) {
+        if (schedulers.get(sched.getSchedulerName()) != null) {
             throw new SchedulerException("Scheduler with name '"
                     + sched.getSchedulerName() + "' already exists.");
         }
