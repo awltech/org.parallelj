@@ -37,10 +37,17 @@ public class Prog2 {
 	public void proc4() throws BusinessException {
 		System.out.println("proc4");
 		System.out.println("prog2DataIn=" + prog2DataIn);
-		if(prog2DataIn.equals("0")) 
-			throw new BusinessException("The letter is '0', which is not permitted !");
-		if(prog2DataIn.toUpperCase().equals(prog2DataIn)) 
-			throw new RuntimeException("The letter is upcased, which is not permitted !");
+//		if(prog2DataIn.equals("0")) 
+//			throw new BusinessException("The letter is '0', which is not permitted !");
+//		if(prog2DataIn.toUpperCase().equals(prog2DataIn)) 
+//			throw new RuntimeException("The letter is upcased, which is not permitted !");
+		if(!simulateBusiness()) 
+			throw new BusinessException("simulated business process unsuccessful");
+	}
+
+	private boolean simulateBusiness() {
+		boolean success = (Math.floor(Math.random()*1000))%2==0;
+		return success;
 	}
 
 	public String getOID(){

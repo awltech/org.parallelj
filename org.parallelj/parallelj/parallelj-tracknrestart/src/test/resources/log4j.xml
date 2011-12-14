@@ -15,7 +15,11 @@
  </logger>
 
  <logger name="org.parallelj.tracknrestart">
-   <level value="debug" />
+   <level value="warning" />
+ </logger>
+
+ <logger name="org.parallelj.events">
+   <level value="warning" />
  </logger>
 
   <root>

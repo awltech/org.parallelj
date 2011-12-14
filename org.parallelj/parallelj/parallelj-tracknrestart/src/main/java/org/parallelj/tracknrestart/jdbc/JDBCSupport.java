@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
+import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.tracknrestart.TrackNRestartMessageKind;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobPersistenceException;
@@ -116,6 +118,7 @@ public class JDBCSupport implements Serializable{
 			// }
 			conn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
 		} catch (SQLException sqle) {
+			TrackNRestartMessageKind.WTNRJDBC0003.format();
 			getLog().warn(
 					"Failed to override connection auto commit/transaction isolation.",
 					sqle);
@@ -277,8 +280,10 @@ public class JDBCSupport implements Serializable{
 			try {
 				conn.close();
 			} catch (SQLException e) {
+				TrackNRestartMessageKind.ETNRJDBC0001.format();
 				getLog().error("Failed to close Connection", e);
 			} catch (Throwable e) {
+				TrackNRestartMessageKind.ETNRJDBC0002.format();
 				getLog().error(
 						"Unexpected exception closing Connection."
 								+ "  This is often due to a Connection being returned after or during shutdown.",

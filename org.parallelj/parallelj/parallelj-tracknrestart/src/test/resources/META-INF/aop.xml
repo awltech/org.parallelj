@@ -2,6 +2,7 @@
 	<aspects>
 <!-- 		<aspect name="org.parallelj.tracknrestart.aspects.QuartzContextAdapter"/> -->
 		<include within="org.parallelj..*" />
+		<exclude within="org.parallelj.tracknrestart.test.quartz.alone..*" />
     </aspects>
 
 <!-- 	<weaver options="-verbose -debug -showWeaveInfo -Xreweavable"> -->

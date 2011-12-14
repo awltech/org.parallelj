@@ -1,6 +1,7 @@
 package org.parallelj.tracknrestart.test.quartz.alone;
 
 
+import org.parallelj.tracknrestart.ReturnCodes;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPlugin;
 import org.quartz.Job;
@@ -80,7 +81,7 @@ public class SimpleJob implements Job {
 			result.put("currentFireInstanceId", context.getFireInstanceId());
 			result.put(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID, restartedFireInstanceId);
 			if (nbrFailure==0){
-				result.put("RETURN_CODE","SUCCESS");
+				result.put("RETURN_CODE",ReturnCodes.SUCCESS.name());
 			} else {
 				result.put("RETURN_CODE","FAILURE");
 			}

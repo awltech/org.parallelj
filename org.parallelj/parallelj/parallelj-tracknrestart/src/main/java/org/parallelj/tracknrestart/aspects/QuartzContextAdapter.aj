@@ -18,8 +18,9 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobPersistenceException;
+import org.parallelj.tracknrestart.ReturnCodes;
 
-privileged public aspect QuartzContextAdapter  {
+privileged public aspect QuartzContextAdapter percflow (execution(public void Job+.execute(..) throws JobExecutionException)) {
 	
 	declare precedence :
 		org.parallelj.tracknrestart.aspects.QuartzContextAdapter,
@@ -29,7 +30,7 @@ privileged public aspect QuartzContextAdapter  {
 	
 	private X root;
 
-	String result = "SUCCESS";
+	String result = ReturnCodes.SUCCESS.name();
 	
 	//---------------------------------------------------------------------------------------------------
 	
@@ -118,30 +119,15 @@ privileged public aspect QuartzContextAdapter  {
 		&& this(self) 
 		&& args(jobExecutionContext) {
 
-		logger.debug("ASPECT BEFORE:execution(public void Job+.execute(..) throws JobExecutionException) && this(self) && args(jobExecutionContext)");
+		//logger.debug("ASPECT BEFORE:execution(public void Job+.execute(..) throws JobExecutionException) && this(self) && args(jobExecutionContext)");
 
 		self.setRestartedFireInstanceId(jobExecutionContext.getJobDetail().getJobDataMap().getString(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID));
 		self.setForEachListener((ForEachListener) jobExecutionContext.getJobDetail().getJobDataMap().get(TrackNRestartPlugin.FOR_EACH_LISTENER));
-		logger.debug("job="+self); 
-		logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
-		logger.debug("forEachListener="+self.getForEachListener());
+		//logger.debug("job="+self); 
+		//logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
+		//logger.debug("forEachListener="+self.getForEachListener());
 
 		this.root = self;
-
-//		for (ProgramType programType : (List<ProgramType>)KReflection.getInstance().getPrograms()) { 
-//			logger.debug("..program="+programType);
-//			((X)programType).setRestartedFireInstanceId(self.getRestartedFireInstanceId()); 
-//			((X)programType).setForEachListener(self.getForEachListener());
-//			logger.debug("..restartedFireInstanceId="+((X)programType).getRestartedFireInstanceId()); 
-//			logger.debug("..forEachListener="+((X)programType).getForEachListener());
-//			for (Procedure procedure : programType.getProcedures()) { 
-//				logger.debug("....procedure="+procedure);
-//				((X)procedure).setRestartedFireInstanceId(self.getRestartedFireInstanceId()); 
-//				((X)procedure).setForEachListener(self.getForEachListener());
-//				logger.debug("....restartedFireInstanceId="+((X)procedure).getRestartedFireInstanceId()); 
-//				logger.debug("....forEachListener="+((X)procedure).getForEachListener());
-//			}
-//		}
 	}
 
 	after(X self, JobExecutionContext jobExecutionContext): 
@@ -149,156 +135,182 @@ privileged public aspect QuartzContextAdapter  {
 		&& this(self) 
 		&& args(jobExecutionContext) {
 
-		logger.debug("ASPECT AFTER:execution(public void Job+.execute(..) throws JobExecutionException) && this(self) && args(jobExecutionContext)");
+		//logger.debug("ASPECT AFTER:execution(public void Job+.execute(..) throws JobExecutionException) && this(self) && args(jobExecutionContext)");
 		jobExecutionContext.setResult(result);
 	}
 	
 	after(X self): 
 		execution(protected KCall.new(..)) && this(self) {
 
-		logger.debug("ASPECT AFTER:protected execution(protected KCall.new(..)) && this(self)");
-		logger.debug("self="+self);
+		//logger.debug("ASPECT AFTER:protected execution(protected KCall.new(..)) && this(self)");
+		//logger.debug("self="+self);
 		self.setRestartedFireInstanceId(root.getRestartedFireInstanceId()); 
 		self.setForEachListener(root.getForEachListener());
-		logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
-		logger.debug("forEachListener="+self.getForEachListener());
+		//logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
+		//logger.debug("forEachListener="+self.getForEachListener());
 	}
 
 	after(X self): 
 		execution(protected KProcess.new(..)) && this(self) {
 
-		logger.debug("ASPECT AFTER:protected execution(protected KProcess.new(..)) && this(self)");
-		logger.debug("self="+self);
+		//logger.debug("ASPECT AFTER:protected execution(protected KProcess.new(..)) && this(self)");
+		//logger.debug("self="+self);
 		self.setRestartedFireInstanceId(root.getRestartedFireInstanceId()); 
 		self.setForEachListener(root.getForEachListener());
-		logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
-		logger.debug("forEachListener="+self.getForEachListener());
+		//logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
+		//logger.debug("forEachListener="+self.getForEachListener());
 	}
-
-//	before(X caller, X callee): 
-//		call(* org.parallelj.internal.kernel.callback.Entry+.enter(..))
-//		&& target(callee) && this(caller){
-//
-//		logger.debug("ASPECT BEFORE:call(* org.parallelj.internal.kernel.callback.Entry+.enter(..)) && target(callee) && this(caller)");
-//		logger.debug("caller="+caller);
-//		logger.debug("callee="+callee);
-//		callee.setRestartedFireInstanceId(caller.getRestartedFireInstanceId()); 
-//		callee.setForEachListener(caller.getForEachListener());
-//		logger.debug("restartedFireInstanceId="+callee.getRestartedFireInstanceId()); 
-//		logger.debug("forEachListener="+callee.getForEachListener());
-//	}
-
-//	before(X caller, X callee): 
-//		call(* org.parallelj.internal.kernel.callback.Exit+.exit(..))
-//		&& target(callee) && this(caller){
-//
-//		logger.debug("ASPECT BEFORE:call(* org.parallelj.internal.kernel.callback.Exit+.exit(..)) && target(callee) && this(caller)");
-//		logger.debug("caller="+caller);
-//		logger.debug("callee="+callee);
-//		callee.setRestartedFireInstanceId(caller.getRestartedFireInstanceId()); 
-//		callee.setForEachListener(caller.getForEachListener());
-//		logger.debug("restartedFireInstanceId="+callee.getRestartedFireInstanceId()); 
-//		logger.debug("forEachListener="+callee.getForEachListener());
-//	}
-
-//	void around(X self, KCall _call): 
-//		execution(* org.parallelj.internal.kernel.callback.Entry+.enter(..))
-//		&& this(self) && args(_call){
-//
-//		try {
-//			if (self.getRestartedFireInstanceId() != null) {
-//				Object c = _call.getProcess().getContext();
-//				if (c != null) {
-//					Method m = c.getClass().getDeclaredMethod("getOID", new Class[]{});
-//					String oid = (String) m.invoke(_call.getProcess().getContext(),	new Object[] {});
-//					if (oid != null) {
-//						boolean wasSuccess = self.getForEachListener().isForEachInstanceIgnorable(self.getRestartedFireInstanceId(), oid);
-//						if (wasSuccess) {
-//							// ?
-//						} else {
-//							proceed(self, _call);
-//						}
-//					} else {
-//						throw new TrackNRestartException("Unable to get iteration OID while 'restarting' context.");
-//					}
-//				}
-//			} else {
-//				proceed(self, _call);
-//			}
-//		} catch (NoSuchMethodException e) {
-//			// ignore
-//		} catch (SecurityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalArgumentException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InvocationTargetException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (TrackNRestartException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 
     pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
     pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(QuartzContextAdapter);
+
+// restart part ----------------------------------------------------------------------------------------------------------------------------------------
+    Object around(Object oo, KCall _kCall)  :
+        invoke() && args(oo, ..) && cflow(enter(_kCall)) {
+               
+        if (restart(_kCall, oo)) {
+               return proceed(oo, _kCall);
+        } else {
+               return null;
+        }
+     }
+
+	private boolean restart(KCall _kCall, Object program) {
+		boolean result = true;
+		if (program != null) {
+			if (program.getClass().isAnnotationPresent(TrackNRestart.class)) {
+				String oid = getOID(program);
+				if (oid != null) {
+					String instanceId = ((X) _kCall)
+							.getRestartedFireInstanceId();
+					if (instanceId != null) {
+						// logger.debug("Processing in restarting mode for oid : ["
+						// + oid + "] ,program : [" + program +
+						// "] ,instanceId :[" +instanceId+ "]");
+						try {
+							result = !((X) _kCall)
+									.getForEachListener()
+									.isForEachInstanceIgnorable(instanceId, oid);
+							// logger.debug(result ?
+							// "This OID has not been already processed or" +
+							// " already processed in error, so its processing is not skipped":
+							// "This OID ("+oid+") has been already successfully processed, so its processing is skipped");
+						} catch (JobPersistenceException e) {
+							abortAbruptly();
+							throw new TrackNRestartException(
+									"Unable to read status for iteration '"
+											+ oid + "'.", e);
+						} catch (SQLException e) {
+							abortAbruptly();
+							throw new TrackNRestartException(
+									"Unable to read status for iteration '"
+											+ oid + "'.", e);
+						}
+					} else {
+						// logger.debug("Processing in normal mode (ie not restarting mode) for : ["
+						// + oid + "] ,program : [" + program + "]");
+					}
+				}
+			}
+		}
+		return result;
+	}
     
-    after(Object oo, KCall _kCall) returning :
+	private String getOID(Object program) {
+		String result = null;
+		try {
+			Method m = program.getClass().getDeclaredMethod("getOID",
+					new Class[] {});
+			return (String) m.invoke(program, new Object[] {});
+		} catch (SecurityException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NoSuchMethodException e1) {
+			abortAbruptly();
+			throw new TrackNRestartException(
+					"No getOID() method found while program " + program
+							+ " was annotated @TrackNRestart.", e1);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+// tracking part ----------------------------------------------------------------------------------------------------------------------------------------
+   after(Object oo, KCall _kCall) returning :
     	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
 		
-		logger.debug("ASPECT AFTER RETURNING");
-		logger.debug("_KCall="+_kCall);
+		//logger.debug("ASPECT AFTER RETURNING");
+		//logger.debug("_KCall="+_kCall);
 		track(_kCall, oo, true, null);
     }
 
     after(Object oo, KCall _kCall) throwing (InvocationTargetException ite) : 
     	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
 		
-		logger.debug("ASPECT AFTER THROWING (InvocationTargetException)");
-		logger.debug("_KCall="+_kCall);
-		this.result = "PARTIAL";
+		//logger.debug("ASPECT AFTER THROWING (InvocationTargetException)");
+		//logger.debug("_KCall="+_kCall);
+		this.result = "FAILURE";
 		track(_kCall, oo, false, ite);
     }
 
     
-    private void track(KCall _kCall, Object program, boolean success, InvocationTargetException ite) {
+	private void track(KCall _kCall, Object program, boolean success,
+			InvocationTargetException ite) {
 		String oid = null;
-		
+
 		try {
 			if (program != null) {
 				Class<? extends Object> clazz = program.getClass();
-				if (clazz.isAnnotationPresent(TrackNRestart.class)){
-					Method m = clazz.getDeclaredMethod("getOID", new Class[]{});
+				if (clazz.isAnnotationPresent(TrackNRestart.class)) {
+					Method m = clazz
+							.getDeclaredMethod("getOID", new Class[] {});
 					oid = (String) m.invoke(program, new Object[] {});
 					if (oid != null) {
 						if (success == true) {
 							persist(_kCall, success, oid);
 						} else {
-							Class<? extends Throwable>[] filteredExceptions = clazz.getAnnotation(TrackNRestart.class).filteredExceptions();
-							if (isIteCausePermittedInList(ite, filteredExceptions)) {
+							Class<? extends Throwable>[] filteredExceptions = clazz
+									.getAnnotation(TrackNRestart.class)
+									.filteredExceptions();
+							if (isIteCausePermittedInList(ite,
+									filteredExceptions)) {
 								persist(_kCall, success, oid);
 							} else {
 								abortAbruptly();
-								throw new TrackNRestartException("Exception thrown ("+ite.getCause().getClass().getName()+") is not in list of permitted exceptions "+filteredExceptionsAsString(filteredExceptions));
+								throw new TrackNRestartException(
+										"Exception thrown ("
+												+ ite.getCause().getClass()
+														.getName()
+												+ ") is not in list of permitted exceptions "
+												+ filteredExceptionsAsString(filteredExceptions));
 							}
 						}
 						if (logger.isDebugEnabled()) {
-							logger.info("oid='"	+ oid + "' persisted with status='"	+ (success ? "SUCCESS" : "FAILURE")	+ "' "+ (ite == null ? "" : ", cause : " + ite.getCause()));
+							// logger.debug("oid='" + oid +
+							// "' persisted with status='" + (success ?
+							// ReturnCodes.SUCCESS : "FAILURE") + "' "+ (ite ==
+							// null ? "" : ", cause : " + ite.getCause()));
 						}
 					} else {
 						abortAbruptly();
-						throw new TrackNRestartException("Unable to get iteration OID while 'tracking' context.");
+						throw new TrackNRestartException(
+								"Unable to get iteration OID while 'tracking' context.");
 					}
 				}
 			}
 		} catch (NoSuchMethodException e) {
 			abortAbruptly();
-			throw new TrackNRestartException("No getOID() method found while program "+program+" was annotated @TrackNRestart.",e);
+			throw new TrackNRestartException(
+					"No getOID() method found while program " + program
+							+ " was annotated @TrackNRestart.", e);
 		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -313,26 +325,33 @@ privileged public aspect QuartzContextAdapter  {
 			e.printStackTrace();
 		} catch (JobPersistenceException e) {
 			abortAbruptly();
-			throw new TrackNRestartException("Unable to persist status ['" + (success?"SUCCESS":"FAILURE") + "'] for iteration '" + oid + "'.",e);
+			throw new TrackNRestartException("Unable to persist status ['"
+					+ (success ? ReturnCodes.SUCCESS : "FAILURE")
+					+ "'] for iteration '" + oid + "'.", e);
 		} catch (SQLException e) {
 			abortAbruptly();
-			throw new TrackNRestartException("Unable to persist status ['" + (success?"SUCCESS":"FAILURE") + "'] for iteration '" + oid + "'.",e);
+			throw new TrackNRestartException("Unable to persist status ['"
+					+ (success ? ReturnCodes.SUCCESS : "FAILURE")
+					+ "'] for iteration '" + oid + "'.", e);
 		}
 	}
 
-	private boolean isIteCausePermittedInList(InvocationTargetException ite, Class<? extends Throwable>[] filteredExceptions) {
+	private boolean isIteCausePermittedInList(InvocationTargetException ite,
+			Class<? extends Throwable>[] filteredExceptions) {
 		for (int i = 0; i < filteredExceptions.length; i++) {
-			if (filteredExceptions[i].isAssignableFrom(ite.getCause().getClass()))
+			if (filteredExceptions[i].isAssignableFrom(ite.getCause()
+					.getClass()))
 				return true;
 		}
 		return false;
 	}
-	
-	private String filteredExceptionsAsString(Class<? extends Throwable>[] filteredExceptions) {
+
+	private String filteredExceptionsAsString(
+			Class<? extends Throwable>[] filteredExceptions) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("[");
 		for (int i = 0; i < filteredExceptions.length; i++) {
-			if (i>0) 
+			if (i > 0)
 				sb.append(", ");
 			sb.append(filteredExceptions[i].getName());
 		}
@@ -340,12 +359,13 @@ privileged public aspect QuartzContextAdapter  {
 		return sb.toString();
 	}
 
-	private void persist(KCall _kCall, boolean success, String oid) throws JobPersistenceException, SQLException {
+	private void persist(KCall _kCall, boolean success, String oid)
+			throws JobPersistenceException, SQLException {
 		((X) _kCall).getForEachListener().forEachInstanceComplete(oid, success);
 	}
 
 	private void abortAbruptly() {
-		this.result = "FAILURE";
+		this.result = "ABORTED";
 		Programs.as((Adapter) this.root).abort();
 	}
 

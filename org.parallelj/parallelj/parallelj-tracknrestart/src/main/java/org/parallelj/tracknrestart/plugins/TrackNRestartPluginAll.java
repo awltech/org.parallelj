@@ -1,10 +1,12 @@
 package org.parallelj.tracknrestart.plugins;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 
 
 import org.parallelj.tracknrestart.TrackNRestartMessageKind;
@@ -27,7 +29,7 @@ import org.quartz.impl.jdbcjobstore.Constants;
 import org.quartz.impl.matchers.EverythingMatcher;
 import org.quartz.spi.SchedulerPlugin;
 
-public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin, JobListener, SchedulerListener {
+public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlugin, JobListener, SchedulerListener {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -39,8 +41,50 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 
     private Scheduler scheduler;
 
+    private String jobToBeFiredMessage = "Job {1}.{0} [id #{8}] fired (by trigger {4}.{3}) at: {2, date, HH:mm:ss MM/dd/yyyy}";
+
+	private String jobSuccessMessage = "Job {1}.{0} [id #{8}] execution complete at {2, date, HH:mm:ss MM/dd/yyyy} and reports: {9}";
+
+	private String jobFailedMessage = "Job {1}.{0}  [id #{8}] execution failed at {2, date, HH:mm:ss MM/dd/yyyy} and reports: {9}";
+
+	private String jobWasVetoedMessage = "Job {1}.{0} was vetoed.  It was to be fired (by trigger {4}.{3}) at: {2, date, HH:mm:ss MM/dd/yyyy}";
+
 	public String getName() {
 		return name;
+	}
+
+	private String COL_RESULT_SUBST = "RESULT";
+
+	private String COL_RESTARTED_UID_SUBST = "RESTARTED_UID";
+
+	/**
+	 * Get the message that is logged when a Job successfully completes its
+	 * execution.
+	 */
+	public String getJobSuccessMessage() {
+		return jobSuccessMessage;
+	}
+
+	/**
+	 * Get the message that is logged when a Job fails its execution.
+	 */
+	public String getJobFailedMessage() {
+		return jobFailedMessage;
+	}
+
+	/**
+	 * Get the message that is logged when a Job is about to execute.
+	 */
+	public String getJobToBeFiredMessage() {
+		return jobToBeFiredMessage;
+	}
+
+	/**
+	 * Get the message that is logged when a Job execution is vetoed by a
+	 * trigger listener.
+	 */
+	public String getJobWasVetoedMessage() {
+		return jobWasVetoedMessage;
 	}
 
     private String FETCH_JOB_DETAIL_TRACK = "SELECT DISTINCT " 
@@ -78,6 +122,25 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
     	+ Constants.COL_JOB_GROUP + " = ? AND "
     	+ Constants.COL_JOB_NAME + " = ?"; 
  
+    private String INSERT_JOB_DETAIL_TRACK = "INSERT INTO "
+            + TABLE_PREFIX_SUBST + Constants.TABLE_JOB_DETAILS 
+            + " (" 
+            + Constants.COL_SCHEDULER_NAME + ", " 
+            + Constants.COL_JOB_NAME + ", " 
+            + Constants.COL_JOB_GROUP + ", "
+            + COL_UID_SUBST + ", " 
+            + Constants.COL_DESCRIPTION + ", "
+            + Constants.COL_JOB_CLASS + ", " 
+            + Constants.COL_IS_DURABLE + ", " 
+            + Constants.COL_IS_NONCONCURRENT +  ", "
+            + Constants.COL_IS_UPDATE_DATA + ", " 
+            + Constants.COL_REQUESTS_RECOVERY + ", "
+            + Constants.COL_JOB_DATAMAP + ", " 
+            + COL_RESULT_SUBST + ", "
+            + COL_RESTARTED_UID_SUBST 
+            + ") " 
+            + " VALUES(" + SCHED_NAME_SUBST + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
 	public void initialize(String pname, Scheduler scheduler)
 			throws SchedulerException {
 		this.name = pname;
@@ -86,7 +149,7 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 				EverythingMatcher.allJobs());
 		scheduler.getListenerManager().addSchedulerListener(this);
 		TrackNRestartMessageKind.ITNRPLUGIN0001.format();
-//		getLog().info("Registering Quartz Job Track&Restart Plug-in.");
+		//getLog().info("Registering Quartz Job Track&Restart Plug-in.");
 	}
 
 	private boolean fetchJob(Connection conn, JobKey jobKey)
@@ -144,35 +207,6 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 		}
 	}
 
-	public void jobToBeExecuted(JobExecutionContext context) {
-		try {
-			ForEachListener forEachListener = 
-					new TrackNRestartListener(
-							dataSource, 
-							tablePrefix, 
-							this.getName(),
-							scheduler.getSchedulerName(),
-							context.getJobDetail().getKey().getGroup(),
-							context.getJobDetail().getKey().getName(),
-							context.getFireInstanceId());
-			context.getJobDetail().getJobDataMap().put(FOR_EACH_LISTENER, forEachListener);
-		} catch (Exception e) {
-			TrackNRestartMessageKind.ETNRPLUGIN0002.format(e);
-//			getLog().error("Unexpected exception.",e);
-		}
-	}
-
-	public void jobExecutionVetoed(JobExecutionContext context) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void jobWasExecuted(JobExecutionContext context,
-			JobExecutionException jobException) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public void start() {
 		try {
 			getLog().debug("----------------- Start scheduler "+scheduler.getSchedulerName());
@@ -221,7 +255,7 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 
 	public void jobAdded(JobDetail jobDetail) {
 		TrackNRestartMessageKind.ITNRPLUGIN0003.format(jobDetail.getKey());
-//		getLog().info("Job "+jobDetail.getKey()+" added.");
+		//getLog().info("Job "+jobDetail.getKey()+" added.");
 		JobKey jobKey = null;
 		try {
 			jobKey = jobDetail.getKey();
@@ -230,33 +264,33 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 			if (fetchJob(getNonManagedTXConnection(), jobKey)){ // group.job exists
 				if (restart == null){
 					TrackNRestartMessageKind.ITNRPLUGIN0004.format(jobKey);
-//					getLog().info(jobKey+" is running in simple tracking (non-restarting) mode.");
+					//getLog().info(jobKey+" is running in simple tracking (non-restarting) mode.");
 					TrackNRestartMessageKind.WTNRPLUGIN0005.format(jobKey);
-//					getLog().warn("At least one "+jobKey+" execution already exists in tracking history.");
+					//getLog().warn("At least one "+jobKey+" execution already exists in tracking history.");
 				} else {
-					if (restart.equals("_LAST_")){
+					if (restart.trim().equals("_LAST_")){
 						restart = fetchJobExecLast(getNonManagedTXConnection(), jobKey);
 						if (restart != null){
 							jobDataMap.put(RESTARTED_FIRE_INSTANCE_ID, restart);
 							TrackNRestartMessageKind.ITNRPLUGIN0006.format(jobKey, restart);
-//							getLog().info("Replacing "+jobKey+" after resolving restarted id from _LAST_ to "+restart+".");
+							//getLog().info("Replacing "+jobKey+" after resolving restarted id from _LAST_ to "+restart+".");
 							scheduler.addJob(jobDetail, true); // WARNING recursivity !
 						} else {
 							TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart);
-//							getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
+							//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
 							TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
-//							getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
+							//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
 							scheduler.deleteJob(jobKey);
 						}
 					} else {
 						if (fetchJobExec(getNonManagedTXConnection(), jobKey, restart)){
 							TrackNRestartMessageKind.ETNRPLUGIN0010.format(jobKey);
-//							getLog().info("Restarting "+jobKey+" #"+restart+".");
+							//getLog().info("Restarting "+jobKey+" #"+restart+".");
 						} else {
 							TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart);
-//							getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
+							//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
 							TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
-//							getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
+							//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
 							scheduler.deleteJob(jobKey);
 						}
 					}
@@ -264,14 +298,13 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 			} else { // group.job doesn't exist
 				if (restart == null){
 					TrackNRestartMessageKind.ITNRPLUGIN0012.format(jobKey);
-//					getLog().info(jobKey+" is running in simple tracking (non-restarting) mode.");
-					TrackNRestartMessageKind.ITNRPLUGIN0015.format(jobKey);
+					//getLog().info(jobKey+" is running in simple tracking (non-restarting) mode.");
 //					getLog().info("First tracked execution of "+jobKey+".");
 				} else {
 					TrackNRestartMessageKind.ETNRPLUGIN0013.format(jobKey);
-//					getLog().error("Unable to restart "+jobKey+" caused by no previous execution in tracking history.");
+					//getLog().error("Unable to restart "+jobKey+" caused by no previous execution in tracking history.");
 					TrackNRestartMessageKind.ETNRPLUGIN0014.format(jobKey);
-//					getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
+					//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
 					scheduler.deleteJob(jobKey);
 				}
 			}
@@ -279,7 +312,6 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 			try {
 				scheduler.deleteJob(jobKey);
 			} catch (SchedulerException e1) {
-				//TODO Verify such case doesn't freeze
 				getLog().error("Deleting "+jobKey+" caused exception.", e);
 			}
 		}
@@ -359,6 +391,177 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	
+	//--------------------------------------------------------------------------------
+	
+	/**
+	 * @see org.quartz.JobListener#jobToBeExecuted(JobExecutionContext)
+	 */
+	public void jobToBeExecuted(JobExecutionContext context) {
+		
+		try {
+			ForEachListener forEachListener = 
+					new TrackNRestartListener(
+							dataSource, 
+							tablePrefix, 
+							this.getName(),
+							scheduler.getSchedulerName(),
+							context.getJobDetail().getKey().getGroup(),
+							context.getJobDetail().getKey().getName(),
+							context.getFireInstanceId());
+			context.getJobDetail().getJobDataMap().put(FOR_EACH_LISTENER, forEachListener);
+		} catch (Exception e) {
+			TrackNRestartMessageKind.ETNRPLUGIN0002.format(e);
+			//getLog().error("Unexpected exception.",e);
+		}
+
+		Trigger trigger = context.getTrigger();
+
+		Object[] args = { 
+				context.getJobDetail().getKey().getName(),
+				context.getJobDetail().getKey().getGroup(),
+				new java.util.Date(),
+				trigger.getKey().getName(),
+				trigger.getKey().getGroup(),
+				trigger.getPreviousFireTime(),
+				trigger.getNextFireTime(),
+				Integer.valueOf(context.getRefireCount()),
+				context.getFireInstanceId()
+				};
+
+		try {
+			JobDetail jobDetail = context.getJobDetail();
+			JobDataMap jobDataMap = jobDetail.getJobDataMap();
+//			this.scheduler.addJob(jobDetail, true);
+
+			//TODO : not for JobToBeFired ?
+//			insertJobDetail(this.getNonManagedTXConnection(), context);
+			getLog().info(MessageFormat.format(getJobToBeFiredMessage(), args));
+		} catch (Exception e) {
+			getLog().error(MessageFormat.format(getJobToBeFiredMessage(), args, e));
+		}
+	}
+
+	/**
+	 * @see org.quartz.JobListener#jobWasExecuted(JobExecutionContext,
+	 *      JobExecutionException)
+	 */
+	public void jobWasExecuted(JobExecutionContext context,
+			JobExecutionException jobException) {
+
+		Trigger trigger = context.getTrigger();
+
+		Object[] args = null;
+
+		if (jobException != null) {
+
+			String errMsg = jobException.getMessage();
+			args = new Object[] { 
+					context.getJobDetail().getKey().getName(),
+					context.getJobDetail().getKey().getGroup(),
+					new java.util.Date(),
+					trigger.getKey().getName(),
+					trigger.getKey().getGroup(),
+					trigger.getPreviousFireTime(),
+					trigger.getNextFireTime(),
+					Integer.valueOf(context.getRefireCount()),
+					context.getFireInstanceId(),
+					errMsg };
+
+			try {
+				insertJobDetail(this.getNonManagedTXConnection(), context);
+				getLog().info(MessageFormat.format(getJobFailedMessage(), args),
+						jobException);
+			} catch (Exception e) {
+				getLog().error(MessageFormat.format(getJobFailedMessage(), args, e));
+			}
+		} else {
+
+			String result = String.valueOf(context.getResult());
+			args = new Object[] { 
+					context.getJobDetail().getKey().getName(),
+					context.getJobDetail().getKey().getGroup(),
+					new java.util.Date(),
+					trigger.getKey().getName(),
+					trigger.getKey().getGroup(),
+					trigger.getPreviousFireTime(),
+					trigger.getNextFireTime(),
+					Integer.valueOf(context.getRefireCount()),
+					context.getFireInstanceId(),
+					result };
+
+			try {
+				insertJobDetail(this.getNonManagedTXConnection(), context);
+				getLog().info(MessageFormat.format(getJobSuccessMessage(),	args));
+			} catch (Exception e) {
+				getLog().error(MessageFormat.format(getJobSuccessMessage(), args, e));
+			}
+		}
+	}
+
+	/**
+	 * @see org.quartz.JobListener#jobExecutionVetoed(org.quartz.JobExecutionContext)
+	 */
+	public void jobExecutionVetoed(JobExecutionContext context) {
+
+		Trigger trigger = context.getTrigger();
+
+		Object[] args = { context.getJobDetail().getKey().getName(),
+				context.getJobDetail().getKey().getGroup(),
+				new java.util.Date(), trigger.getKey().getName(),
+				trigger.getKey().getGroup(), trigger.getPreviousFireTime(),
+				trigger.getNextFireTime(),
+				Integer.valueOf(context.getRefireCount()) };
+		
+		try {
+//TODO : not for jobExecutionVetoed ?
+//			insertJobDetail(this.getNonManagedTXConnection(), context);
+			getLog().info(MessageFormat.format(getJobWasVetoedMessage(), args));
+		} catch (Exception e) {
+			getLog().error(MessageFormat.format(getJobWasVetoedMessage(), args, e));
+		}
+	}
+
+	private int insertJobDetail(Connection conn, JobExecutionContext context)
+			throws IOException, SQLException, SchedulerException {
+
+		JobDetail job = context.getJobDetail();
+		JobDataMap jobDataMap = job.getJobDataMap();
+		
+		ByteArrayOutputStream baos = serializeJobData(job.getJobDataMap());
+
+		PreparedStatement ps = null;
+
+		int insertResult = 0;
+
+		try {
+			ps = conn.prepareStatement(rtp(INSERT_JOB_DETAIL_TRACK, scheduler.getSchedulerName()));
+			ps.setString(1, job.getKey().getName());
+			ps.setString(2, job.getKey().getGroup());
+
+            String instanceId = context.getFireInstanceId();
+			ps.setString(3, instanceId);
+
+			ps.setString(4, job.getDescription());
+			ps.setString(5, job.getJobClass().getName());
+			ps.setBoolean(6, job.isDurable());
+			ps.setBoolean(7, job.isConcurrentExectionDisallowed());
+			ps.setBoolean(8, job.isPersistJobDataAfterExecution());
+			ps.setBoolean(9, job.requestsRecovery());
+			ps.setBytes(10, (baos == null) ? new byte[0] : baos.toByteArray());
+			ps.setObject(11, context.getResult());
+
+			String restartedInstanceId = jobDataMap.getString(RESTARTED_FIRE_INSTANCE_ID);
+			ps.setString(12, restartedInstanceId);
+
+			insertResult = ps.executeUpdate();
+		} finally {
+			closeStatement(ps);
+			cleanupConnection(conn);
+		}
+        return insertResult;
 	}
 
 }
