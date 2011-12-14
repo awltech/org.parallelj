@@ -47,7 +47,10 @@ public class Help extends AbstractTcpCommand {
 			TcpCommand[] cmds = TcpIpCommands.getCommands().values().toArray(new TcpCommand[]{});
 			Arrays.sort(cmds);
 			for (TcpCommand cmd : cmds) {
-				strb.append(cmd.getUsage()).append(TcpIpHandlerAdapter.ENDLINE);
+				String usage = cmd.getUsage(); 
+				if (usage!=null && usage.length()>0) {
+					strb.append(usage).append(TcpIpHandlerAdapter.ENDLINE);
+				}
 			}
 			this.message=strb.toString();
 		}

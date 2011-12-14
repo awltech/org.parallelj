@@ -453,7 +453,4 @@ public class LaunchTest {
 		}
 		jl.setLatcher(null);
 	}
-	
-
-
 }
