@@ -65,7 +65,7 @@ public final class AdapterJobsRunner {
 		listener = new AdapterJobListener();
 		Matcher<JobKey> matcher = KeyMatcher.keyEquals(job.getKey());
 		scheduler.getListenerManager().addJobListener(listener, matcher);
-
+		
 		// Launch the Job
 		scheduler.scheduleJob(job, trigger);
 		scheduler.start();

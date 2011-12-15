@@ -99,7 +99,7 @@ public enum LaunchingMessageKind {
 	@Format("Quartz Scheduler failed to shutdown cleanly")
 	EQUARTZ0002,
 	
-	@Format("Error invoking Program %")
+	@Format("Error invoking Program %. Program not launched")
 	EQUARTZ0003,
 	
 	/**
@@ -112,7 +112,21 @@ public enum LaunchingMessageKind {
 	EREMOTE0002,
 	
 	@Format("Can't instanciate class ?")
-	EREMOTE0003;
+	EREMOTE0003,
+	
+	@Format("Id %s is out of range! No Program launched!")
+	EREMOTE0004,
+	
+	@Format("Invalid arguments for Program %s. Number of expected arguments is %s! Program not launched!")
+	EREMOTE0005,
+	
+	@Format("Illegal argument value. Program not launched!")
+	EREMOTE0006,
+	
+	@Format("Error with Parser %s - Program not launched!")
+	EREMOTE0007;
+	
+
 	/**
 	 * Method used to format a message
 	 * 

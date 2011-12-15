@@ -28,6 +28,7 @@ import java.util.List;
 import org.apache.mina.core.session.IoSession;
 import org.kohsuke.args4j.CmdLineException;
 import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.quartz.AdapterJobsRunner;
 import org.parallelj.launching.quartz.ParalleljScheduler;
 import org.parallelj.launching.quartz.ParalleljSchedulerFactory;
@@ -44,6 +45,8 @@ import org.quartz.SchedulerException;
  *
  */
 public class AsyncLaunch extends AbstractLaunchTcpCommand {
+	
+	private final static String DONE = "Done.";
 
 	private static final int PRIORITY=70;
 
@@ -52,7 +55,6 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand {
 	 */
 	@Override
 	public final String process(IoSession session, String... args) {
-		String result = null;
 		TcpIpOptions options = null;
 		try {
 			options = parseCommandLine(args);
@@ -66,11 +68,26 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand {
 			List<String> arguments = options.getArguments();
 			
 			if (id >= AdaptersArguments.size()) {
-				return "id is out of range";
+				return LaunchingMessageKind.EREMOTE0004.format(id);
 			}
 			
 			// Get the arguments of the Program
 			AdapterArguments adapterArguments = AdaptersArguments.getAdapterArgument(id);
+			
+			// Verify number of arguments
+			if (adapterArguments.getAdapterArguments().size()>arguments.size()) {
+				return LaunchingMessageKind.EREMOTE0005.format(adapterArguments.getAdapterClassName(), adapterArguments.getAdapterArguments().size());
+			}
+
+			// Check arguments format
+			try {
+				checkArgsFormat(adapterArguments, arguments);
+			} catch (NumberFormatException e) {
+				return LaunchingMessageKind.EREMOTE0006.format();				
+			} catch (ParserException e) {
+				return LaunchingMessageKind.EREMOTE0007.format(e.getParser(), e);				
+			}
+			
 			String adapterClassName = adapterArguments.getAdapterClassName();
 			
 			try {
@@ -95,15 +112,14 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand {
 
 				AdapterJobsRunner.asyncLaunch(scheduler, job);
 			} catch (SchedulerException e) {
-				LaunchingMessageKind.EQUARTZ0003.format(adapterClassName, e);
+				return LaunchingMessageKind.EQUARTZ0003.format(adapterClassName);
 			} catch (ClassNotFoundException e) {
-				LaunchingMessageKind.EREMOTE0001.format(adapterClassName, e);
+				return LaunchingMessageKind.EREMOTE0001.format(adapterClassName);
 			}
-			return String.valueOf(result);
+			return DONE;
 		} else {
-			LaunchingMessageKind.EREMOTE0002.format((Object[])args);
+			return LaunchingMessageKind.EREMOTE0002.format((Object[])args);
 		}
-		return result;
 	}
 
 	/* (non-Javadoc)
