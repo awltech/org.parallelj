@@ -164,33 +164,122 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
     pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
     pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(QuartzContextAdapter);
 
+//pdx
+// Runnable program. ----------------------------------------------------------------------------------------------------------------------------------
+
+    public interface Y {};
+    
+  	private Object Y.context = null;
+  	
+  	public Object Y.getContext() {
+  		return context;
+  	}
+  	
+  	public void Y.setContext(Object context) {
+  		this.context=context;
+  	}
+    
+    declare parents:           
+		(java.lang.Runnable+ ) implements X, Y;    
+    
+    // 1) Transfert from RunnableCall to Runnable. 
+  	after(Object self) returning (Runnable ret): 
+    	 execution(* org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall.toRunnable())
+      && this(self)  {
+    	
+    	 ((X)ret).setForEachListener(((X)self).getForEachListener());
+    	 ((X)ret).setRestartedFireInstanceId(((X)self).getRestartedFireInstanceId());
+    	 ((Y)ret).setContext(((org.parallelj.internal.kernel.KCall)self).getContext());
+    }
+    
+     // 2) Interception around call of run.      
+     void around(Object self): call(* run(..))
+     && within(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall)
+     && within(Runnable+)  && this(self)  {
+    	 
+    	 String restartedFireInstanceId = ((X) self).getRestartedFireInstanceId();
+    	 ForEachListener forEachListener = ((X)self).getForEachListener();	
+    	 Object program =  ((Y)self).getContext();
+    	 
+    	 if (isToProcess(restartedFireInstanceId,forEachListener,program)) {
+    		try { 
+    			proceed(self);
+     			if (isTrackNRestartAnnoted(program)) {
+     				String oid = getOID(program);
+   					track(forEachListener, oid, true);
+     			}
+    		} catch (Exception e) {
+ 				if (isTrackNRestartAnnoted(program)){
+ 					String oid = getOID(program);
+ 					if (isTrackNRestartExceptionPermitted(program, e)) {
+	 					track(forEachListener, oid, false);
+					} else {
+						abortAbruptly();
+						throw new TrackNRestartException("Exception thrown ("+e.getClass().getName()+") is not in list of permitted exceptions "+filteredExceptionsAsString(getTrackNRestartAnnotedException(program)));
+					}
+ 				}
+    		}
+     	} else {
+     		if (isTrackNRestartAnnoted(program)) {
+ 				String oid = getOID(program);
+ 				track(forEachListener, oid, true);
+			} else {
+				abortAbruptly();
+				throw new TrackNRestartException("Unable to get iteration OID while 'tracking' context.");
+ 			}
+     	}
+     }
+     
+     /**
+      * Track the execution (success or failure).
+      * @param forEachListener listener handling Quartz backend.
+      * @param oid unique identifier
+      * @param success boolean indicating if processing is a success or a failure.
+      */
+     private void track(ForEachListener forEachListener, String oid, boolean success) {
+	     try {
+				forEachListener.forEachInstanceComplete(oid, success);
+	     } catch (JobPersistenceException e) {
+				abortAbruptly();
+				throw new TrackNRestartException("Unable to read status for iteration '"+ oid + "'.", e);
+		} catch (SQLException e) {
+				abortAbruptly();
+				throw new TrackNRestartException("Unable to read status for iteration '"+ oid + "'.", e);
+		}
+     }
+    
+ 
 // restart part ----------------------------------------------------------------------------------------------------------------------------------------
-    Object around(Object oo, KCall _kCall)  :
+     
+     Object around(Object oo, KCall _kCall)  :
         invoke() && args(oo, ..) && cflow(enter(_kCall)) {
-               
-        if (restart(_kCall, oo)) {
+         
+    	if (isToProcess( ((X) _kCall).getRestartedFireInstanceId(),((X) _kCall).getForEachListener(), oo)) {
                return proceed(oo, _kCall);
         } else {
                return null;
         }
      }
 
-	private boolean restart(KCall _kCall, Object program) {
+    /**
+     * Check if an iterable must be processed. This means if the iterable is not already processed or the element was processed in error.
+     * @param restartedFireInstanceId id of the batch to be restarted.
+     * @param forEachListener listener handling request to Quartz. 
+     * @param program instance of the program processing the iterable. 
+     * @return true iterable has to be processed, false else.
+     */
+    private boolean isToProcess(String restartedFireInstanceId,  ForEachListener forEachListener, Object program)   {
 		boolean result = true;
 		if (program != null) {
 			if (program.getClass().isAnnotationPresent(TrackNRestart.class)) {
 				String oid = getOID(program);
 				if (oid != null) {
-					String instanceId = ((X) _kCall)
-							.getRestartedFireInstanceId();
-					if (instanceId != null) {
+					if (restartedFireInstanceId != null) {
 						// logger.debug("Processing in restarting mode for oid : ["
 						// + oid + "] ,program : [" + program +
 						// "] ,instanceId :[" +instanceId+ "]");
 						try {
-							result = !((X) _kCall)
-									.getForEachListener()
-									.isForEachInstanceIgnorable(instanceId, oid);
+							result = !forEachListener.isForEachInstanceIgnorable(restartedFireInstanceId, oid);
 							// logger.debug(result ?
 							// "This OID has not been already processed or" +
 							// " already processed in error, so its processing is not skipped":
@@ -216,6 +305,11 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 		return result;
 	}
     
+    /**
+     * Get unique identifier returned by the program (the program contains value to be processed).
+     * @param program
+     * @return unique identifier.
+     */
 	private String getOID(Object program) {
 		String result = null;
 		try {
@@ -240,9 +334,46 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		return result;
 	}
+	
+	/**
+	 * Indicate of the Program contains annotation TrackNRestart.
+	 * @param program
+	 * @return true if program is annoted.
+	 */
+	private boolean isTrackNRestartAnnoted(Object program) {
+		return program.getClass().isAnnotationPresent(TrackNRestart.class);
+	}
 
+	/**
+	 * Check if the raised exception belong to the allowed ones in TrackNRestart annotation.
+	 * @param program
+	 * @param exception raised
+	 * @return true if exception is allowed, false else.
+	 */
+	private boolean isTrackNRestartExceptionPermitted(Object program, Exception exception) {
+		boolean result = false;
+		Class<? extends Throwable>[] filteredExceptions =  getTrackNRestartAnnotedException(program);
+		for (int i = 0; i < filteredExceptions.length; i++) {
+				if (filteredExceptions[i].isAssignableFrom(exception.getClass())) {
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Return exceptions defined in TrackNRestart annotation.
+	 * @param program
+	 * @return array of exceptions
+	 */
+	private Class<? extends Throwable>[] getTrackNRestartAnnotedException (Object program) {
+		return program.getClass().getAnnotation(TrackNRestart.class).filteredExceptions();
+	}
+	
+	
 // tracking part ----------------------------------------------------------------------------------------------------------------------------------------
    after(Object oo, KCall _kCall) returning :
     	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
