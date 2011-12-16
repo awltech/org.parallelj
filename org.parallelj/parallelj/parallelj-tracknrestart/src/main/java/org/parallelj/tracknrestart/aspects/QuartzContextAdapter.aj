@@ -164,7 +164,6 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
     pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
     pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(QuartzContextAdapter);
 
-//pdx
 // Runnable program. ----------------------------------------------------------------------------------------------------------------------------------
 
     public interface Y {};
