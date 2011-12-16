@@ -21,24 +21,20 @@
  */
 package org.parallelj.launching.transport.tcp.command;
 
-import static org.quartz.JobBuilder.newJob;
-
 import java.util.List;
 
 import org.apache.mina.core.session.IoSession;
 import org.kohsuke.args4j.CmdLineException;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.parser.ParserException;
-import org.parallelj.launching.quartz.AdapterJobsRunner;
-import org.parallelj.launching.quartz.ParalleljScheduler;
-import org.parallelj.launching.quartz.ParalleljSchedulerFactory;
+import org.parallelj.launching.quartz.Launch;
+import org.parallelj.launching.quartz.LaunchException;
+import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.transport.AdaptersArguments;
 import org.parallelj.launching.transport.AdaptersArguments.AdapterArguments;
 import org.parallelj.launching.transport.tcp.TcpIpOptions;
 import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
+import org.quartz.JobDataMap;
 
 /**
  * SuncLaunch TcpCommand
@@ -47,6 +43,7 @@ import org.quartz.SchedulerException;
 public class SyncLaunch extends AbstractLaunchTcpCommand {
 	
 	private static final int PRIORITY=80;
+	private final String usage = "  synclaunch -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
@@ -62,7 +59,6 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 		
 		if (options != null) {
 			int id = options.getId();
-			String rid = options.getRid();
 			List<String> arguments = options.getArguments();
 			
 			if (id >= AdaptersArguments.size()) {
@@ -91,25 +87,22 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 			try {
 				Class<?> adapterClass = Class.forName(adapterClassName);
 				
-				// First we must get a reference to a scheduler
-				ParalleljScheduler scheduler = (new ParalleljSchedulerFactory())
-						.getScheduler();
-
-				// define the job and tie it to our HelloJob class
 				@SuppressWarnings("unchecked")
-				JobBuilder jobBuilder = newJob((Class<Job>) adapterClass);
-				JobDetail job = jobBuilder.withIdentity(String.valueOf(jobBuilder),
-						String.valueOf(jobBuilder)).build();
+				Class<? extends Job> jobClass = (Class<? extends Job>)adapterClass;
+				Launcher launcher = Launcher.getLauncher();
 
+				JobDataMap jobDataMap = buildJobDataMap(adapterArguments, arguments.toArray());
+				String jobId = options.getRid();
 				// Is there a restartId?
-				if (rid != null && rid.length()>0) {
-					job.getJobDataMap().put("restartId", rid);
+				if (jobId != null && jobId.length()>0) {
+					jobDataMap.put(JOB_ID_KEY, jobId);
 				}
-				// initialize others arguments for Quartz
-				addAdapterArgumentsToJobDataMap(job, adapterArguments, arguments.toArray());
-
-				return String.valueOf(AdapterJobsRunner.syncLaunch(scheduler, job));
-			} catch (SchedulerException e) {
+				
+				Launch launch = launcher.newLaunch(jobClass)
+						.addDatas(jobDataMap)
+						.synchLaunch();
+				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(jobClass.getCanonicalName(), launch.getLaunchId());
+			} catch (LaunchException e) {
 				return LaunchingMessageKind.EQUARTZ0003.format(adapterClassName);
 			} catch (ClassNotFoundException e) {
 				return LaunchingMessageKind.EREMOTE0001.format(adapterClassName);
@@ -131,7 +124,7 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 	 */
 	@Override
 	public String getUsage() {
-		return "  synclaunch -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
+		return this.usage;
 	}
 
 	/* (non-Javadoc)

@@ -22,8 +22,6 @@
 
 package org.parallelj.launching.transport.jmx;
 
-import static org.quartz.JobBuilder.newJob;
-
 import java.util.List;
 
 import javax.management.Attribute;
@@ -44,20 +42,19 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.parser.NopParser;
-import org.parallelj.launching.quartz.AdapterJobsRunner;
-import org.parallelj.launching.quartz.ParalleljScheduler;
-import org.parallelj.launching.quartz.ParalleljSchedulerFactory;
+import org.parallelj.launching.quartz.Launch;
+import org.parallelj.launching.quartz.LaunchException;
+import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.transport.ArgEntry;
 import org.quartz.Job;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
+import org.quartz.JobDataMap;
 
 /**
  * Dynamic MBean to register a Program as a MBean
  * 
  */
 public class DynamicLegacyProgram implements DynamicMBean {
+	public static final String JOB_ID_KEY = "restartedFireInstanceId";
 
 	/**
 	 * The adapter class 
@@ -90,8 +87,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @param signature The parameters type
 	 * @throws MBeanException If an error appends when initializing the JobDataMap
 	 */
-	private void addAdapterArgumentsToJobDataMap(JobDetail job,
-			Object[] params, String[] signature) throws MBeanException {
+	protected JobDataMap buildJobDataMap(Object[] params) throws MBeanException {
+		JobDataMap jobDataMap = new JobDataMap();
 		/*
 		 * if no restartId: this.adapterArgs.size() == params[].length ==
 		 * signature[].length if a restartId: this.adapterArgs.size()+1 ==
@@ -103,7 +100,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			// Is there a restartId?
 			int ind = 0;
 			if (params.length == this.adapterArgs.size() + 1) {
-				job.getJobDataMap().put("restartId", params[ind++]);
+				jobDataMap.put(JOB_ID_KEY, params[ind++]);
 			}
 
 			for (ArgEntry arg : this.adapterArgs) {
@@ -115,13 +112,14 @@ public class DynamicLegacyProgram implements DynamicMBean {
 				} else {
 					obj = params[ind++];
 				}
-				job.getJobDataMap().put(arg.getName(), obj);
+				jobDataMap.put(arg.getName(), obj);
 			}
 		} catch (InstantiationException e) {
 			throw new MBeanException(e);
 		} catch (IllegalAccessException e) {
 			throw new MBeanException(e);
 		}
+		return jobDataMap;
 	}
 
 	/*
@@ -136,25 +134,23 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		boolean isSync = actionName.startsWith("sync");
 		Object result = null;
 		try {
-			// First we must get a reference to a scheduler
-			ParalleljScheduler scheduler = (new ParalleljSchedulerFactory())
-					.getScheduler();
-
-			// define the job and tie it to our HelloJob class
-			@SuppressWarnings("unchecked")
-			JobBuilder jobBuilder = newJob((Class<Job>) adapterClass);
-			JobDetail job = jobBuilder.withIdentity(String.valueOf(jobBuilder),
-					String.valueOf(jobBuilder)).build();
-
 			// initialize arguments for Quartz
-			addAdapterArgumentsToJobDataMap(job, params, signature);
+			JobDataMap jobDataMap = buildJobDataMap(params);
 
+			@SuppressWarnings("unchecked")
+			Launch launch = Launcher.getLauncher()
+					.newLaunch((Class<Job>) adapterClass)
+					.addDatas(jobDataMap);
 			if (isSync) {
-				result = AdapterJobsRunner.syncLaunch(scheduler, job);
+				// Launch and wait until terminated
+				launch.synchLaunch();
+				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(adapterClass.getCanonicalName(), launch.getLaunchId());
 			} else {
-				AdapterJobsRunner.asyncLaunch(scheduler, job);
+				// Launch and continue
+				launch.aSynchLaunch();
+				return LaunchingMessageKind.IQUARTZ0002.getFormatedMessage(adapterClass.getCanonicalName(), launch.getLaunchId());
 			}
-		} catch (SchedulerException e) {
+		} catch (LaunchException e) {
 			LaunchingMessageKind.EQUARTZ0003.format(actionName, e);
 		}
 		return result;
@@ -172,12 +168,16 @@ public class DynamicLegacyProgram implements DynamicMBean {
 						"the method for a syncLaunch",
 						ArrayUtils.addAll(createMBeanParameterInfos()),
 						"java.lang.String", MBeanOperationInfo.INFO),
+				new MBeanOperationInfo("asyncLaunch",
+						"the method for a syncLaunch",
+						ArrayUtils.addAll(createMBeanParameterInfos()), "void",
+						MBeanOperationInfo.INFO),
 				new MBeanOperationInfo(
 						"syncLaunch",
 						"the method for a syncLaunch",
 						ArrayUtils
 								.addAll(new MBeanParameterInfo[] { new MBeanParameterInfo(
-										"restartId", "java.lang.String",
+										"rid", "java.lang.String",
 										"the restarting Id") },
 										createMBeanParameterInfos()),
 						"java.lang.String", MBeanOperationInfo.INFO),
@@ -186,13 +186,9 @@ public class DynamicLegacyProgram implements DynamicMBean {
 						"the method for a syncLaunch",
 						ArrayUtils
 								.addAll(new MBeanParameterInfo[] { new MBeanParameterInfo(
-										"restartId", "java.lang.String",
+										"rid", "java.lang.String",
 										"the restarting Id") },
 										createMBeanParameterInfos()), "void",
-						MBeanOperationInfo.INFO),
-				new MBeanOperationInfo("asyncLaunch",
-						"the method for a syncLaunch",
-						ArrayUtils.addAll(createMBeanParameterInfos()), "void",
 						MBeanOperationInfo.INFO) };
 		return mbeansInfos;
 	}

@@ -32,12 +32,11 @@ import org.parallelj.internal.conf.CBeans.Bean;
 import org.parallelj.internal.conf.ParalleljConfiguration;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.launching.LaunchingMessageKind;
-import org.parallelj.launching.quartz.ParalleljScheduler;
-import org.parallelj.launching.quartz.ParalleljSchedulerFactory;
+import org.parallelj.launching.quartz.LaunchException;
+import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.transport.AdaptersArguments;
 import org.parallelj.launching.transport.jmx.JmxServer;
 import org.parallelj.launching.transport.tcp.TcpIpServer;
-import org.quartz.SchedulerException;
 
 /**
  * <p>
@@ -49,10 +48,14 @@ import org.quartz.SchedulerException;
  */
 public class ServersInitializerListener implements ServletContextListener {
 
+	/**
+	 * The TcpIpServer for remote launching via telnet.
+	 */
 	private TcpIpServer tcpIpServer;
 	
-    private ParalleljScheduler scheduler = null;
-
+    /**
+	 * The JmxServer for remote launching via JMX.
+     */
     private JmxServer jmxServer;
 
     /* (non-Javadoc)
@@ -64,8 +67,7 @@ public class ServersInitializerListener implements ServletContextListener {
             ParalleljConfiguration configuration = ParalleljConfigurationManager.getConfiguration();
             
             // Initialize the scheduler
-			this.scheduler = (new ParalleljSchedulerFactory()).getScheduler();
-			this.scheduler.start();
+            Launcher.getLauncher();
 			LaunchingMessageKind.IQUARTZ0001.format();
 			
 			// Initialize a TcpIpServer
@@ -118,7 +120,7 @@ public class ServersInitializerListener implements ServletContextListener {
 					}
 				}
 			}
-        } catch (SchedulerException e) {
+        } catch (LaunchException e) {
         	LaunchingMessageKind.EQUARTZ0001.format(e);
         }
     }
@@ -139,10 +141,8 @@ public class ServersInitializerListener implements ServletContextListener {
 
 		// Shutdown the scheduler
         try {
-            if (this.scheduler != null) {
-                this.scheduler.shutdown();
-            }
-        } catch (Exception e) {
+            Launcher.getLauncher().complete();
+        } catch (LaunchException e) {
         	LaunchingMessageKind.EQUARTZ0002.format(e);
         }
     }

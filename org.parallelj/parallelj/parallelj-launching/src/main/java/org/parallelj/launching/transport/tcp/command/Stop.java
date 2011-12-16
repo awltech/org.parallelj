@@ -30,6 +30,7 @@ import org.apache.mina.core.session.IoSession;
 public class Stop extends AbstractTcpCommand {
 
 	private static final int PRIORITY=0;
+	private final String usage = "                      stop -id x : stop the program with ID x";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
@@ -52,7 +53,7 @@ public class Stop extends AbstractTcpCommand {
 	 */
 	@Override
 	public final String getUsage() {
-		return "                      stop -id x : stop the program with ID x";
+		return this.usage;
 	}
 
 	@Override

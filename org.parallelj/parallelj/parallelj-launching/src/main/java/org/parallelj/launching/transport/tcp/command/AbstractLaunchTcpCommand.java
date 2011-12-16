@@ -31,15 +31,16 @@ import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.parser.Parser;
 import org.parallelj.launching.parser.ParserException;
-import org.parallelj.launching.transport.ArgEntry;
 import org.parallelj.launching.transport.AdaptersArguments.AdapterArguments;
+import org.parallelj.launching.transport.ArgEntry;
 import org.parallelj.launching.transport.tcp.TcpIpOptions;
-import org.quartz.JobDetail;
+import org.quartz.JobDataMap;
 
 /**
  * Define a Program launch Command available in a TcpIpServer
  */
 abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
+	public static final String JOB_ID_KEY = "restartedFireInstanceId";
 
 	/*
 	 * (non-Javadoc)
@@ -65,8 +66,9 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 		return options;
 	}
 
-	protected void addAdapterArgumentsToJobDataMap(JobDetail job,
-			AdapterArguments adapterArguments, Object[] params) {
+	protected JobDataMap buildJobDataMap(AdapterArguments adapterArguments,
+			Object[] params) {
+		JobDataMap jobDataMap = new JobDataMap();
 		/*
 		 * if no restartId: this.adapterArgs.size() == params[].length ==
 		 * signature[].length if a restartId: this.adapterArgs.size()+1 ==
@@ -85,15 +87,26 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 				} else {
 					obj = params[ind++];
 				}
-				job.getJobDataMap().put(arg.getName(), obj);
+				jobDataMap.put(arg.getName(), obj);
 			}
 		} catch (InstantiationException e) {
 			LaunchingMessageKind.EREMOTE0002.format();
 		} catch (IllegalAccessException e) {
 			LaunchingMessageKind.EREMOTE0002.format();
 		}
+		return jobDataMap;
 	}
 
+	/**
+	 * Check the validity of arguments values coming from remote launching with
+	 * regard to types. If not done, the Quartz Exception thrown doesn't
+	 * stop the launch and Program may be launched with invalid arguments
+	 * values.
+	 * 
+	 * @param adapterArguments
+	 * @param arguments
+	 * @throws ParserException
+	 */
 	protected void checkArgsFormat(AdapterArguments adapterArguments,
 			List<String> arguments) throws ParserException {
 
@@ -109,10 +122,12 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 					throw new RuntimeException(
 							String.valueOf(entry.getParser()));
 				} catch (IllegalAccessException e) {
-					throw new ParserException(entry.getParser().getCanonicalName(), e);
+					throw new ParserException(entry.getParser()
+							.getCanonicalName(), e);
 				} catch (Exception e) {
 					// Other Exceptions...
-					throw new ParserException(entry.getParser().getCanonicalName(), e);
+					throw new ParserException(entry.getParser()
+							.getCanonicalName(), e);
 				}
 			} else {
 				// No Parser is defined

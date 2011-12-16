@@ -30,6 +30,7 @@ import org.apache.mina.core.session.IoSession;
 public class Quit extends AbstractTcpCommand {
 
 	private static final int PRIORITY=60;
+	private final String usage = "                            quit : Quit ";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
@@ -52,7 +53,7 @@ public class Quit extends AbstractTcpCommand {
 	 */
 	@Override
 	public String getUsage() {
-		return "                            quit : Quit ";
+		return this.usage;
 	}
 
 	/* (non-Javadoc)
