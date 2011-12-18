@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:parallelj xmlns:ns2="parallelj">
+    <ns2:procedures>
+        <procedure capacity="10" name="proc4"/>
+    </ns2:procedures>
+<!--     <ns2:servers> -->
+<!--         <telnet port="10000" host="localhost"/> -->
+<!--         <jmx port="9000" host="localhost"/> -->
+<!--         <ns2:beans> -->
+
+<!--         </ns2:beans> -->
+<!--     </ns2:servers> -->
+</ns2:parallelj>

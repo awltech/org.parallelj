@@ -1,6 +1,5 @@
 package org.parallelj.tracknrestart.aspects;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
@@ -11,22 +10,26 @@ import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
+import org.parallelj.tracknrestart.ReturnCodes;
 import org.parallelj.tracknrestart.annotations.TrackNRestart;
+import org.parallelj.tracknrestart.databinding.ProgramFieldsBinder;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
-import org.parallelj.tracknrestart.plugins.TrackNRestartPlugin;
+import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobPersistenceException;
-import org.parallelj.tracknrestart.ReturnCodes;
 
 privileged public aspect QuartzContextAdapter percflow (execution(public void Job+.execute(..) throws JobExecutionException)) {
 	
+	public static final String RETURN_CODE = "RETURN_CODE";
+
 	declare precedence :
 		org.parallelj.tracknrestart.aspects.QuartzContextAdapter,
 		org.parallelj.launching.quartz.JobsAdapter;
 
-	static Logger logger = Logger.getLogger("org.parallelj.tracknrestart.QuartzContextAdapter");
+	static Logger logger = Logger.getLogger("org.parallelj.tracknrestart");
 	
 	private X root;
 
@@ -37,39 +40,30 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 	declare parents:
 		(@org.parallelj.launching.QuartzExecution *) implements Job;
 
-	public void Job.execute(JobExecutionContext context)
-			throws JobExecutionException {
+	public void Job.execute(JobExecutionContext context) throws JobExecutionException {
 		
-		ProcessHelper<?> p = null;
 		logger.debug("-----------------------------------------------------------------------------------------------------");
 		logger.debug("STARTING //J Root Program "+this.getClass().getName());
 
-		p = Programs.as((Adapter) this);
-
+		ProcessHelper<?> p = null;
+//		context.setResult(new String());
+//		context.setResult(new HashMap<String, Serializable>());
+		context.setResult(new JobDataMap());
 		try {
-			//TODO voir avec Christophe @IN
-			Field f = this.getClass().getDeclaredField("data1");
-			f.setAccessible(true);
-			f.set(this, context.getJobDetail().getJobDataMap().get("data1"));
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ProgramFieldsBinder.setProgramInputFields(this, context);
+			p = Programs.as((Adapter) this).execute().join();
+			ProgramFieldsBinder.getProgramOutputFields(this, context);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JobExecutionException(e);
 		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JobExecutionException(e);
 		}
 
-		p.execute().join();
 
 		logger.debug("ENDING   //J Root Program "+this.getClass().getName());
 		logger.debug("-----------------------------------------------------------------------------------------------------");
-		context.setResult(String.valueOf(p.getState()));
+
+//		context.setResult(String.valueOf(p.getState()));
 	}
 
 	//---------------------------------------------------------------------------------------------------
@@ -82,15 +76,6 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 	declare parents:   
 		(org.parallelj.internal.kernel.KCall) implements X;      
 
-//	declare parents:   
-//		(org.parallelj.mirror.Element+) implements X;      
-
-//	declare parents:   
-//		(org.parallelj.internal.kernel.callback.Entry+) implements X; 
-	
-//	declare parents:   
-//		(org.parallelj.internal.kernel.callback.Exit+) implements X; 
-	
 	private ForEachListener X.forEachListener = null;       
 	
 	public ForEachListener X.getForEachListener() { 
@@ -121,8 +106,8 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 
 		//logger.debug("ASPECT BEFORE:execution(public void Job+.execute(..) throws JobExecutionException) && this(self) && args(jobExecutionContext)");
 
-		self.setRestartedFireInstanceId(jobExecutionContext.getJobDetail().getJobDataMap().getString(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID));
-		self.setForEachListener((ForEachListener) jobExecutionContext.getJobDetail().getJobDataMap().get(TrackNRestartPlugin.FOR_EACH_LISTENER));
+		self.setRestartedFireInstanceId(jobExecutionContext.getJobDetail().getJobDataMap().getString(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID));
+		self.setForEachListener((ForEachListener) jobExecutionContext.getJobDetail().getJobDataMap().get(TrackNRestartPluginAll.FOR_EACH_LISTENER));
 		//logger.debug("job="+self); 
 		//logger.debug("restartedFireInstanceId="+self.getRestartedFireInstanceId()); 
 		//logger.debug("forEachListener="+self.getForEachListener());
@@ -136,7 +121,14 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 		&& args(jobExecutionContext) {
 
 		//logger.debug("ASPECT AFTER:execution(public void Job+.execute(..) throws JobExecutionException) && this(self) && args(jobExecutionContext)");
-		jobExecutionContext.setResult(result);
+
+		Object oResult = jobExecutionContext.getResult();
+		if (oResult instanceof JobDataMap){
+			JobDataMap resultAsJobDataMap = (JobDataMap) oResult;
+			resultAsJobDataMap.put(RETURN_CODE, this.result);
+		} else {
+			jobExecutionContext.setResult(this.result);
+		}
 	}
 	
 	after(X self): 
@@ -210,6 +202,10 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 						// logger.debug("Processing in normal mode (ie not restarting mode) for : ["
 						// + oid + "] ,program : [" + program + "]");
 					}
+				} else {
+					abortAbruptly();
+					throw new TrackNRestartException(
+							"Unable to get iteration OID while 'restarting' context.");
 				}
 			}
 		}
@@ -219,8 +215,7 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 	private String getOID(Object program) {
 		String result = null;
 		try {
-			Method m = program.getClass().getDeclaredMethod("getOID",
-					new Class[] {});
+			Method m = program.getClass().getDeclaredMethod("getOID", new Class[] {});
 			return (String) m.invoke(program, new Object[] {});
 		} catch (SecurityException e1) {
 			// TODO Auto-generated catch block
@@ -257,7 +252,7 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 		
 		//logger.debug("ASPECT AFTER THROWING (InvocationTargetException)");
 		//logger.debug("_KCall="+_kCall);
-		this.result = "FAILURE";
+		this.result = ReturnCodes.FAILURE.name();
 		track(_kCall, oo, false, ite);
     }
 
@@ -270,9 +265,10 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 			if (program != null) {
 				Class<? extends Object> clazz = program.getClass();
 				if (clazz.isAnnotationPresent(TrackNRestart.class)) {
-					Method m = clazz
-							.getDeclaredMethod("getOID", new Class[] {});
-					oid = (String) m.invoke(program, new Object[] {});
+//					Method m = clazz
+//							.getDeclaredMethod("getOID", new Class[] {});
+//					oid = (String) m.invoke(program, new Object[] {});
+					oid = getOID(program);
 					if (oid != null) {
 						if (success == true) {
 							persist(_kCall, success, oid);
@@ -293,12 +289,12 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 												+ filteredExceptionsAsString(filteredExceptions));
 							}
 						}
-						if (logger.isDebugEnabled()) {
+						//if (logger.isDebugEnabled()) {
 							// logger.debug("oid='" + oid +
 							// "' persisted with status='" + (success ?
-							// ReturnCodes.SUCCESS : "FAILURE") + "' "+ (ite ==
+							// ReturnCodes.SUCCESS : ReturnCodes.FAILURE) + "' "+ (ite ==
 							// null ? "" : ", cause : " + ite.getCause()));
-						}
+						//}
 					} else {
 						abortAbruptly();
 						throw new TrackNRestartException(
@@ -306,32 +302,32 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 					}
 				}
 			}
-		} catch (NoSuchMethodException e) {
-			abortAbruptly();
-			throw new TrackNRestartException(
-					"No getOID() method found while program " + program
-							+ " was annotated @TrackNRestart.", e);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+//		} catch (NoSuchMethodException e) {
+//			abortAbruptly();
+//			throw new TrackNRestartException(
+//					"No getOID() method found while program " + program
+//							+ " was annotated @TrackNRestart.", e);
+//		} catch (SecurityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalArgumentException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalAccessException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (InvocationTargetException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
 		} catch (JobPersistenceException e) {
 			abortAbruptly();
 			throw new TrackNRestartException("Unable to persist status ['"
-					+ (success ? ReturnCodes.SUCCESS : "FAILURE")
+					+ (success ? ReturnCodes.SUCCESS : ReturnCodes.FAILURE)
 					+ "'] for iteration '" + oid + "'.", e);
 		} catch (SQLException e) {
 			abortAbruptly();
 			throw new TrackNRestartException("Unable to persist status ['"
-					+ (success ? ReturnCodes.SUCCESS : "FAILURE")
+					+ (success ? ReturnCodes.SUCCESS : ReturnCodes.FAILURE)
 					+ "'] for iteration '" + oid + "'.", e);
 		}
 	}

@@ -50,7 +50,7 @@ public enum TrackNRestartMessageKind {
 		ITNRPLUGIN0004,
 		@Format("At least one %s execution already exists in tracking history.")
 		WTNRPLUGIN0005,
-		@Format("Replacing %s after resolving restarted id from _LAST_ to %s.")
+		@Format("Replacing %s after resolving restarted id from keyword _LAST_ to #%s.")
 		ITNRPLUGIN0006,
 		@Format("Unable to restart %s caused by previous execution id #%s not found in tracking history.")
 		ETNRPLUGIN0007,

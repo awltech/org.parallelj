@@ -28,9 +28,6 @@ public class ScriptRunner {
 		if (scriptRunner == null) {
 
 			Properties prop = new Properties();
-//			FileInputStream in = new FileInputStream("src/main/resources/database.properties");
-//			prop.load(in);
-//			in.close();
 			prop.load(databaseProperties);
 			databaseProperties.close();
 			
@@ -46,20 +43,9 @@ public class ScriptRunner {
 		return scriptRunner;
 	}
 
-//	public static void runScript(final String scriptName) throws IOException, SQLException {
-//
-//		if (log.isDebugEnabled()) {
-//			log.debug("runScript() : execute script : " + scriptName);
-//		}
-//		getScriptRunner().runScript(new FileReader(scriptName));
-//	}
-
 	public static void runScript(final FileReader fr, final InputStream pDatabaseProperties) throws IOException, SQLException {
 
 		databaseProperties = pDatabaseProperties;
-//		if (log.isDebugEnabled()) {
-//			log.debug("Execute SQL script " + pSqlScript + " with database properties " + pDatabaseProperties);
-//		}
 		getScriptRunner().runScript(fr);
 	}
 

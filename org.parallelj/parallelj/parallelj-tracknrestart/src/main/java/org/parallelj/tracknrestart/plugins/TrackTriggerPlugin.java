@@ -25,6 +25,7 @@ import org.quartz.impl.matchers.EverythingMatcher;
 import org.quartz.spi.OperableTrigger;
 import org.quartz.spi.SchedulerPlugin;
 
+@Deprecated
 public class TrackTriggerPlugin extends JDBCSupport implements SchedulerPlugin, TriggerListener {
 
 	private String name;

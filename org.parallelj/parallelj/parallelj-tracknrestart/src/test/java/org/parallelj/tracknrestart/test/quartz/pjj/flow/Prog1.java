@@ -10,7 +10,10 @@ import org.parallelj.AndSplit;
 import org.parallelj.AndJoin;
 import org.parallelj.Capacity;
 import org.parallelj.ForEach;
+//import org.parallelj.launching.In;
 import org.parallelj.launching.QuartzExecution;
+import org.parallelj.tracknrestart.databinding.In;
+import org.parallelj.tracknrestart.databinding.Out;
 
 /**
  * Program tbr.groupid.jjp1.pack1.Prog1
@@ -24,9 +27,11 @@ public class Prog1 {
 	 * data1 field
 	 * Description :
 	 **/
-//	private List<String> data1 = Arrays.asList(new String[]{"a","B","c","0"});
-//	private List<String> data1 = Arrays.asList(new String[]{"a","b","a"});
+	@In
 	private List<String> data1 = Arrays.asList(new String[]{});
+
+	@Out
+	int processed = 0;
 
 	public List<String> getData1() {
 		return data1;
@@ -100,6 +105,7 @@ public class Prog1 {
 	@Generated(value = "//J", comments = "3677788")
 	@AndSplit({ "proc2" })
 	public void forEach4(Prog2 executable) {
+		processed++;
 		System.out.println("exit forEach4(Prog2)");
 	}
 

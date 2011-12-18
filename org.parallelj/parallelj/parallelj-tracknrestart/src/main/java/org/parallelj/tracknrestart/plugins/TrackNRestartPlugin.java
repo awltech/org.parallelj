@@ -27,6 +27,7 @@ import org.quartz.impl.jdbcjobstore.Constants;
 import org.quartz.impl.matchers.EverythingMatcher;
 import org.quartz.spi.SchedulerPlugin;
 
+@Deprecated
 public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin, JobListener, SchedulerListener {
 	
 	private static final long serialVersionUID = 1L;

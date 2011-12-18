@@ -10,6 +10,7 @@ import java.text.MessageFormat;
 
 
 import org.parallelj.tracknrestart.TrackNRestartMessageKind;
+//import org.parallelj.tracknrestart.jdbc.JDBCSupport;
 import org.parallelj.tracknrestart.jdbc.JDBCSupport;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
 import org.parallelj.tracknrestart.listeners.TrackNRestartListener;
@@ -31,11 +32,13 @@ import org.quartz.spi.SchedulerPlugin;
 
 public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlugin, JobListener, SchedulerListener {
 	
+	private static final String JOB_IDENTIFICATION_COMPLETE = "_JOB_IDENTIFICATION_COMPLETE_";
+
 	private static final long serialVersionUID = 1L;
 
-	public static final String RESTARTED_FIRE_INSTANCE_ID = "restartedFireInstanceId";
+	public static final String RESTARTED_FIRE_INSTANCE_ID = "_RESTARTED_FIRE_INSTANCE_ID_";
 
-	public static final String FOR_EACH_LISTENER = "forEachListener";
+	public static final String FOR_EACH_LISTENER = "_FOR_EACH_LISTENER_";
 
 	private String name;
 
@@ -53,10 +56,10 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 		return name;
 	}
 
-	private String COL_RESULT_SUBST = "RESULT";
-
-	private String COL_RESTARTED_UID_SUBST = "RESTARTED_UID";
-
+//	private static String COL_RESULT_SUBST = "RESULT";
+//
+//	private static String COL_RESTARTED_UID_SUBST = "RESTARTED_UID";
+//
 	/**
 	 * Get the message that is logged when a Job successfully completes its
 	 * execution.
@@ -102,6 +105,7 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
     	+ Constants.COL_SCHEDULER_NAME + ", "
     	+ Constants.COL_JOB_GROUP + ", "
     	+ Constants.COL_JOB_NAME + ", "
+    	+ Constants.COL_JOB_DATAMAP + ", "
     	+ COL_UID_SUBST 
     	+ " FROM "
         + TABLE_PREFIX_SUBST + Constants.TABLE_JOB_DETAILS 
@@ -181,6 +185,25 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 			ps.setString(3, restart);
 			rs = ps.executeQuery();
 			return rs.next();
+		} finally {
+			closeStatement(ps);
+			cleanupConnection(conn);
+		}
+	}
+
+	private Object getJobExecParams(Connection conn, JobKey jobKey, String restart)
+			throws IOException, SQLException, SchedulerException, ClassNotFoundException {
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conn.prepareStatement(rtp(FETCH_JOB_DETAIL_EXEC_TRACK,
+					scheduler.getSchedulerName()));
+			ps.setString(1, jobKey.getGroup());
+			ps.setString(2, jobKey.getName());
+			ps.setString(3, restart);
+			rs = ps.executeQuery();
+			rs.next();
+			return getJobDataFromBlob(rs, "JOB_DATA");
 		} finally {
 			closeStatement(ps);
 			cleanupConnection(conn);
@@ -268,13 +291,18 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 					TrackNRestartMessageKind.WTNRPLUGIN0005.format(jobKey);
 					//getLog().warn("At least one "+jobKey+" execution already exists in tracking history.");
 				} else {
-					if (restart.trim().equals("_LAST_")){
+					if (restart.trim().equals("_LAST_")){ // Retrieve last execution to restart it
 						restart = fetchJobExecLast(getNonManagedTXConnection(), jobKey);
 						if (restart != null){
-							jobDataMap.put(RESTARTED_FIRE_INSTANCE_ID, restart);
+
+//							jobDataMap.put(RESTARTED_FIRE_INSTANCE_ID, restart);
+							jobDetail.getJobBuilder().usingJobData(RESTARTED_FIRE_INSTANCE_ID, restart);
+							
 							TrackNRestartMessageKind.ITNRPLUGIN0006.format(jobKey, restart);
 							//getLog().info("Replacing "+jobKey+" after resolving restarted id from _LAST_ to "+restart+".");
+
 							scheduler.addJob(jobDetail, true); // WARNING recursivity !
+
 						} else {
 							TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart);
 							//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
@@ -282,16 +310,30 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 							//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
 							scheduler.deleteJob(jobKey);
 						}
-					} else {
-						if (fetchJobExec(getNonManagedTXConnection(), jobKey, restart)){
-							TrackNRestartMessageKind.ETNRPLUGIN0010.format(jobKey);
-							//getLog().info("Restarting "+jobKey+" #"+restart+".");
-						} else {
-							TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart);
-							//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
-							TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
-							//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
-							scheduler.deleteJob(jobKey);
+					} else {  // Retrieve numbered execution to restart it
+						if (!jobDataMap.getBoolean(JOB_IDENTIFICATION_COMPLETE)) { // to break recursivity
+							if (fetchJobExec(getNonManagedTXConnection(),jobKey, restart)) { // found
+
+								JobDataMap currentJobDataMap = jobDataMap; // save current JDM
+								JobDataMap previousJobDataMap = (JobDataMap) getJobExecParams(getNonManagedTXConnection(), jobKey, restart); // retrieve JDM from job to restart
+								jobDetail.getJobBuilder().usingJobData(previousJobDataMap); // override current with previous JDM
+								jobDetail.getJobBuilder().usingJobData(currentJobDataMap); // override overridden with current JDM (especially restart id)
+								jobDetail.getJobBuilder().usingJobData(JOB_IDENTIFICATION_COMPLETE,true); 
+								
+								TrackNRestartMessageKind.ETNRPLUGIN0010.format(jobKey, restart);
+								//getLog().info("Restarting "+jobKey+" #"+restart+".");
+
+								scheduler.addJob(jobDetail, true); // WARNING recursivity !
+
+							} else {
+								TrackNRestartMessageKind.ETNRPLUGIN0007.format(
+										jobKey, restart); // not found
+								//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
+								TrackNRestartMessageKind.WTNRPLUGIN0008
+										.format(jobKey);
+								//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
+								scheduler.deleteJob(jobKey);
+							}
 						}
 					}
 				}
@@ -310,6 +352,7 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 			}
 		} catch (Exception e) {
 			try {
+				e.printStackTrace();
 				scheduler.deleteJob(jobKey);
 			} catch (SchedulerException e1) {
 				getLog().error("Deleting "+jobKey+" caused exception.", e);

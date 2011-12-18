@@ -1,7 +1,6 @@
 package org.parallelj.tracknrestart.test.quartz.pjj.flow;
 
 import javax.annotation.Generated;
-import javax.transaction.SystemException;
 
 import org.parallelj.Program;
 import org.parallelj.Begin;
@@ -42,7 +41,7 @@ public class Prog2 {
 //		if(prog2DataIn.toUpperCase().equals(prog2DataIn)) 
 //			throw new RuntimeException("The letter is upcased, which is not permitted !");
 		if(!simulateBusiness()) 
-			throw new BusinessException("simulated business process unsuccessful");
+			throw new BusinessException("simulated business process unsuccessful for OID=" + prog2DataIn);
 	}
 
 	private boolean simulateBusiness() {

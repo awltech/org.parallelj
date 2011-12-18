@@ -21,6 +21,7 @@ import org.quartz.impl.jdbcjobstore.Constants;
 import org.quartz.impl.matchers.EverythingMatcher;
 import org.quartz.spi.SchedulerPlugin;
 
+@Deprecated
 public class TrackJobPlugin extends JDBCSupport implements SchedulerPlugin, JobListener {
 
 	private String name;

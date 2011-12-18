@@ -1,15 +1,21 @@
 package org.parallelj.tracknrestart.jdbc;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
@@ -22,24 +28,30 @@ import org.quartz.JobPersistenceException;
 import org.quartz.SchedulerException;
 import org.quartz.impl.jdbcjobstore.AttributeRestoringConnectionInvocationHandler;
 import org.quartz.impl.jdbcjobstore.Constants;
+import org.quartz.impl.jdbcjobstore.TablePrefixAware;
 import org.quartz.impl.jdbcjobstore.Util;
 import org.quartz.utils.DBConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JDBCSupport implements Serializable{
+public class JDBCSupport implements Serializable {
 
 	protected String dataSource;
 
     protected String tablePrefix = Constants.DEFAULT_TABLE_PREFIX + "TRACK_";
 
-    protected boolean useProperties;
+    protected boolean useProperties = false;
     
-	public final String TABLE_PREFIX_SUBST = "{0}";
+	public static final String TABLE_PREFIX_SUBST = "{0}";
 
-	public final String SCHED_NAME_SUBST = "{1}";
+	public static final String SCHED_NAME_SUBST = "{1}";
 
-	public final String COL_UID_SUBST = "UID";
+	public static final String COL_UID_SUBST = "UID";
+	
+	public static final String COL_RESULT_SUBST = "RESULT";
+
+	public static final String COL_RESTARTED_UID_SUBST = "RESTARTED_UID";
+
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -135,7 +147,7 @@ public class JDBCSupport implements Serializable{
 		return conn;
 	}
 
-	public static final void closeStatement(Statement statement) {
+	public void closeStatement(Statement statement) {
 		if (null != statement) {
 			try {
 				statement.close();
@@ -143,19 +155,6 @@ public class JDBCSupport implements Serializable{
 			}
 		}
 	}
-
-//	protected final String rtp(String query, JobExecutionContext context) {
-//		String schedName;
-//		String rtp = null;
-//		try {
-//			schedName = context.getScheduler().getSchedulerName();
-//			rtp = Util.rtp(query, tablePrefix, "'" + schedName + "'");
-//		} catch (SchedulerException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return rtp;
-//	}
 
 	public final String rtp(String query, String schedName) {
 		String rtp = Util.rtp(query, tablePrefix, "'" + schedName + "'");
@@ -254,7 +253,7 @@ public class JDBCSupport implements Serializable{
 		return null;
 	}
 
-	protected void cleanupConnection(Connection conn) {
+	public void cleanupConnection(Connection conn) {
 		if (conn != null) {
 			if (conn instanceof Proxy) {
 				Proxy connProxy = (Proxy) conn;
@@ -281,15 +280,87 @@ public class JDBCSupport implements Serializable{
 				conn.close();
 			} catch (SQLException e) {
 				TrackNRestartMessageKind.ETNRJDBC0001.format();
-				getLog().error("Failed to close Connection", e);
+//				getLog().error("Failed to close Connection", e);
 			} catch (Throwable e) {
-				TrackNRestartMessageKind.ETNRJDBC0002.format();
-				getLog().error(
-						"Unexpected exception closing Connection."
-								+ "  This is often due to a Connection being returned after or during shutdown.",
-						e);
+				TrackNRestartMessageKind.ETNRJDBC0002.format(e);
+//				getLog().error(
+//						"Unexpected exception closing Connection."
+//								+ "  This is often due to a Connection being returned after or during shutdown.",
+//						e);
 			}
 		}
 	}
+
+    public JobDataMap getJobDataMapResultFromBlob(ResultSet rs)
+            throws ClassNotFoundException, IOException, SQLException {
+            Map<?, ?> map;
+            JobDataMap jobDataMap = (JobDataMap) getJobDataFromBlob(rs, COL_RESULT_SUBST);
+            return jobDataMap;
+        }
+
+    protected Object getJobDataFromBlob(ResultSet rs, String colName)
+            throws ClassNotFoundException, IOException, SQLException {
+            if (canUseProperties()) {
+                Blob blobLocator = rs.getBlob(colName);
+                if (blobLocator != null) {
+                    InputStream binaryInput = blobLocator.getBinaryStream();
+                    return binaryInput;
+                } else {
+                    return null;
+                }
+            }
+
+            return getObjectFromBlob(rs, colName);
+        }
+
+    protected Object getObjectFromBlob(ResultSet rs, String colName)
+            throws ClassNotFoundException, IOException, SQLException {
+            Object obj = null;
+
+            Blob blobLocator = rs.getBlob(colName);
+            if (blobLocator != null && blobLocator.length() != 0) {
+                InputStream binaryInput = blobLocator.getBinaryStream();
+
+                if (null != binaryInput) {
+                    if (binaryInput instanceof ByteArrayInputStream
+                        && ((ByteArrayInputStream) binaryInput).available() == 0 ) {
+                        //do nothing
+                    } else {
+                        ObjectInputStream in = new ObjectInputStream(binaryInput);
+                        try {
+                            obj = in.readObject();
+                        } finally {
+                            in.close();
+                        }
+                    }
+                }
+
+            }
+            return obj;
+        }
+
+    public Map<?, ?> getMapFromProperties(ResultSet rs)
+            throws ClassNotFoundException, IOException, SQLException {
+            Map<?, ?> map;
+            InputStream is = (InputStream) getJobDataFromBlob(rs, Constants.COL_JOB_DATAMAP);
+            if(is == null) {
+                return null;
+            }
+            Properties properties = new Properties();
+            if (is != null) {
+                try {
+                    properties.load(is);
+                } finally {
+                    is.close();
+                }
+            }
+            map = convertFromProperty(properties);
+            return map;
+        }
+
+    protected Map<?, ?> convertFromProperty(Properties properties) throws IOException {
+        return new HashMap<Object, Object>(properties);
+    }
+
 
 }

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 
 import org.parallelj.tracknrestart.ReturnCodes;
+//import org.parallelj.tracknrestart.jdbc.JDBCSupport;
 import org.parallelj.tracknrestart.jdbc.JDBCSupport;
 import org.quartz.JobPersistenceException;
 import org.quartz.impl.jdbcjobstore.Constants;
@@ -103,7 +104,7 @@ public class TrackNRestartListener extends JDBCSupport implements ForEachListene
 
 //		try {
 			insertIteration(this.getNonManagedTXConnection(), oid, success);
-			getLog().debug(MessageFormat.format(getIterateCompleteMessage()+(success?ReturnCodes.SUCCESS:"FAILURE"), args));
+			getLog().debug(MessageFormat.format(getIterateCompleteMessage()+(success?ReturnCodes.SUCCESS:ReturnCodes.FAILURE), args));
 //		} catch (Exception e) {
 //			getLog().error("Unable to persist iteration '" + oid + "' status");
 //			throw e;
@@ -143,7 +144,7 @@ public class TrackNRestartListener extends JDBCSupport implements ForEachListene
 		boolean status = false;
 //		try {
 			status = fetchIteration(this.getNonManagedTXConnection(), restartedFireInstanceId, oid);
-			getLog().debug(MessageFormat.format(getIterateFetchedMessage()+(status?ReturnCodes.SUCCESS:"FAILURE"), args));
+			getLog().debug(MessageFormat.format(getIterateFetchedMessage()+(status?ReturnCodes.SUCCESS:ReturnCodes.FAILURE), args));
 //		} catch (Exception e) {
 //			throw new TrackNRestartException("Unable to fetch iteration '"+oid+"'", e);
 //		}

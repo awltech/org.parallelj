@@ -13,7 +13,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.parallelj.tracknrestart.ReturnCodes;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPlugin;
+import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
 import org.parallelj.tracknrestart.util.TrackNRestartLoader;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -115,7 +117,7 @@ public class AllTest {
 		
 		JobDetail job = newJob(SimpleJob.class)
 				.withIdentity("TestJob1","DEFAULT")
-				.usingJobData(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID, "UNKNOWN_ID")
+				.usingJobData(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID, "UNKNOWN_ID")
 				.build();
 
 		Trigger trigger = newTrigger()
@@ -141,7 +143,7 @@ public class AllTest {
 		
 		JobDetail job = newJob(SimpleJob.class)
 				.withIdentity("NO_HISTORY_JOB","DEFAULT")
-				.usingJobData(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID, "_LAST_")
+				.usingJobData(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID, "_LAST_")
 				.build();
 
 		Trigger trigger = newTrigger()
@@ -182,7 +184,7 @@ public class AllTest {
 					job = newJob(SimpleJob.class)
 							.withIdentity("TestJob2", "DEFAULT")
 							.usingJobData(
-									TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID,
+									TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID,
 									"_LAST_").build();
 					trigger = newTrigger()
 							.withIdentity("TestTrigger2", "DEFAULT").startNow().build();
@@ -205,8 +207,8 @@ public class AllTest {
 			log.info("nbrFailure=" + nbrFailure);
 			rc = result.getString("RETURN_CODE");
 			log.info("rc=" + rc);
-			String restartedFireInstanceId = result.getString(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID);
-			log.info(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID+"=" + restartedFireInstanceId);
+			String restartedFireInstanceId = result.getString(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID);
+			log.info(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID+"=" + restartedFireInstanceId);
 			String currentFireInstanceId = result.getString("currentFireInstanceId");
 			log.info("currentFireInstanceId=" + currentFireInstanceId);
 			totalSuccess=totalSuccess+nbrSuccess;
@@ -223,7 +225,7 @@ public class AllTest {
 				fail();
 			}
 			
-		} while (rc.equals("FAILURE"));
+		} while (rc.equals(ReturnCodes.FAILURE.name()));
 		Assert.assertNotSame("ABORTED", rc);
 		Assert.assertEquals(iterationNumber, totalSuccess);
 	}

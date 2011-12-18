@@ -4,6 +4,7 @@ package org.parallelj.tracknrestart.test.quartz.alone;
 import org.parallelj.tracknrestart.ReturnCodes;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPlugin;
+import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -40,7 +41,7 @@ public class SimpleJob implements Job {
 
 			// En mode 'initial/track' simple 'restartedFireInstanceId' est null, 
 			// en mode 'restart/track' 'restartedFireInstanceId' contient l'id du job � re-starter 
-			String restartedFireInstanceId = jobDataMap.getString(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID);
+			String restartedFireInstanceId = jobDataMap.getString(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID);
 
 			boolean reconductSucceeded = true; // toujours 'true' � priori
 			for (int element = 0; element < iterationNumber; element++) {
@@ -79,15 +80,15 @@ public class SimpleJob implements Job {
 			result.put("nbrSuccess", nbrSuccess);
 			result.put("nbrFailure", nbrFailure);
 			result.put("currentFireInstanceId", context.getFireInstanceId());
-			result.put(TrackNRestartPlugin.RESTARTED_FIRE_INSTANCE_ID, restartedFireInstanceId);
+			result.put(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID, restartedFireInstanceId);
 			if (nbrFailure==0){
-				result.put("RETURN_CODE",ReturnCodes.SUCCESS.name());
+				result.put("RETURN_CODE",ReturnCodes.SUCCESS);
 			} else {
-				result.put("RETURN_CODE","FAILURE");
+				result.put("RETURN_CODE",ReturnCodes.FAILURE);
 			}
 //			context.getScheduler().addJob(jobDetail,true);
 		} catch (Exception e) {
-			result.put("RETURN_CODE","ABORTED");
+			result.put("RETURN_CODE",ReturnCodes.ABORTED);
 			JobExecutionException jexex = new JobExecutionException(e, false);
 			throw jexex;
 		} finally {
