@@ -37,16 +37,29 @@ import org.quartz.impl.StdSchedulerFactory;
  */
 public class ParalleljSchedulerFactory implements SchedulerFactory  {
 	
+	/**
+	 * 
+	 */
 	private StdSchedulerFactory stdChedulerFactory;
 
+    /**
+     * 
+     */
     public ParalleljSchedulerFactory() {
     	this.stdChedulerFactory = new StdSchedulerFactory();
     }
 
+    /**
+     * @param fileName
+     * @throws SchedulerException
+     */
     public ParalleljSchedulerFactory(String fileName) throws SchedulerException {
     	this.stdChedulerFactory = new StdSchedulerFactory(fileName);
     }
 	
+	/* (non-Javadoc)
+	 * @see org.quartz.SchedulerFactory#getScheduler()
+	 */
 	@Override
 	public final ParalleljScheduler getScheduler() throws SchedulerException {
 		Scheduler scheduler = this.stdChedulerFactory.getScheduler();
@@ -62,22 +75,34 @@ public class ParalleljSchedulerFactory implements SchedulerFactory  {
 			return pScheduler;
 		}
 		
-		pScheduler = instantiate(pSchedRep, stdChedulerFactory);
+		pScheduler = instantiate(pSchedRep, this.stdChedulerFactory);
 
         return pScheduler;
 	}
 
+	/**
+	 * @param pSchedRep
+	 * @param stdChedulerFactory
+	 * @return
+	 * @throws SchedulerException
+	 */
 	private ParalleljScheduler instantiate(ParalleljSchedulerRepository pSchedRep, StdSchedulerFactory stdChedulerFactory) throws SchedulerException {
 		ParalleljScheduler pScheduler = new ParalleljScheduler();
 		pSchedRep.bind(pScheduler);
 		return pScheduler;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.quartz.SchedulerFactory#getScheduler(java.lang.String)
+	 */
 	@Override
 	public final Scheduler getScheduler(String schedName) throws SchedulerException {
 		return ParalleljSchedulerRepository.getInstance().lookup(schedName);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.quartz.SchedulerFactory#getAllSchedulers()
+	 */
 	@Override
 	public final Collection<Scheduler> getAllSchedulers() throws SchedulerException {
 		 return SchedulerRepository.getInstance().lookupAll();

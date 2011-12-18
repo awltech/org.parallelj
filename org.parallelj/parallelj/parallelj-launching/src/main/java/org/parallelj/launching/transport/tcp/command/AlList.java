@@ -29,6 +29,7 @@ package org.parallelj.launching.transport.tcp.command;
 public class AlList extends ListPrograms {
 
 	private static final int PRIORITY=89;
+	private final String usage = "                              ll : Lists available programs and their associated IDs.";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.ListPrograms#getType()
@@ -42,7 +43,7 @@ public class AlList extends ListPrograms {
 	 */
 	@Override
 	public final String getUsage() {
-		return "                              ll : Lists available programs and their associated IDs.";
+		return this.usage; 
 	}
 
 	/* (non-Javadoc)

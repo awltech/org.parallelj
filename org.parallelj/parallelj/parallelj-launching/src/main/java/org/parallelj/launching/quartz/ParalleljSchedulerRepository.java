@@ -32,14 +32,26 @@ import org.quartz.SchedulerException;
  * 
  */
 public final class ParalleljSchedulerRepository {
+    /**
+     * 
+     */
     private HashMap<String, ParalleljScheduler> schedulers;
     
+    /**
+     * 
+     */
     private static ParalleljSchedulerRepository inst;
     
+    /**
+     * 
+     */
     private ParalleljSchedulerRepository() {
         schedulers = new HashMap<String, ParalleljScheduler>();
     }
 
+    /**
+     * @return
+     */
     public static synchronized ParalleljSchedulerRepository getInstance() {
         if (inst == null) {
             inst = new ParalleljSchedulerRepository();
@@ -48,6 +60,10 @@ public final class ParalleljSchedulerRepository {
         return inst;
     }
 
+    /**
+     * @param sched
+     * @throws SchedulerException
+     */
     public synchronized void bind(ParalleljScheduler sched) throws SchedulerException {
 
         if (schedulers.get(sched.getSchedulerName()) != null) {
@@ -58,18 +74,27 @@ public final class ParalleljSchedulerRepository {
         schedulers.put(sched.getSchedulerName(), sched);
     }
 
+    /**
+     * @param schedName
+     * @return
+     */
     public synchronized boolean remove(String schedName) {
         return (schedulers.remove(schedName) != null);
     }
 
+    /**
+     * @param schedName
+     * @return
+     */
     public synchronized ParalleljScheduler lookup(String schedName) {
         return schedulers.get(schedName);
     }
 
+    /**
+     * @return
+     */
     public synchronized Collection<ParalleljScheduler> lookupAll() {
         return java.util.Collections
                 .unmodifiableCollection(schedulers.values());
     }
-
-
 }

@@ -19,38 +19,25 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
+package org.parallelj.launching.parser;
 
-package org.parallelj.launching.transport.tcp.command;
+public class ParserException extends Exception {
 
-/**
- * Alias for the Help TcpCommand
- *
- */
-public class AlHelp extends Help {
+	private String parser;
 	
-	private static final int PRIORITY=99;
-	private final String usage = "                               h : Print this help message";
-
-	/* (non-Javadoc)
-	 * @see org.parallelj.launching.transport.tcp.command.Help#getType()
+	/**
+	 * 
 	 */
-	public final String getType() {
-		return "h";
+	private static final long serialVersionUID = 273243666792357288L;
+
+	public ParserException(String parser, Throwable e) {
+		super(e);
+		this.parser = parser;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
-	 */
-	@Override
-	public final String getUsage() {
-		return this.usage;
+	public String getParser() {
+		return this.parser;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.parallelj.launching.transport.tcp.command.Help#getPriorityUsage()
-	 */
-	@Override
-	public final int getPriorityUsage() {
-		return PRIORITY;
-	}
+	
+	
 }
