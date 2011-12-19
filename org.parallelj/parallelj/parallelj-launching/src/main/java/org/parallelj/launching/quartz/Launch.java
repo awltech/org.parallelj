@@ -43,6 +43,9 @@ import org.quartz.impl.matchers.EverythingMatcher;
  *
  */
 public class Launch {
+	
+	private static final String DEFAULT_GROUP_NAME = "DEFAULT";
+	
 	/**
 	 * The scheduler used to launch Programs.
 	 */
@@ -94,8 +97,8 @@ public class Launch {
 		this.jobClass = jobClass;
 		this.jobBuilder = newJob(this.jobClass);
 		
-		this.job = jobBuilder.withIdentity(String.valueOf(jobBuilder),
-				String.valueOf(jobBuilder)).build();
+		this.job = jobBuilder.withIdentity(this.jobClass.getCanonicalName(),
+				DEFAULT_GROUP_NAME).build();
 		
 		this.trigger = triggerBuilder
 				.withIdentity(String.valueOf(triggerBuilder),
