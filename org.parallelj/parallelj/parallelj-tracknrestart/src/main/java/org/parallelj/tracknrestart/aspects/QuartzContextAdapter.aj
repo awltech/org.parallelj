@@ -50,7 +50,7 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 //		context.setResult(new HashMap<String, Serializable>());
 		context.setResult(new JobDataMap());
 		try {
-			ProgramFieldsBinder.setProgramInputFields(this, context);
+//			ProgramFieldsBinder.setProgramInputFields(this, context);
 			p = Programs.as((Adapter) this).execute().join();
 			ProgramFieldsBinder.getProgramOutputFields(this, context);
 		} catch (IllegalAccessException e) {

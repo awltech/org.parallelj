@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.parallelj.tracknrestart.ReturnCodes;
-import org.parallelj.tracknrestart.plugins.TrackNRestartPlugin;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
 import org.parallelj.tracknrestart.util.TrackNRestartLoader;
 import org.quartz.JobDataMap;

@@ -7,6 +7,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 
 
 import org.parallelj.tracknrestart.TrackNRestartMessageKind;
@@ -44,7 +47,7 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
     private Scheduler scheduler;
 
-    private String jobToBeFiredMessage = "Job {1}.{0} [id #{8}] fired (by trigger {4}.{3}) at: {2, date, HH:mm:ss MM/dd/yyyy}";
+    private String jobToBeFiredMessage = "Job {1}.{0} [id #{8}] fired (by trigger {4}.{3}) at: {2, date, HH:mm:ss MM/dd/yyyy} with params [{9}]";
 
 	private String jobSuccessMessage = "Job {1}.{0} [id #{8}] execution complete at {2, date, HH:mm:ss MM/dd/yyyy} and reports: {9}";
 
@@ -297,6 +300,7 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
 //							jobDataMap.put(RESTARTED_FIRE_INSTANCE_ID, restart);
 							jobDetail.getJobBuilder().usingJobData(RESTARTED_FIRE_INSTANCE_ID, restart);
+							jobDetail.getJobBuilder().usingJobData(JOB_IDENTIFICATION_COMPLETE,false); 
 							
 							TrackNRestartMessageKind.ITNRPLUGIN0006.format(jobKey, restart);
 							//getLog().info("Replacing "+jobKey+" after resolving restarted id from _LAST_ to "+restart+".");
@@ -462,22 +466,33 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
 		Trigger trigger = context.getTrigger();
 
+		JobDetail jobDetail = context.getJobDetail();
+		JobDataMap jobDataMap = jobDetail.getJobDataMap();
+
+		String params = "";
+		for (Iterator<Entry<String, Object>> iterator = jobDataMap.entrySet().iterator(); iterator
+				.hasNext();) {
+			Entry<String,Object> entry = (Entry<String,Object>) iterator.next();
+			params+=entry.getKey()+"="+entry.getValue();
+			if (iterator.hasNext()){
+				params+=", ";
+			}
+		}
+
 		Object[] args = { 
-				context.getJobDetail().getKey().getName(),
-				context.getJobDetail().getKey().getGroup(),
+				jobDetail.getKey().getName(),
+				jobDetail.getKey().getGroup(),
 				new java.util.Date(),
 				trigger.getKey().getName(),
 				trigger.getKey().getGroup(),
 				trigger.getPreviousFireTime(),
 				trigger.getNextFireTime(),
 				Integer.valueOf(context.getRefireCount()),
-				context.getFireInstanceId()
+				context.getFireInstanceId(),
+				params
 				};
 
 		try {
-			JobDetail jobDetail = context.getJobDetail();
-			JobDataMap jobDataMap = jobDetail.getJobDataMap();
-//			this.scheduler.addJob(jobDetail, true);
 
 			//TODO : not for JobToBeFired ?
 //			insertJobDetail(this.getNonManagedTXConnection(), context);
@@ -522,7 +537,21 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 			}
 		} else {
 
-			String result = String.valueOf(context.getResult());
+			String result = "";
+			Object oResult = context.getResult();
+			if (oResult instanceof JobDataMap) {
+				for (Iterator<Entry<String, Object>> iterator = ((JobDataMap)oResult).entrySet().iterator(); iterator
+						.hasNext();) {
+					Entry<String,Object> entry = (Entry<String,Object>) iterator.next();
+					result+=entry.getKey()+"="+entry.getValue();
+					if (iterator.hasNext()){
+						result+=", ";
+					}
+				}
+			} else {
+				result = String.valueOf(context.getResult());
+			}
+
 			args = new Object[] { 
 					context.getJobDetail().getKey().getName(),
 					context.getJobDetail().getKey().getGroup(),

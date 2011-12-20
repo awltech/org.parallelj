@@ -3,7 +3,6 @@ package org.parallelj.tracknrestart.test.quartz.alone;
 
 import org.parallelj.tracknrestart.ReturnCodes;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
-import org.parallelj.tracknrestart.plugins.TrackNRestartPlugin;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -37,7 +36,7 @@ public class SimpleJob implements Job {
 		try {
 
 			// Le listener est toujours pr�sent (� condition d'avoir activ� le 'initial/track' ou le 'restart/track' i.e. configur� le 'TrackJobPlugin')
-			ForEachListener forEachListener = (ForEachListener) jobDataMap.get(TrackNRestartPlugin.FOR_EACH_LISTENER);
+			ForEachListener forEachListener = (ForEachListener) jobDataMap.get(TrackNRestartPluginAll.FOR_EACH_LISTENER);
 
 			// En mode 'initial/track' simple 'restartedFireInstanceId' est null, 
 			// en mode 'restart/track' 'restartedFireInstanceId' contient l'id du job � re-starter 

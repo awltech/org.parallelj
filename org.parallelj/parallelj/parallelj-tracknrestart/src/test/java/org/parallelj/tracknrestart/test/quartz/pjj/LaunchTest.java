@@ -23,11 +23,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.quartz.ParalleljSchedulerFactory;
+import org.parallelj.launching.quartz.ParalleljSchedulerRepository;
 import org.parallelj.tracknrestart.ReturnCodes;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
 import org.parallelj.tracknrestart.test.quartz.alone.TestListener;
 import org.parallelj.tracknrestart.util.TrackNRestartLoader;
 import org.parallelj.tracknrestart.aspects.QuartzContextAdapter;
+import org.parallelj.tracknrestart.databinding.ProgramFieldsBinder;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -85,6 +87,7 @@ public class LaunchTest {
 		sched.getListenerManager().removeJobListener(jl.getName());
 		sched.getListenerManager().removeSchedulerListener(jl);
 		sched.shutdown(true);
+		ParalleljSchedulerRepository.getInstance().remove(sched.getSchedulerName());
 	}
 
 	@Before
@@ -309,11 +312,9 @@ public class LaunchTest {
 				JobBuilder jobBuilder = newJob((Class<? extends Job>) jobClass);
 				JobDataMap jobDataMap = new JobDataMap();
 				jobDataMap.put("data1",params);
+				
 				job[i] = createJob(groupName, jobName, restartId, jobBuilder, jobDataMap);
-				trigger[i] = newTrigger()
-						.withIdentity(triggerName, groupName)
-						.startNow()
-						.build();
+				trigger[i] = createTrigger(groupName, triggerName);
 			}
 			
 			CountDownLatch latcher = createLatcher(jl,n);
@@ -380,7 +381,7 @@ public class LaunchTest {
 				JobBuilder jobBuilder = newJob((Class<? extends Job>) jobClass);
 				JobDataMap jobDataMap = new JobDataMap();
 				jobDataMap.put("data1",params);
-
+				
 				if (i>0) {
 					restartId = "_LAST_";
 				}

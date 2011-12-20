@@ -10,10 +10,12 @@ import org.parallelj.AndSplit;
 import org.parallelj.AndJoin;
 import org.parallelj.Capacity;
 import org.parallelj.ForEach;
-//import org.parallelj.launching.In;
+import org.parallelj.launching.In;
 import org.parallelj.launching.QuartzExecution;
-import org.parallelj.tracknrestart.databinding.In;
+//import org.parallelj.tracknrestart.databinding.In;
 import org.parallelj.tracknrestart.databinding.Out;
+
+import org.parallelj.tracknrestart.test.quartz.pjj.parsers.ListStringParser;
 
 /**
  * Program tbr.groupid.jjp1.pack1.Prog1
@@ -27,7 +29,7 @@ public class Prog1 {
 	 * data1 field
 	 * Description :
 	 **/
-	@In
+	@In(parser=ListStringParser.class)
 	private List<String> data1 = Arrays.asList(new String[]{});
 
 	@Out

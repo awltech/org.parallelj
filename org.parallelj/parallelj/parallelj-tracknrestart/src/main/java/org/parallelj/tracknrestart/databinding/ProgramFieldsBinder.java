@@ -8,26 +8,6 @@ import org.quartz.JobExecutionContext;
 
 public class ProgramFieldsBinder {
 
-	public static void setProgramInputFields(Object prog, JobExecutionContext context)
-			throws NoSuchFieldException, IllegalAccessException {
-		Class<? extends Object> clazz = prog.getClass();
-		if (clazz.isAnnotationPresent(Program.class)) {
-			Field[] fields = clazz.getDeclaredFields();
-			for (int i = 0; i < fields.length; i++) {
-				if (fields[i].isAnnotationPresent(In.class)) {
-					boolean wasAccessible = fields[i].isAccessible();
-					if (!wasAccessible) {
-						fields[i].setAccessible(true);
-					}
-					fields[i].set(prog, context.getJobDetail().getJobDataMap().get(fields[i].getName()));
-					if (!wasAccessible) {
-						fields[i].setAccessible(false);
-					}
-				}
-			}
-		}
-	}
-
 	public static void getProgramOutputFields(Object prog, JobExecutionContext context)
 			throws NoSuchFieldException, IllegalAccessException {
 		Class<? extends Object> clazz = prog.getClass();
