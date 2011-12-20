@@ -91,10 +91,17 @@ public class Launch {
 	 * 
 	 * @param scheduler The ParalleljScheduler
 	 * @param jobClass The Program Adapter class
+	 * @throws LaunchException 
 	 */
-	public Launch(Scheduler scheduler, Class<? extends Job> jobClass) {
+	@SuppressWarnings("unchecked")
+	public Launch(Scheduler scheduler, Class<?> jobClass) throws LaunchException {
 		this.scheduler = scheduler;
-		this.jobClass = jobClass;
+		try {
+			this.jobClass = (Class<? extends Job>)jobClass;
+		} catch (ClassCastException e) {
+			LaunchingMessageKind.ELAUNCH0001.format(jobClass, e);
+			throw new LaunchException(e);
+		}
 		this.jobBuilder = newJob(this.jobClass);
 		
 		this.job = jobBuilder.withIdentity(this.jobClass.getCanonicalName(),

@@ -13,4 +13,8 @@ public class LaunchException extends Exception {
 		super(e);
 	}
 
+	public LaunchException(ClassCastException e) {
+		super(e);
+	}
+
 }

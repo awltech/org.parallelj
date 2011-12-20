@@ -34,6 +34,16 @@ import org.parallelj.internal.util.Formatter.Format;
 public enum LaunchingMessageKind {
 	
 	/*
+	 * Information messages for Simple Launching
+	 */
+	
+	/**
+	 * Error launching %s. Is the program annotated with @QuartzExecution?
+	 */
+	@Format("Error launching %s. Is the program annotated with @QuartzExecution?")
+	ELAUNCH0001,
+	
+	/*
 	 * Information messages for TcpIp
 	 */
 	
