@@ -58,7 +58,7 @@ public enum TrackNRestartMessageKind {
 		WTNRPLUGIN0008,
 
 		@Format("Restarting %s #%s.")
-		ETNRPLUGIN0010,
+		ITNRPLUGIN0010,
 
 		@Format("%s is running in simple tracking (non-restarting) mode.")
 		ITNRPLUGIN0012,

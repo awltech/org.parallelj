@@ -324,7 +324,7 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 								jobDetail.getJobBuilder().usingJobData(currentJobDataMap); // override overridden with current JDM (especially restart id)
 								jobDetail.getJobBuilder().usingJobData(JOB_IDENTIFICATION_COMPLETE,true); 
 								
-								TrackNRestartMessageKind.ETNRPLUGIN0010.format(jobKey, restart);
+								TrackNRestartMessageKind.ITNRPLUGIN0010.format(jobKey, restart);
 								//getLog().info("Restarting "+jobKey+" #"+restart+".");
 
 								scheduler.addJob(jobDetail, true); // WARNING recursivity !

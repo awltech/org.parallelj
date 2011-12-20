@@ -251,7 +251,7 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 						}
 					} else {
 						if (fetchJobExec(getNonManagedTXConnection(), jobKey, restart)){
-							TrackNRestartMessageKind.ETNRPLUGIN0010.format(jobKey);
+							TrackNRestartMessageKind.ITNRPLUGIN0010.format(jobKey);
 //							getLog().info("Restarting "+jobKey+" #"+restart+".");
 						} else {
 							TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart);
