@@ -30,6 +30,7 @@ import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
+import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.launching.transport.AdaptersArguments;
 import org.parallelj.launching.transport.AdaptersArguments.AdapterArguments;
 import org.parallelj.launching.transport.tcp.TcpIpOptions;
@@ -94,9 +95,17 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 				JobDataMap jobDataMap = buildJobDataMap(adapterArguments, arguments.toArray());
 				String jobId = options.getRid();
 				// Is there a restartId?
-				if (jobId != null && jobId.length()>0) {
-					jobDataMap.put(JOB_ID_KEY, jobId);
+				if (jobId == null || jobId.trim().length() == 0) {
+					if (adapterArguments.getAdapterArguments().size() > arguments
+							.size()) {
+						return LaunchingMessageKind.EREMOTE0005
+								.getFormatedMessage(adapterArguments
+										.getAdapterClassName(),
+										adapterArguments.getAdapterArguments()
+												.size());
+					}
 				}
+				jobDataMap.put(QuartzUtils.getRestartedFireInstanceIdKey(), jobId);
 				
 				Launch launch = launcher.newLaunch(jobClass)
 						.addDatas(jobDataMap)
