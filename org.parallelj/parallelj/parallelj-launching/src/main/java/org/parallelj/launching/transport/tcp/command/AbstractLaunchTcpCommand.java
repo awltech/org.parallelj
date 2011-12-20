@@ -40,8 +40,6 @@ import org.quartz.JobDataMap;
  * Define a Program launch Command available in a TcpIpServer
  */
 abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
-	public static final String JOB_ID_KEY = "restartedFireInstanceId";
-
 	/*
 	 * (non-Javadoc)
 	 * 

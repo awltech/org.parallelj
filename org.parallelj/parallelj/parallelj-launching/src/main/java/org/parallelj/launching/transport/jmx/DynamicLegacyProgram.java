@@ -45,6 +45,7 @@ import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
+import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.launching.transport.ArgEntry;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -54,8 +55,6 @@ import org.quartz.JobDataMap;
  * 
  */
 public class DynamicLegacyProgram implements DynamicMBean {
-	public static final String JOB_ID_KEY = "restartedFireInstanceId";
-
 	/**
 	 * The adapter class 
 	 */
@@ -100,7 +99,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			// Is there a restartId?
 			int ind = 0;
 			if (params.length == this.adapterArgs.size() + 1) {
-				jobDataMap.put(JOB_ID_KEY, params[ind++]);
+				jobDataMap.put(QuartzUtils.getRestartedFireInstanceIdKey(), params[ind++]);
 			}
 
 			for (ArgEntry arg : this.adapterArgs) {
