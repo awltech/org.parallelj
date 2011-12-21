@@ -28,8 +28,8 @@ import java.util.List;
 
 import org.apache.mina.core.session.IoSession;
 import org.parallelj.internal.conf.CBeans.Bean;
+import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfiguration;
-import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.In;
 import org.parallelj.launching.parser.Parser;
@@ -74,7 +74,8 @@ public class ListPrograms extends AbstractTcpCommand {
 	public ListPrograms() {
 		// Search for all available Program and print it's name and parameters
 		// Available Programs are defined in parallej.xml as MBeans
-		ParalleljConfiguration configuration = ParalleljConfigurationManager
+		ParalleljConfiguration configuration = (ParalleljConfiguration) ConfigurationService
+				.getConfigurationService().getConfigurationManager()
 				.getConfiguration();
 		if (configuration.getServers().getBeans() != null
 				&& configuration.getServers().getBeans().getBean() != null) {

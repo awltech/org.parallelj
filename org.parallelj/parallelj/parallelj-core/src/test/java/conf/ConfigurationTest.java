@@ -28,22 +28,24 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.junit.Test;
-import org.parallelj.internal.conf.ParalleljConfiguration;
-import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.CProcedures.Procedure;
+import org.parallelj.internal.conf.ConfigurationService;
+import org.parallelj.internal.conf.ParalleljConfiguration;
 
 public class ConfigurationTest {
 
 	@Test
 	public void test() {
-		
-		ParalleljConfiguration conf = ParalleljConfigurationManager.getConfiguration();
-		
+
+		ParalleljConfiguration conf = (ParalleljConfiguration) ConfigurationService
+				.getConfigurationService().getConfigurationManager()
+				.getConfiguration();
+
 		assertNotNull(conf);
 		assertNotNull(conf.getProcedures());
 		assertNotNull(conf.getProcedures().getProcedure());
 		assertEquals(conf.getProcedures().getProcedure().size(), 2);
-		
+
 		List<Procedure> prs = conf.getProcedures().getProcedure();
 		for (Procedure procedure : prs) {
 			String name = procedure.getName();
