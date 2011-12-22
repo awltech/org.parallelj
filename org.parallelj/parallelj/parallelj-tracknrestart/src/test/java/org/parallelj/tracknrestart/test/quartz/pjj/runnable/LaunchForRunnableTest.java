@@ -22,8 +22,9 @@ import org.parallelj.launching.quartz.ParalleljSchedulerFactory;
 import org.parallelj.launching.quartz.ParalleljSchedulerRepository;
 import org.parallelj.tracknrestart.databinding.ProgramFieldsBinder;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
+import org.parallelj.tracknrestart.test.quartz.RootAbstractTest;
+import org.parallelj.tracknrestart.test.quartz.TestHelper;
 import org.parallelj.tracknrestart.test.quartz.alone.TestListener;
-import org.parallelj.tracknrestart.test.quartz.pjj.TestHelper;
 import org.parallelj.tracknrestart.test.quartz.pjj.flow.runnable.People;
 import org.parallelj.tracknrestart.util.TrackNRestartLoader;
 import org.quartz.Job;
@@ -41,57 +42,16 @@ import org.slf4j.LoggerFactory;
 
 
 
-public class LaunchTest {
+public class LaunchForRunnableTest extends RootAbstractTest {
 
-	static Logger log = LoggerFactory.getLogger(LaunchTest.class);
-
-	static Scheduler sched = null;
-	
-	static TestListener jl = null;
-
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-
-		TrackNRestartLoader.cleanTrackingDatabase("scripts/quartz-database-init-mysql.sql", "database.properties");
-		TrackNRestartLoader.cleanTrackingDatabase("scripts/quartz-track-database-init-mysql.sql", "database.properties");
-
-		SchedulerFactory sf = new ParalleljSchedulerFactory("quartz.properties");
-		sched = sf.getScheduler();
-		sched.start();
-
-		// wait 5 seconds to give our jobs a chance to run
-		try {
-			Thread.sleep(5L * 1000L);
-		} catch (Exception e) {
-		}
-
-		jl = new TestListener("TestListener", sched);
-		try {
-			sched.getListenerManager().addJobListener(jl,
-					EverythingMatcher.allJobs());
-			sched.getListenerManager().addSchedulerListener(jl);
-		} catch (SchedulerException e2) {
-			fail();
-			return;
-		}
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-		sched.getListenerManager().removeJobListener(jl.getName());
-		sched.getListenerManager().removeSchedulerListener(jl);
-		sched.shutdown(true);
-		ParalleljSchedulerRepository.getInstance().remove(sched.getSchedulerName());
-	}
-
-	//@Test
+	@Test
 	public void testfirst() {
 		
 		String restartId = null;
 		String programQN = "org.parallelj.tracknrestart.test.quartz.pjj.flow.runnable.ForEachMyElement";
-		String jobName = "AAA_TestJob3_runnable";
+		String jobName = "AAA_TestJob3_runnable"+this.getClass().getSimpleName();
 		String groupName = "DEFAULT";
-		String triggerName = "AAA_TestTrigger3_runnable";
+		String triggerName = "AAA_TestTrigger3_runnable"+this.getClass().getSimpleName();
 		List<People> l = new ArrayList<People>();
 		l.add(new People("john", "lennon"));
 		l.add(new People("freddie", "mercury"));
@@ -154,14 +114,14 @@ public class LaunchTest {
 		}
 	}
 
-	//@Test
+	@Test
 	public void testRestart() {
 		
 		String restartId = "_LAST_";
 		String programQN = "org.parallelj.tracknrestart.test.quartz.pjj.flow.runnable.ForEachMyElement";
-		String jobName = "AAA_TestJob3_runnable";
+		String jobName = "AAA_TestJob3_runnable"+this.getClass().getSimpleName();
 		String groupName = "DEFAULT";
-		String triggerName = "AAA_TestTrigger3_runnable";
+		String triggerName = "AAA_TestTrigger3_runnable"+this.getClass().getSimpleName();
 		List<People> l = new ArrayList<People>();
 		l.add(new People("john", "lennon"));
 		l.add(new People("freddie", "mercury")); 
@@ -226,57 +186,6 @@ public class LaunchTest {
 			fail();
 			return;
 		}
-	}
-
-
-	private Trigger createTrigger(String groupName, String triggerName) {
-		Trigger trigger = newTrigger()
-				.withIdentity(triggerName, groupName)
-				.startNow()
-				.build();
-		return trigger;
-	}
-	
-	private JobDetail createJob(String groupName, String jobName, String restartId, JobBuilder jobBuilder, JobDataMap jobDataMap) {
-		JobDetail job;
-		if (restartId==null) {
-			job = jobBuilder
-					.withIdentity(jobName, groupName)
-					.usingJobData(jobDataMap)
-					.build();
-		} else {
-			job = jobBuilder
-					.withIdentity(jobName, groupName)
-					.usingJobData(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID, restartId)
-					.usingJobData(jobDataMap)
-					.build();
-		}
-		return job;
-	}
-
-	private CountDownLatch createLatcher(TestListener jl) {
-		CountDownLatch latcher = new CountDownLatch(1);
-		jl.setLatcher(latcher);
-		return latcher;
-	}
-
-	private CountDownLatch createLatcher(TestListener jl, int n) {
-		CountDownLatch latcher = new CountDownLatch(n);
-		jl.setLatcher(latcher);
-		return latcher;
-	}
-
-	private void awaitingLatcher(CountDownLatch latcher, TestListener jl) {
-		try {
-			if (latcher.getCount()>0) {
-				log.info("***********************AWAIT********************************"+latcher.getCount());
-				latcher.await();
-			}
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		jl.setLatcher(null);
 	}
 
 }

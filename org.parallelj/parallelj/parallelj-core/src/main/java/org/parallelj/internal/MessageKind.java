@@ -17,6 +17,12 @@ public enum MessageKind {
 	@Format("Invalid argument [%2$s] for kind [%1$s]")
 	E0001,
 	
+	/**Error: Can't find configuration file.
+	 * 
+	 */
+	@Format("Can't find configuration file. Make sure [%s] is in the classpath!!")
+	E0002,
+	
 	/**
 	 * Info: building a program
 	 */

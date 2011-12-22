@@ -20,7 +20,6 @@
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-
 package org.parallelj.launching.quartz.web;
 
 import java.io.IOException;
@@ -29,8 +28,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.parallelj.internal.conf.CBeans.Bean;
+import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfiguration;
-import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
@@ -64,7 +63,9 @@ public class ServersInitializerListener implements ServletContextListener {
     public final void contextInitialized(ServletContextEvent sce) {
         try {
             // Get the configuration
-            ParalleljConfiguration configuration = ParalleljConfigurationManager.getConfiguration();
+            ParalleljConfiguration configuration = (ParalleljConfiguration) ConfigurationService
+    				.getConfigurationService().getConfigurationManager()
+    				.getConfiguration();
             
             // Initialize the scheduler
             Launcher.getLauncher();

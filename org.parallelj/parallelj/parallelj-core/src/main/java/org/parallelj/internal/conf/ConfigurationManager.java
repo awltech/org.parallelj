@@ -21,23 +21,16 @@
  */
 package org.parallelj.internal.conf;
 
-public class ParalleljConfigurationManager extends AbstractConfigurationManager {
+public interface ConfigurationManager extends Comparable<ConfigurationManager> {
 
-	private static final String CONFIGURATION_FILE = "/parallelj.xml";
+	public Class<?> getConfigurationObjectClass();
 	
-	@Override
-	public String getConfigurationFile() {
-		return CONFIGURATION_FILE;
-	}
-
-	@Override
-	public int getPriority() {
-		return 0;
-	}
-
-	@Override
-	public Class<?> getConfigurationObjectClass() {
-		return ParalleljConfiguration.class;
-	}
+	public String getConfigurationFile();
+	
+	public Object getConfiguration();
+	
+	public int getPriority();
+	
+	public void reloadConfiguration();
 
 }

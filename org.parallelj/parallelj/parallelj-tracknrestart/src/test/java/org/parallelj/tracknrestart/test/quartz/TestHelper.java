@@ -1,4 +1,4 @@
-package org.parallelj.tracknrestart.test.quartz.pjj;
+package org.parallelj.tracknrestart.test.quartz;
 
 //import org.parallelj.tracknrestart.jdbc.JDBCSupport;
 import org.parallelj.tracknrestart.jdbc.JDBCSupport;
