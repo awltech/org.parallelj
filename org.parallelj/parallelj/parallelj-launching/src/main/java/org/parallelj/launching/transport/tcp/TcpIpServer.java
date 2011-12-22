@@ -27,6 +27,7 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 
 import org.apache.mina.core.service.IoAcceptor;
+import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
@@ -51,6 +52,18 @@ public class TcpIpServer {
 	 * 
 	 * @param host
 	 * @param port
+	 * @param handler
+	 */
+	public TcpIpServer(String host, int port, IoHandler handler) {
+		this(host, port);
+		setHandler(handler);
+	}
+	
+	/**
+	 * Default constructor
+	 * 
+	 * @param host
+	 * @param port
 	 */
 	public TcpIpServer(String host, int port) {
 		this.host = host;
@@ -62,9 +75,7 @@ public class TcpIpServer {
 				"codec",
 				new ProtocolCodecFilter(new TextLineCodecFactory(Charset
 						.forName("UTF-8"))));
-		this.acceptor.setHandler(new TcpIpHandlerAdapter());
 		this.acceptor.getSessionConfig().setReadBufferSize(BUFFER_READER_SIZE);
-		//this.acceptor.getSessionConfig().set
 		this.acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE_TIME);
 	}
 	
@@ -74,7 +85,11 @@ public class TcpIpServer {
 	 * @throws IOException
 	 */
 	public final synchronized void start() throws IOException {
-		if (acceptor != null) {
+		if (this.acceptor != null) {
+			if (this.acceptor.getHandler() == null) {
+				this.acceptor.setHandler(new TcpIpHandlerAdapter());
+			}
+			
 			LaunchingMessageKind.ITCPIP0001.format(this.host, this.port);
 			this.acceptor.bind(new InetSocketAddress(this.host, this.port));
 		}
@@ -84,9 +99,13 @@ public class TcpIpServer {
 	 * Stop the TcpIpServer
 	 */
 	public final synchronized void stop() {
-		if (acceptor != null) {
+		if (this.acceptor != null) {
 			LaunchingMessageKind.ITCPIP0002.format();
-			acceptor.dispose(true);
+			this.acceptor.dispose(true);
 		}
+	}
+
+	public void setHandler(IoHandler handler) {
+		this.acceptor.setHandler(handler);
 	}
 }
