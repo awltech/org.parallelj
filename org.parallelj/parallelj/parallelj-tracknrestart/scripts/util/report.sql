@@ -1,9 +1,9 @@
-select aa.job_group, aa.job_name, aa.uid, aa.restarted_uid, cast(aa.result as CHAR) as result,
+select aa.job_group, aa.job_name, aa.uid, aa.restarted_uid, aa.return_code, aa.time_end,
     coalesce(s.success,0) as success, 
     coalesce(aa.failure,0) as failure, 
     coalesce(s.success,0)+coalesce(aa.failure,0) as total from
 (
-    SELECT a.job_group, a.job_name, a.uid, a.restarted_uid, a.result, f.failure FROM qrtz_track_job_details as a
+    SELECT a.job_group, a.job_name, a.uid, a.restarted_uid, a.return_code, a.time_end, f.failure FROM qrtz_track_job_details as a
     left join
     (SELECT uid,count(*) as failure FROM qrtz_track_iterations where success='0' group by uid) as f
     on a.uid = f.uid

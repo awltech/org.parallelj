@@ -84,7 +84,7 @@ public class LaunchTest {
 		ParalleljSchedulerRepository.getInstance().remove(sched.getSchedulerName());
 	}
 
-	@Test
+	//@Test
 	public void testfirst() {
 		
 		String restartId = null;
@@ -154,7 +154,7 @@ public class LaunchTest {
 		}
 	}
 
-	@Test
+	//@Test
 	public void testRestart() {
 		
 		String restartId = "_LAST_";

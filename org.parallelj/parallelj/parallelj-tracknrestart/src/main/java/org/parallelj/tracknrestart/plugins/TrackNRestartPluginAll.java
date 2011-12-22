@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.parallelj.tracknrestart.TrackNRestartMessageKind;
 //import org.parallelj.tracknrestart.jdbc.JDBCSupport;
+import org.parallelj.tracknrestart.aspects.QuartzContextAdapter;
 import org.parallelj.tracknrestart.jdbc.JDBCSupport;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
 import org.parallelj.tracknrestart.listeners.TrackNRestartListener;
@@ -51,7 +52,7 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
 	private String jobSuccessMessage = "Job {1}.{0} [id #{8}] execution complete at {2, date, HH:mm:ss MM/dd/yyyy} and reports: {9}";
 
-	private String jobFailedMessage = "Job {1}.{0}  [id #{8}] execution failed at {2, date, HH:mm:ss MM/dd/yyyy} and reports: {9}";
+	private String jobFailedMessage = "Job {1}.{0} [id #{8}] execution failed at {2, date, HH:mm:ss MM/dd/yyyy} and reports: {9} caused by {10}";
 
 	private String jobWasVetoedMessage = "Job {1}.{0} was vetoed.  It was to be fired (by trigger {4}.{3}) at: {2, date, HH:mm:ss MM/dd/yyyy}";
 
@@ -144,9 +145,10 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
             + Constants.COL_REQUESTS_RECOVERY + ", "
             + Constants.COL_JOB_DATAMAP + ", " 
             + COL_RESULT_SUBST + ", "
-            + COL_RESTARTED_UID_SUBST 
+            + COL_RESTARTED_UID_SUBST + ", "
+            + COL_RETURN_CODE_SUBST
             + ") " 
-            + " VALUES(" + SCHED_NAME_SUBST + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            + " VALUES(" + SCHED_NAME_SUBST + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	public void initialize(String pname, Scheduler scheduler)
 			throws SchedulerException {
@@ -513,6 +515,22 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
 		Object[] args = null;
 
+
+		String result = "";
+		Object oResult = context.getResult();
+		if (oResult instanceof JobDataMap) {
+			for (Iterator<Entry<String, Object>> iterator = ((JobDataMap)oResult).entrySet().iterator(); iterator
+					.hasNext();) {
+				Entry<String,Object> entry = (Entry<String,Object>) iterator.next();
+				result+=entry.getKey()+"="+entry.getValue();
+				if (iterator.hasNext()){
+					result+=", ";
+				}
+			}
+		} else {
+			result = String.valueOf(context.getResult());
+		}
+
 		if (jobException != null) {
 
 			String errMsg = jobException.getMessage();
@@ -526,31 +544,18 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 					trigger.getNextFireTime(),
 					Integer.valueOf(context.getRefireCount()),
 					context.getFireInstanceId(),
+					result,
 					errMsg };
 
 			try {
 				insertJobDetail(this.getNonManagedTXConnection(), context);
-				getLog().info(MessageFormat.format(getJobFailedMessage(), args),
-						jobException);
+				getLog().info(MessageFormat.format(getJobFailedMessage(), args)); // without exception trace
+//				getLog().info(MessageFormat.format(getJobFailedMessage(), args),
+//				jobException);
 			} catch (Exception e) {
 				getLog().error(MessageFormat.format(getJobFailedMessage(), args, e));
 			}
 		} else {
-
-			String result = "";
-			Object oResult = context.getResult();
-			if (oResult instanceof JobDataMap) {
-				for (Iterator<Entry<String, Object>> iterator = ((JobDataMap)oResult).entrySet().iterator(); iterator
-						.hasNext();) {
-					Entry<String,Object> entry = (Entry<String,Object>) iterator.next();
-					result+=entry.getKey()+"="+entry.getValue();
-					if (iterator.hasNext()){
-						result+=", ";
-					}
-				}
-			} else {
-				result = String.valueOf(context.getResult());
-			}
 
 			args = new Object[] { 
 					context.getJobDetail().getKey().getName(),
@@ -624,9 +629,18 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 			ps.setBoolean(9, job.requestsRecovery());
 			ps.setBytes(10, (baos == null) ? new byte[0] : baos.toByteArray());
 			ps.setObject(11, context.getResult());
-
 			String restartedInstanceId = jobDataMap.getString(RESTARTED_FIRE_INSTANCE_ID);
 			ps.setString(12, restartedInstanceId);
+
+			String returnCode = null;
+			Object oResult = context.getResult();
+			if (oResult instanceof JobDataMap) {
+				returnCode = ((JobDataMap)oResult).getString(QuartzContextAdapter.RETURN_CODE);
+			} else {
+				returnCode = String.valueOf(context.getResult());
+			}
+			ps.setString(13, returnCode);
+
 
 			insertResult = ps.executeUpdate();
 		} finally {

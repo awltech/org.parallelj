@@ -35,6 +35,8 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 
 	String result = ReturnCodes.SUCCESS.name();
 	
+//	Throwable exceptionThrown = null;
+	
 	//---------------------------------------------------------------------------------------------------
 	
 	declare parents:
@@ -42,27 +44,30 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 
 	public void Job.execute(JobExecutionContext context) throws JobExecutionException {
 		
-		logger.debug("-----------------------------------------------------------------------------------------------------");
-		logger.debug("STARTING //J Root Program "+this.getClass().getName());
-
-		ProcessHelper<?> p = null;
-//		context.setResult(new String());
-//		context.setResult(new HashMap<String, Serializable>());
-		context.setResult(new JobDataMap());
 		try {
+			logger.debug("-----------------------------------------------------------------------------------------------------");
+			logger.debug("STARTING //J Root Program "+this.getClass().getName());
+	
+			ProcessHelper<?> p = null;
+//			context.setResult(new String());
+//			context.setResult(new HashMap<String, Serializable>());
+			context.setResult(new JobDataMap());
 //			ProgramFieldsBinder.setProgramInputFields(this, context);
 			p = Programs.as((Adapter) this).execute().join();
 			ProgramFieldsBinder.getProgramOutputFields(this, context);
+
+			X xx = (X)this;
+			if (xx.exceptionThrown != null){
+				throw new JobExecutionException(xx.exceptionThrown);
+			}
 		} catch (IllegalAccessException e) {
 			throw new JobExecutionException(e);
 		} catch (NoSuchFieldException e) {
 			throw new JobExecutionException(e);
+		} finally {
+			logger.debug("ENDING   //J Root Program "+this.getClass().getName());
+			logger.debug("-----------------------------------------------------------------------------------------------------");
 		}
-
-
-		logger.debug("ENDING   //J Root Program "+this.getClass().getName());
-		logger.debug("-----------------------------------------------------------------------------------------------------");
-
 //		context.setResult(String.valueOf(p.getState()));
 	}
 
@@ -75,6 +80,8 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 
 	declare parents:   
 		(org.parallelj.internal.kernel.KCall) implements X;      
+
+	private Throwable X.exceptionThrown = null;
 
 	private ForEachListener X.forEachListener = null;       
 	
@@ -203,10 +210,10 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
  				if (isTrackNRestartAnnoted(program)){
  					String oid = getOID(program);
  					if (isTrackNRestartExceptionPermitted(program, e)) {
+ 						this.result = ReturnCodes.FAILURE.name();
 	 					track(forEachListener, oid, false);
 					} else {
-						abortAbruptly();
-						throw new TrackNRestartException("Exception thrown ("+e.getClass().getName()+") is not in list of permitted exceptions "+filteredExceptionsAsString(getTrackNRestartAnnotedException(program)));
+						abortAbruptly(new TrackNRestartException("Exception thrown ("+e.getClass().getName()+") is not in list of permitted exceptions "+filteredExceptionsAsString(getTrackNRestartAnnotedException(program))));
 					}
  				}
     		}
@@ -215,8 +222,7 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
  				String oid = getOID(program);
  				track(forEachListener, oid, true);
 			} else {
-				abortAbruptly();
-				throw new TrackNRestartException("Unable to get iteration OID while 'tracking' context.");
+				abortAbruptly(new TrackNRestartException("Unable to get iteration OID while 'tracking' context."));
  			}
      	}
      }
@@ -231,11 +237,11 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 	     try {
 				forEachListener.forEachInstanceComplete(oid, success);
 	     } catch (JobPersistenceException e) {
-				abortAbruptly();
-				throw new TrackNRestartException("Unable to read status for iteration '"+ oid + "'.", e);
+				abortAbruptly(new TrackNRestartException(e));
+//				throw new TrackNRestartException("Unable to read status for iteration '"+ oid + "'.", e);
 		} catch (SQLException e) {
-				abortAbruptly();
-				throw new TrackNRestartException("Unable to read status for iteration '"+ oid + "'.", e);
+				abortAbruptly(new TrackNRestartException(e));
+//				throw new TrackNRestartException("Unable to read status for iteration '"+ oid + "'.", e);
 		}
      }
     
@@ -276,24 +282,22 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 							// " already processed in error, so its processing is not skipped":
 							// "This OID ("+oid+") has been already successfully processed, so its processing is skipped");
 						} catch (JobPersistenceException e) {
-							abortAbruptly();
-							throw new TrackNRestartException(
-									"Unable to read status for iteration '"
-											+ oid + "'.", e);
+							abortAbruptly(new TrackNRestartException(e));
+//							throw new TrackNRestartException(
+//									"Unable to read status for iteration '"
+//											+ oid + "'.", e);
 						} catch (SQLException e) {
-							abortAbruptly();
-							throw new TrackNRestartException(
-									"Unable to read status for iteration '"
-											+ oid + "'.", e);
+							abortAbruptly(new TrackNRestartException(e));
+//							throw new TrackNRestartException(
+//									"Unable to read status for iteration '"
+//											+ oid + "'.", e);
 						}
 					} else {
 						// logger.debug("Processing in normal mode (ie not restarting mode) for : ["
 						// + oid + "] ,program : [" + program + "]");
 					}
 				} else {
-					abortAbruptly();
-					throw new TrackNRestartException(
-							"Unable to get iteration OID while 'restarting' context.");
+					abortAbruptly(new TrackNRestartException("Unable to get iteration OID while 'restarting' context."));
 				}
 			}
 		}
@@ -310,23 +314,19 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 		try {
 			Method m = program.getClass().getDeclaredMethod("getOID", new Class[] {});
 			return (String) m.invoke(program, new Object[] {});
-		} catch (SecurityException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (NoSuchMethodException e1) {
-			abortAbruptly();
-			throw new TrackNRestartException(
-					"No getOID() method found while program " + program
-							+ " was annotated @TrackNRestart.", e1);
+		} catch (SecurityException e) {
+			abortAbruptly(new TrackNRestartException(e));
+		} catch (NoSuchMethodException e) {
+			abortAbruptly(e);
+//			throw new TrackNRestartException(
+//					"No getOID() method found while program " + program
+//							+ " was annotated @TrackNRestart.", e1);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			abortAbruptly(new TrackNRestartException(e));
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			abortAbruptly(new TrackNRestartException(e));
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			abortAbruptly(new TrackNRestartException(e));
 		}
 		
 		return result;
@@ -395,9 +395,6 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 			if (program != null) {
 				Class<? extends Object> clazz = program.getClass();
 				if (clazz.isAnnotationPresent(TrackNRestart.class)) {
-//					Method m = clazz
-//							.getDeclaredMethod("getOID", new Class[] {});
-//					oid = (String) m.invoke(program, new Object[] {});
 					oid = getOID(program);
 					if (oid != null) {
 						if (success == true) {
@@ -410,13 +407,12 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 									filteredExceptions)) {
 								persist(_kCall, success, oid);
 							} else {
-								abortAbruptly();
-								throw new TrackNRestartException(
-										"Exception thrown ("
-												+ ite.getCause().getClass()
-														.getName()
+								abortAbruptly(
+										new TrackNRestartException(
+												"Exception thrown ("
+												+ ite.getCause().getClass().getName()
 												+ ") is not in list of permitted exceptions "
-												+ filteredExceptionsAsString(filteredExceptions));
+												+ filteredExceptionsAsString(filteredExceptions)));
 							}
 						}
 						//if (logger.isDebugEnabled()) {
@@ -426,39 +422,20 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 							// null ? "" : ", cause : " + ite.getCause()));
 						//}
 					} else {
-						abortAbruptly();
-						throw new TrackNRestartException(
-								"Unable to get iteration OID while 'tracking' context.");
+						abortAbruptly(new TrackNRestartException("Unable to get iteration OID while 'tracking' context."));
 					}
 				}
 			}
-//		} catch (NoSuchMethodException e) {
-//			abortAbruptly();
-//			throw new TrackNRestartException(
-//					"No getOID() method found while program " + program
-//							+ " was annotated @TrackNRestart.", e);
-//		} catch (SecurityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalArgumentException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (InvocationTargetException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
 		} catch (JobPersistenceException e) {
-			abortAbruptly();
-			throw new TrackNRestartException("Unable to persist status ['"
-					+ (success ? ReturnCodes.SUCCESS : ReturnCodes.FAILURE)
-					+ "'] for iteration '" + oid + "'.", e);
+			abortAbruptly(new TrackNRestartException(e));
+//			throw new TrackNRestartException("Unable to persist status ['"
+//					+ (success ? ReturnCodes.SUCCESS : ReturnCodes.FAILURE)
+//					+ "'] for iteration '" + oid + "'.", e);
 		} catch (SQLException e) {
-			abortAbruptly();
-			throw new TrackNRestartException("Unable to persist status ['"
-					+ (success ? ReturnCodes.SUCCESS : ReturnCodes.FAILURE)
-					+ "'] for iteration '" + oid + "'.", e);
+			abortAbruptly(new TrackNRestartException(e));
+//			throw new TrackNRestartException("Unable to persist status ['"
+//					+ (success ? ReturnCodes.SUCCESS : ReturnCodes.FAILURE)
+//					+ "'] for iteration '" + oid + "'.", e);
 		}
 	}
 
@@ -490,9 +467,10 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 		((X) _kCall).getForEachListener().forEachInstanceComplete(oid, success);
 	}
 
-	private void abortAbruptly() {
+	private void abortAbruptly(Throwable t) {
 		this.result = "ABORTED";
 		Programs.as((Adapter) this.root).abort();
+		this.root.exceptionThrown = t;
 	}
 
 }

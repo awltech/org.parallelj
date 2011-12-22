@@ -14,7 +14,6 @@ public class TestHelper extends JDBCSupport implements SchedulerPlugin {
 	private static TestHelper instance;
 	
 	public static String req = 
-//	"		select aa.job_group, aa.job_name, aa.uid, aa.restarted_uid, cast(aa.result as CHAR) as result, " +
 	"		select aa.job_group, aa.job_name, aa.uid, aa.restarted_uid, aa.result, " +
 	"	    coalesce(s.success,0) as success, " +
 	"	    coalesce(aa.failure,0) as failure, " +

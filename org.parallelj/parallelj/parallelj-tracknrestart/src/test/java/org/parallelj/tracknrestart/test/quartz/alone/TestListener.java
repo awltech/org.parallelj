@@ -82,10 +82,10 @@ public class TestListener implements JobListener, SchedulerListener {
 
 	@Override
 	public void triggerFinalized(Trigger trigger) {
-		if (latcher!=null) {
-			log.info("***********************COUNTDOWN********************************"+latcher.getCount());
-			latcher.countDown();
-		}
+//		if (latcher!=null) {
+//			log.info("triggerFinalized "+latcher+"***********************COUNTDOWN********************************");
+//			latcher.countDown();
+//		}
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class TestListener implements JobListener, SchedulerListener {
 	@Override
 	public void jobDeleted(JobKey jobKey) {
 		if (latcher!=null) {
-			log.info("***********************COUNTDOWN********************************"+latcher.getCount());
+			log.info("jobDeleted "+latcher+"***********************COUNTDOWN********************************");
 			latcher.countDown();
 		}
 	}

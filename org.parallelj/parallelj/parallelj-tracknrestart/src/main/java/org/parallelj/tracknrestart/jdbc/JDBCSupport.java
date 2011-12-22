@@ -50,6 +50,8 @@ public class JDBCSupport implements Serializable {
 	
 	public static final String COL_RESULT_SUBST = "RESULT";
 
+	public static final String COL_RETURN_CODE_SUBST = "RETURN_CODE";
+
 	public static final String COL_RESTARTED_UID_SUBST = "RESTARTED_UID";
 
 

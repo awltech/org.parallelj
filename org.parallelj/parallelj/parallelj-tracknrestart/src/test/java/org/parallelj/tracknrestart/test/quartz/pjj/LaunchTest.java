@@ -121,7 +121,7 @@ public class LaunchTest {
 			
 			Trigger trigger = createTrigger(groupName, triggerName);
 			
-			CountDownLatch latcher = createLatcher(jl);
+			CountDownLatch latcher = createLatcher(jl,1);
 			
 			sched.scheduleJob(job, trigger);
 
@@ -179,7 +179,7 @@ public class LaunchTest {
 
 			Trigger trigger = createTrigger(groupName, triggerName);
 			
-			CountDownLatch latcher = createLatcher(jl);
+			CountDownLatch latcher = createLatcher(jl,1);
 			
 			sched.scheduleJob(job, trigger);
 
@@ -241,7 +241,7 @@ public class LaunchTest {
 
 			Trigger trigger = createTrigger(groupName, triggerName);
 			
-			CountDownLatch latcher = createLatcher(jl);
+			CountDownLatch latcher = createLatcher(jl,1);
 			
 			sched.scheduleJob(job, trigger);
 
@@ -389,7 +389,7 @@ public class LaunchTest {
 				job = createJob(groupName, jobName, restartId, jobBuilder, jobDataMap);
 				Trigger trigger = createTrigger(groupName, triggerName);
 				
-				CountDownLatch latcher = createLatcher(jl);
+				CountDownLatch latcher = createLatcher(jl,1);
 				
 				sched.scheduleJob(job, trigger);
 
@@ -398,7 +398,6 @@ public class LaunchTest {
 //				result = (String)jl.getResult();
 				Map<String, Serializable> map = (Map<String, Serializable>)jl.getResult();
 				result = (String)map.get(QuartzContextAdapter.RETURN_CODE);
-
 			}
 
 			Statement statement = null;
@@ -428,6 +427,7 @@ public class LaunchTest {
 				Assert.assertEquals(0, resultSet.getInt("failure"));
 
 			} catch (IOException e) {
+				e.printStackTrace();
 				fail();
 				return;
 			} finally {
@@ -436,9 +436,12 @@ public class LaunchTest {
 			}
 
 		} catch (SchedulerException e) {
+			System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			e.printStackTrace();
 			fail();
 			return;
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 			fail();
 			return;
 		} catch (SQLException e) {
@@ -473,14 +476,9 @@ public class LaunchTest {
 		return trigger;
 	}
 
-	private CountDownLatch createLatcher(TestListener jl) {
-		CountDownLatch latcher = new CountDownLatch(1);
-		jl.setLatcher(latcher);
-		return latcher;
-	}
-
 	private CountDownLatch createLatcher(TestListener jl, int n) {
 		CountDownLatch latcher = new CountDownLatch(n);
+		log.info(""+latcher+"***********************CREATE********************************");
 		jl.setLatcher(latcher);
 		return latcher;
 	}
@@ -488,7 +486,7 @@ public class LaunchTest {
 	private void awaitingLatcher(CountDownLatch latcher, TestListener jl) {
 		try {
 			if (latcher.getCount()>0) {
-				log.info("***********************AWAIT********************************"+latcher.getCount());
+				log.info(""+latcher+"***********************AWAIT********************************");
 				latcher.await();
 			}
 		} catch (InterruptedException e) {
