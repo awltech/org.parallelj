@@ -43,6 +43,12 @@ public enum LaunchingMessageKind {
 	@Format("Error launching %s. Is the program annotated with @QuartzExecution?")
 	ELAUNCH0001,
 	
+	/**
+	 * An Error occurred
+	 */
+	@Format("An Error occurred when running the Program %s!")
+	ELAUNCH0002,
+	
 	/*
 	 * Information messages for TcpIp
 	 */
@@ -156,7 +162,7 @@ public enum LaunchingMessageKind {
 	/**
 	 * Program %s with jobId %s is terminated!
 	 */
-	@Format("Program %s with jobId %s is terminated!")
+	@Format("Program %s with jobId %s is terminated with status %s!")
 	IQUARTZ0003,
 	
 	/*

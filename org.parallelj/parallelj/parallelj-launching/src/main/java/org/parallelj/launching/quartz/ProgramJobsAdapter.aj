@@ -22,27 +22,86 @@
 
 package org.parallelj.launching.quartz;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.parallelj.Programs;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
+import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.launching.ReturnCodes;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 /**
  * Implements the Job.execute(..) method
  * 
  * 
  */
-public aspect ProgramJobsAdapter {
+privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+.execute(..) throws JobExecutionException)) {
 
+	/**
+	 * The JobExecutionContext where get Program's arguments ant where to put
+	 * the Result.
+	 */
+	public JobExecutionContext context;
+
+	/*
+	 * The Aspect JobsAdapter must be passed before this.
+	 */
 	declare precedence :
 		org.parallelj.launching.quartz.JobsAdapter;
 
-	after(Job self, JobExecutionContext context) : 
-		execution( public void  Job.execute(..)) 
+	private Adapter adpater;
+
+	/**
+	 * Launch a Program and initialize the Result as a JobDataMap.
+	 * 
+	 * @param self
+	 * @param context
+	 * @throws JobExecutionException
+	 */
+	void around(Job self, JobExecutionContext context)
+			throws JobExecutionException : 
+		execution( public void  Job+.execute(..) throws JobExecutionException) 
 			&& (within(@org.parallelj.Program *) || within(JobsAdapter)) 
 				&& args(context) && this(self) {
+		this.adpater = (Adapter) self;
+		this.context = context;
+		JobDataMap jobDataMap = new JobDataMap();
+		context.setResult(jobDataMap);
+		jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.SUCCESS);
+		try {
+			proceed(self, context);
 
-		Programs.as((Adapter) self).execute().join();
+			try {
+				Programs.as((Adapter) self).execute().join();
+				ProgramFieldsBinder.getProgramOutputFields(this, context);
+			} catch (IllegalAccessException e) {
+				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+			} catch (NoSuchFieldException e) {
+				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+			}
+		} catch (InvocationTargetException e) {
+			jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+		}
 	}
 
+	/**
+	 * Intercept Exception thrown in RunnableProcedure for tracing. If an
+	 * Exception is thrown, the return code of a Launch becomes FAILURE.
+	 * 
+	 * @param self
+	 */
+	void around(Object self) : call(* run(..))
+		    && within(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall)
+		    && within(Runnable+)  && this(self)  {
+		try {
+			proceed(self);
+		} catch (Exception e) {
+			LaunchingMessageKind.ELAUNCH0002.format(this.adpater, e);
+			((JobDataMap) this.context.getResult()).put(
+					QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+		}
+	}
 }

@@ -20,14 +20,15 @@
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-package org.parallelj.launching.quartz;
+package org.parallelj.launching;
 
-public class QuartzUtils {
-	public static final String RETURN_CODE = "RETURN_CODE";
-	private static final String JOB_ID_KEY = "_RESTARTED_FIRE_INSTANCE_ID_";
+/**
+ * This enumeration contains the execution codes returned by //J Launching.
+ * 
+ * @author Atos Worldline
+ * @since 0.5.0
+ */
+public enum ReturnCodes {
 
-	public static String getRestartedFireInstanceIdKey() {
-		return JOB_ID_KEY;
-	}
-
+	SUCCESS, FAILURE, ABORTED;
 }

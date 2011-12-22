@@ -20,14 +20,16 @@
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-package org.parallelj.launching.quartz;
+package org.parallelj.launching;
 
-public class QuartzUtils {
-	public static final String RETURN_CODE = "RETURN_CODE";
-	private static final String JOB_ID_KEY = "_RESTARTED_FIRE_INSTANCE_ID_";
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	public static String getRestartedFireInstanceIdKey() {
-		return JOB_ID_KEY;
-	}
-
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface Out {
 }
