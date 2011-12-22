@@ -40,47 +40,47 @@ import org.quartz.impl.matchers.EverythingMatcher;
 
 /**
  * A launch entry of a Program.
- *
+ * 
  */
 public class Launch {
-	
+
 	private static final String DEFAULT_GROUP_NAME = "DEFAULT";
-	
+
 	/**
 	 * The scheduler used to launch Programs.
 	 */
-	Scheduler scheduler;
-	
+	private Scheduler scheduler;
+
 	/**
 	 * The result Object of this Launch.
 	 */
-	LaunchResult launchResult;
-	
+	private LaunchResult launchResult;
+
 	/**
 	 * The Program Adapter class.
 	 */
-	Class<? extends Job> jobClass;
-	
+	private Class<? extends Job> jobClass;
+
 	/**
-	 * The Quartz JobBuilder for this Launch. 
+	 * The Quartz JobBuilder for this Launch.
 	 */
-	JobBuilder jobBuilder;
-	
+	private JobBuilder jobBuilder;
+
 	/**
-	 * The Quartz Job for this Launch. 
+	 * The Quartz Job for this Launch.
 	 */
-	JobDetail job;
-	
+	private JobDetail job;
+
 	/**
 	 * The TriggerBuilder for this Launch.
 	 */
-	TriggerBuilder<Trigger> triggerBuilder = newTrigger();
-	
+	private TriggerBuilder<Trigger> triggerBuilder = newTrigger();
+
 	/**
 	 * The Trigger for this Launch.
 	 */
-	Trigger trigger;
-	
+	private Trigger trigger;
+
 	/**
 	 * Time to wait for the JobId to be available when scheduling the Program.
 	 */
@@ -89,102 +89,118 @@ public class Launch {
 	/**
 	 * Default Constructor.
 	 * 
-	 * @param scheduler The ParalleljScheduler
-	 * @param jobClass The Program Adapter class
-	 * @throws LaunchException 
+	 * @param scheduler
+	 *            The ParalleljScheduler
+	 * @param jobClass
+	 *            The Program Adapter class
+	 * @throws LaunchException
 	 */
 	@SuppressWarnings("unchecked")
-	public Launch(Scheduler scheduler, Class<?> jobClass) throws LaunchException {
+	public Launch(Scheduler scheduler, Class<?> jobClass)
+			throws LaunchException {
 		this.scheduler = scheduler;
 		try {
-			this.jobClass = (Class<? extends Job>)jobClass;
+			this.jobClass = (Class<? extends Job>) jobClass;
 		} catch (ClassCastException e) {
 			LaunchingMessageKind.ELAUNCH0001.format(jobClass, e);
 			throw new LaunchException(e);
 		}
 		this.jobBuilder = newJob(this.jobClass);
-		
+
 		this.job = jobBuilder.withIdentity(this.jobClass.getCanonicalName(),
 				DEFAULT_GROUP_NAME).build();
-		
+
 		this.trigger = triggerBuilder
 				.withIdentity(String.valueOf(triggerBuilder),
 						String.valueOf(triggerBuilder)).startNow().build();
 	}
-	
+
 	/**
 	 * Launch a Program and wait until it's terminated.
 	 * 
 	 * @return A Launch instance.
-	 * @throws LaunchException When a SchedulerException occurred.
+	 * @throws LaunchException
+	 *             When a SchedulerException occurred.
 	 */
 	public synchronized Launch synchLaunch() throws LaunchException {
 		try {
-			// Define a listener to get the jobId and to wait until the Job is completed
-			AdapterJobListener listener = new AdapterJobListener(this.jobClass.getCanonicalName(), this.scheduler);
-			this.scheduler.getListenerManager().addJobListener(listener, EverythingMatcher.allJobs());
+			// Define a listener to get the jobId and to wait until the Job is
+			// completed
+			AdapterJobListener listener = new AdapterJobListener(
+					this.jobClass.getCanonicalName(), this.scheduler);
+			this.scheduler.getListenerManager().addJobListener(listener,
+					EverythingMatcher.allJobs());
 			this.scheduler.getListenerManager().addSchedulerListener(listener);
-		
+
 			CountDownLatch latcher = createLatcher(listener);
 
 			// Launch the Job
 			this.scheduler.scheduleJob(this.job, this.trigger);
 			this.scheduler.start();
-			
+
 			// Wait few seconds for the JobId to be available.
 			try {
 				Thread.sleep(MSECONDS);
 			} catch (Exception e) {
 			}
-			
-			LaunchingMessageKind.IQUARTZ0002.format(jobClass.getCanonicalName(), listener.getJobId());
-			
+
+			LaunchingMessageKind.IQUARTZ0002.format(
+					jobClass.getCanonicalName(), listener.getJobId());
+
 			awaitingLatcher(latcher, listener);
-			
-			this.launchResult= new LaunchResult(listener.getJobId(), listener.getResult());
+
+			this.launchResult = new LaunchResult(listener.getJobId(),
+					listener.getResult());
+			//Object obj = this.launchResult.getResult();
+			//System.out.println(obj);
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Launch a Program and continue.
 	 * 
 	 * @return A Launch instance.
-	 * @throws LaunchException When a SchedulerException occurred.
+	 * @throws LaunchException
+	 *             When a SchedulerException occurred.
 	 */
 	public synchronized Launch aSynchLaunch() throws LaunchException {
 		try {
 			// Define a listener to get the jobId
-			AdapterJobListener listener = new AdapterJobListener(this.jobClass.getCanonicalName(), this.scheduler);
-			this.scheduler.getListenerManager().addJobListener(listener, EverythingMatcher.allJobs());
+			AdapterJobListener listener = new AdapterJobListener(
+					this.jobClass.getCanonicalName(), this.scheduler);
+			this.scheduler.getListenerManager().addJobListener(listener,
+					EverythingMatcher.allJobs());
 			this.scheduler.getListenerManager().addSchedulerListener(listener);
-		
+
 			// Launch the Job
 			this.scheduler.scheduleJob(this.job, this.trigger);
 			this.scheduler.start();
-			
+
 			// Wait few seconds for the JobId to be available.
 			try {
 				Thread.sleep(MSECONDS);
 			} catch (Exception e) {
 			}
-			
-			LaunchingMessageKind.IQUARTZ0002.format(jobClass.getCanonicalName(), listener.getJobId());
-			
-			this.launchResult= new LaunchResult(listener.getJobId(), listener.getResult());
-			//this.scheduler.getListenerManager().removeJobListener(listener.getName());
+
+			LaunchingMessageKind.IQUARTZ0002.format(
+					jobClass.getCanonicalName(), listener.getJobId());
+			this.launchResult = new LaunchResult(listener.getJobId(),
+					listener.getResult());
+			// this.scheduler.getListenerManager().removeJobListener(listener.getName());
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
 		}
 		return this;
 	}
-	
+
 	/**
 	 * Create a CountDownLatch to be able to wait until a Program is terminated.
 	 * 
-	 * @param listener The Quartz listener used for this Launch.
+	 * @param listener
+	 *            The Quartz listener used for this Launch.
 	 * @return a CountDownLatch.
 	 */
 	private CountDownLatch createLatcher(AdapterJobListener listener) {
@@ -196,25 +212,29 @@ public class Launch {
 	/**
 	 * Wait for the CountDownLatch.
 	 * 
-	 * @param latcher The CountDownLatch
-	 * @param listener The listener which decrements the count of the latch.
+	 * @param latcher
+	 *            The CountDownLatch
+	 * @param listener
+	 *            The listener which decrements the count of the latch.
 	 */
-	private void awaitingLatcher(CountDownLatch latcher, AdapterJobListener listener) {
-		if (latcher.getCount()>0) {
-				try {
-					latcher.await();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+	private void awaitingLatcher(CountDownLatch latcher,
+			AdapterJobListener listener) {
+		if (latcher.getCount() > 0) {
+			try {
+				latcher.await();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		listener.setLatcher(null);
 	}
-	
+
 	/**
-	 * Add a Quartz JobData to the one used to launch the Program.
-	 * This JobData is used to initialize Programs arguments for launching.
+	 * Add a Quartz JobData to the one used to launch the Program. This JobData
+	 * is used to initialize Programs arguments for launching.
 	 * 
-	 * @param jobDataMap A JobDatamap
+	 * @param jobDataMap
+	 *            A JobDatamap
 	 * @return This Launch instance.
 	 */
 	public synchronized Launch addDatas(JobDataMap jobDataMap) {
@@ -236,7 +256,7 @@ public class Launch {
 	 * 
 	 * @return The result Object of the launch.
 	 */
-	public synchronized Object getLaunchResult() {
+	public synchronized JobDataMap getLaunchResult() {
 		return this.launchResult.getResult();
 	}
 

@@ -189,11 +189,13 @@ public class JmxServer {
 				List<ArgEntry> adapterArgs = AdaptersArguments.getAdapterArguments(clazz);
 
 				// Register the bean as a DynamicMBean in the JMX server...
+				/*
 				Class<?>[] cls = clazz.getInterfaces();
 				for (Class<?> class1 : cls) {
 					System.out.println("=>" + clazz + " implements ["
 							+ class1.getCanonicalName() + "]");
 				}
+				*/
 				if (Arrays.asList(clazz.getInterfaces()).contains(
 						ProgramAdapter.Adapter.class)) {
 					DynamicLegacyProgram dprogram = new DynamicLegacyProgram(
