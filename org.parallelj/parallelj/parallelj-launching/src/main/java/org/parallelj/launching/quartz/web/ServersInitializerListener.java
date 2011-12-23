@@ -35,6 +35,7 @@ import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.transport.AdaptersArguments;
 import org.parallelj.launching.transport.jmx.JmxServer;
+import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 import org.parallelj.launching.transport.tcp.TcpIpServer;
 
 /**
@@ -76,7 +77,7 @@ public class ServersInitializerListener implements ServletContextListener {
 					&& configuration.getServers().getTelnet() != null) {
 				this.tcpIpServer = new TcpIpServer(configuration.getServers()
 						.getTelnet().getHost(), configuration.getServers()
-						.getTelnet().getPort());
+						.getTelnet().getPort(), new TcpIpHandlerAdapter());
 				// Try to start the TciIpServer
 				if (this.tcpIpServer != null) {
 					try {
