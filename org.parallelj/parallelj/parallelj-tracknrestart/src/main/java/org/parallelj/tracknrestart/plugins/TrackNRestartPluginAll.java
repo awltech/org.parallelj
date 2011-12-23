@@ -15,6 +15,7 @@ import java.util.Set;
 import org.parallelj.tracknrestart.TrackNRestartMessageKind;
 //import org.parallelj.tracknrestart.jdbc.JDBCSupport;
 import org.parallelj.tracknrestart.aspects.QuartzContextAdapter;
+import org.parallelj.tracknrestart.aspects.TrackNRestartException;
 import org.parallelj.tracknrestart.jdbc.JDBCSupport;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
 import org.parallelj.tracknrestart.listeners.TrackNRestartListener;
@@ -24,6 +25,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobKey;
 import org.quartz.JobListener;
+import org.quartz.JobPersistenceException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerListener;
@@ -284,11 +286,10 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 	public void jobAdded(JobDetail jobDetail) {
 		TrackNRestartMessageKind.ITNRPLUGIN0003.format(jobDetail.getKey());
 		//getLog().info("Job "+jobDetail.getKey()+" added.");
-		JobKey jobKey = null;
+		JobKey jobKey = jobDetail.getKey();
+		JobDataMap jobDataMap = jobDetail.getJobDataMap();
+		String restart = jobDataMap.getString(RESTARTED_FIRE_INSTANCE_ID);
 		try {
-			jobKey = jobDetail.getKey();
-			JobDataMap jobDataMap = jobDetail.getJobDataMap();
-			String restart = jobDataMap.getString(RESTARTED_FIRE_INSTANCE_ID);
 			if (fetchJob(getNonManagedTXConnection(), jobKey)){ // group.job exists
 				if (restart == null){
 					TrackNRestartMessageKind.ITNRPLUGIN0004.format(jobKey);
@@ -300,7 +301,6 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 						restart = fetchJobExecLast(getNonManagedTXConnection(), jobKey);
 						if (restart != null){
 
-//							jobDataMap.put(RESTARTED_FIRE_INSTANCE_ID, restart);
 							jobDetail.getJobBuilder().usingJobData(RESTARTED_FIRE_INSTANCE_ID, restart);
 							jobDetail.getJobBuilder().usingJobData(JOB_IDENTIFICATION_COMPLETE,false); 
 							
@@ -310,11 +310,12 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 							scheduler.addJob(jobDetail, true); // WARNING recursivity !
 
 						} else {
-							TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart);
+							//TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart);
 							//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
 							TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
 							//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
 							scheduler.deleteJob(jobKey);
+							throw new TrackNRestartException(TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart));
 						}
 					} else {  // Retrieve numbered execution to restart it
 						if (!jobDataMap.getBoolean(JOB_IDENTIFICATION_COMPLETE)) { // to break recursivity
@@ -331,14 +332,13 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
 								scheduler.addJob(jobDetail, true); // WARNING recursivity !
 
-							} else {
-								TrackNRestartMessageKind.ETNRPLUGIN0007.format(
-										jobKey, restart); // not found
+							} else { // not found
+								//TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart); // not found
 								//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
-								TrackNRestartMessageKind.WTNRPLUGIN0008
-										.format(jobKey);
+								TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
 								//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
 								scheduler.deleteJob(jobKey);
+								throw new TrackNRestartException(TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart));
 							}
 						}
 					}
@@ -347,15 +347,17 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 				if (restart == null){
 					TrackNRestartMessageKind.ITNRPLUGIN0012.format(jobKey);
 					//getLog().info(jobKey+" is running in simple tracking (non-restarting) mode.");
-//					getLog().info("First tracked execution of "+jobKey+".");
 				} else {
-					TrackNRestartMessageKind.ETNRPLUGIN0013.format(jobKey);
+					//TrackNRestartMessageKind.ETNRPLUGIN0013.format(jobKey);
 					//getLog().error("Unable to restart "+jobKey+" caused by no previous execution in tracking history.");
-					TrackNRestartMessageKind.ETNRPLUGIN0014.format(jobKey);
+					TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
 					//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
 					scheduler.deleteJob(jobKey);
+					throw new TrackNRestartException(TrackNRestartMessageKind.ETNRPLUGIN0013.format(jobKey));
 				}
 			}
+		} catch (TrackNRestartException e) {
+			throw e;
 		} catch (Exception e) {
 			try {
 				e.printStackTrace();

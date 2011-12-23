@@ -102,18 +102,11 @@ public class TrackNRestartListener extends JDBCSupport implements ForEachListene
 
 		args = new Object[] {jobName, groupName, oid};
 
-//		try {
-			insertIteration(this.getNonManagedTXConnection(), oid, success);
-			getLog().debug(MessageFormat.format(getIterateCompleteMessage()+(success?ReturnCodes.SUCCESS:ReturnCodes.FAILURE), args));
-//		} catch (Exception e) {
-//			getLog().error("Unable to persist iteration '" + oid + "' status");
-//			throw e;
-//		}
+		insertIteration(this.getNonManagedTXConnection(), oid, success);
+		getLog().debug(MessageFormat.format(getIterateCompleteMessage()+(success?ReturnCodes.SUCCESS:ReturnCodes.FAILURE), args));
 	}
 
 	private int insertIteration(Connection conn, String oid, boolean success) throws SQLException {
-
-//		JobDetail job = context.getJobDetail();
 
 		PreparedStatement ps = null;
 
@@ -142,12 +135,9 @@ public class TrackNRestartListener extends JDBCSupport implements ForEachListene
 		args = new Object[] { jobName, groupName, oid};
 
 		boolean status = false;
-//		try {
-			status = fetchIteration(this.getNonManagedTXConnection(), restartedFireInstanceId, oid);
-			getLog().debug(MessageFormat.format(getIterateFetchedMessage()+(status?ReturnCodes.SUCCESS:ReturnCodes.FAILURE), args));
-//		} catch (Exception e) {
-//			throw new TrackNRestartException("Unable to fetch iteration '"+oid+"'", e);
-//		}
+		status = fetchIteration(this.getNonManagedTXConnection(), restartedFireInstanceId, oid);
+		getLog().debug(MessageFormat.format(getIterateFetchedMessage()+(status?ReturnCodes.SUCCESS:ReturnCodes.FAILURE), args));
+
 		return status;
 	}
 

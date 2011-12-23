@@ -23,11 +23,13 @@ import org.quartz.JobPersistenceException;
 
 privileged public aspect QuartzContextAdapter percflow (execution(public void Job+.execute(..) throws JobExecutionException)) {
 	
-	public static final String RETURN_CODE = "RETURN_CODE";
-
 	declare precedence :
 		org.parallelj.tracknrestart.aspects.QuartzContextAdapter,
 		org.parallelj.launching.quartz.JobsAdapter;
+
+	//---------------------------------------------------------------------------------------------------
+
+	public static final String RETURN_CODE = "RETURN_CODE";
 
 	static Logger logger = Logger.getLogger("org.parallelj.tracknrestart");
 	
@@ -40,22 +42,39 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 	declare parents:
 		(@org.parallelj.launching.QuartzExecution *) implements Job;
 
+	declare parents:           
+		(org.quartz.Job+ && !org.quartz.Job) implements X;    
+
+	declare parents:   
+		(org.parallelj.internal.kernel.KCall) implements X;      
+
+	//---------------------------------------------------------------------------------------------------
+	
+	public interface X {};
+	
+	private Throwable X.exceptionThrown = null;
+	
+	private ForEachListener X.forEachListener = null;       
+	
+	private String X.restartedFireInstanceId = null;       
+	
+	//---------------------------------------------------------------------------------------------------
+	
 	public void Job.execute(JobExecutionContext context) throws JobExecutionException {
 		
 		try {
 			logger.debug("-----------------------------------------------------------------------------------------------------");
 			logger.debug("STARTING //J Root Program "+this.getClass().getName());
 	
-			ProcessHelper<?> p = null;
 			context.setResult(new JobDataMap());
 
-			p = Programs.as((Adapter) this).execute().join();
+			ProcessHelper<?> p = Programs.as((Adapter) this).execute().join();
 
 			ProgramFieldsBinder.getProgramOutputFields(this, context);
 
-			X xx = (X)this;
-			if (xx.exceptionThrown != null){
-				throw new JobExecutionException(xx.exceptionThrown);
+			X current = (X)this;
+			if (current.exceptionThrown != null){
+				throw new JobExecutionException(current.exceptionThrown);
 			}
 		} catch (IllegalAccessException e) {
 			throw new JobExecutionException(e);
@@ -69,46 +88,14 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 
 	//---------------------------------------------------------------------------------------------------
 	
-	public interface X {};
-
-	declare parents:           
-		(org.quartz.Job+ && !org.quartz.Job) implements X;    
-
-	declare parents:   
-		(org.parallelj.internal.kernel.KCall) implements X;      
-
-	private Throwable X.exceptionThrown = null;
-
-	private ForEachListener X.forEachListener = null;       
-	
-	public ForEachListener X.getForEachListener() { 
-		return forEachListener;
-	}
-	
-	public void X.setForEachListener(ForEachListener forEachListener) {
-		this.forEachListener = forEachListener;
-	}
-	
-	private String X.restartedFireInstanceId = null;       
-	
-	public String X.getRestartedFireInstanceId() {
-		return restartedFireInstanceId;
-	}
-	
-	public void X.setRestartedFireInstanceId(String restartedFireInstanceId) {
-		this.restartedFireInstanceId = restartedFireInstanceId;
-	}
-	
-	//---------------------------------------------------------------------------------------------------
-	
 	//JobExecutionContext --> Job
 	before(X self, JobExecutionContext jobExecutionContext): 
 		execution(public void Job+.execute(..) throws JobExecutionException) 
 		&& this(self) 
 		&& args(jobExecutionContext) {
 
-		self.setRestartedFireInstanceId(jobExecutionContext.getJobDetail().getJobDataMap().getString(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID));
-		self.setForEachListener((ForEachListener) jobExecutionContext.getJobDetail().getJobDataMap().get(TrackNRestartPluginAll.FOR_EACH_LISTENER));
+		self.restartedFireInstanceId = jobExecutionContext.getJobDetail().getJobDataMap().getString(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID);
+		self.forEachListener = (ForEachListener)jobExecutionContext.getJobDetail().getJobDataMap().get(TrackNRestartPluginAll.FOR_EACH_LISTENER);
 
 		this.root = self;
 	}
@@ -130,45 +117,43 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 	after(X self): 
 		execution(protected KCall.new(..)) && this(self) {
 
-		self.setRestartedFireInstanceId(root.getRestartedFireInstanceId()); 
-		self.setForEachListener(root.getForEachListener());
+		self.restartedFireInstanceId = root.restartedFireInstanceId; 
+		self.forEachListener = root.forEachListener;
 	}
 
 	after(X self): 
 		execution(protected KProcess.new(..)) && this(self) {
 
-		self.setRestartedFireInstanceId(root.getRestartedFireInstanceId()); 
-		self.setForEachListener(root.getForEachListener());
+		self.restartedFireInstanceId = root.restartedFireInstanceId; 
+		self.forEachListener = root.forEachListener;
 	}
 
+	//---------------------------------------------------------------------------------------------------
+	
     pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
     pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(QuartzContextAdapter);
 
-// Runnable program. ----------------------------------------------------------------------------------------------------------------------------------
+    // Runnable program. ----------------------------------------------------------------------------------------------------------------------------------
 
+    declare parents:           
+    	(java.lang.Runnable+ ) implements X, Y;    
+    
+	//---------------------------------------------------------------------------------------------------
+	
     public interface Y {};
     
   	private Object Y.context = null;
   	
-  	public Object Y.getContext() {
-  		return context;
-  	}
-  	
-  	public void Y.setContext(Object context) {
-  		this.context=context;
-  	}
-    
-    declare parents:           
-		(java.lang.Runnable+ ) implements X, Y;    
-    
+	//---------------------------------------------------------------------------------------------------
+	
     // 1) Transfert from RunnableCall to Runnable. 
   	after(Object self) returning (Runnable ret): 
     	 execution(* org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall.toRunnable())
       && this(self)  {
     	
-    	 ((X)ret).setForEachListener(((X)self).getForEachListener());
-    	 ((X)ret).setRestartedFireInstanceId(((X)self).getRestartedFireInstanceId());
-    	 ((Y)ret).setContext(((org.parallelj.internal.kernel.KCall)self).getContext());
+   	 ((X)ret).forEachListener = ((X)self).forEachListener;
+   	 ((X)ret).restartedFireInstanceId = ((X)self).restartedFireInstanceId;
+   	 ((Y)ret).context = ((org.parallelj.internal.kernel.KCall)self).context;
     }
     
      // 2) Interception around call of run.      
@@ -176,9 +161,9 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
      && within(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall)
      && within(Runnable+)  && this(self)  {
     	 
-    	 String restartedFireInstanceId = ((X) self).getRestartedFireInstanceId();
-    	 ForEachListener forEachListener = ((X)self).getForEachListener();	
-    	 Object program =  ((Y)self).getContext();
+    	 String restartedFireInstanceId = ((X)self).restartedFireInstanceId;
+    	 ForEachListener forEachListener = ((X)self).forEachListener;	
+    	 Object program =  ((Y)self).context;
     	 
     	 if (isToProcess(restartedFireInstanceId,forEachListener,program)) {
     		try { 
@@ -208,6 +193,8 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
      	}
      }
      
+ 	//---------------------------------------------------------------------------------------------------
+ 	
      /**
       * Track the execution (success or failure).
       * @param forEachListener listener handling Quartz backend.
@@ -225,18 +212,20 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
      }
     
  
-// restart part ----------------------------------------------------------------------------------------------------------------------------------------
+     // restart part ----------------------------------------------------------------------------------------------------------------------------------------
      
      Object around(Object oo, KCall _kCall)  :
         invoke() && args(oo, ..) && cflow(enter(_kCall)) {
          
-    	if (isToProcess( ((X) _kCall).getRestartedFireInstanceId(),((X) _kCall).getForEachListener(), oo)) {
+       	if (isToProcess(((X)_kCall).restartedFireInstanceId, ((X)_kCall).forEachListener, oo)) {
                return proceed(oo, _kCall);
         } else {
                return null;
         }
      }
 
+ 	//---------------------------------------------------------------------------------------------------
+ 	
     /**
      * Check if an iterable must be processed. This means if the iterable is not already processed or the element was processed in error.
      * @param restartedFireInstanceId id of the batch to be restarted.
@@ -318,7 +307,6 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 	 * @return true if exception is allowed, false else.
 	 */
 	private boolean isTrackNRestartExceptionPermitted(Object program, Exception exception) {
-		boolean result = false;
 		Class<? extends Throwable>[] filteredExceptions =  getTrackNRestartAnnotedException(program);
 		for (int i = 0; i < filteredExceptions.length; i++) {
 				if (filteredExceptions[i].isAssignableFrom(exception.getClass())) {
@@ -337,9 +325,9 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 		return program.getClass().getAnnotation(TrackNRestart.class).filteredExceptions();
 	}
 	
-	
-// tracking part ----------------------------------------------------------------------------------------------------------------------------------------
-   after(Object oo, KCall _kCall) returning :
+	// tracking part ----------------------------------------------------------------------------------------------------------------------------------------
+
+	after(Object oo, KCall _kCall) returning :
     	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
 		
 		track(_kCall, oo, true, null);
@@ -352,7 +340,8 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 		track(_kCall, oo, false, ite);
     }
 
-    
+	//---------------------------------------------------------------------------------------------------
+	
 	private void track(KCall _kCall, Object program, boolean success,
 			InvocationTargetException ite) {
 		String oid = null;
@@ -424,11 +413,11 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 
 	private void persist(KCall _kCall, boolean success, String oid)
 			throws JobPersistenceException, SQLException {
-		((X) _kCall).getForEachListener().forEachInstanceComplete(oid, success);
+		((X)_kCall).forEachListener.forEachInstanceComplete(oid, success);
 	}
 
 	private void abortAbruptly(Throwable t) {
-		this.result = "ABORTED";
+		this.result = ReturnCodes.ABORTED.name();
 		Programs.as((Adapter) this.root).abort();
 		this.root.exceptionThrown = t;
 	}

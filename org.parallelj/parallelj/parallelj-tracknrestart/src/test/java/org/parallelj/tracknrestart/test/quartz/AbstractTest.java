@@ -55,7 +55,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 	protected abstract String getProgramQN();
 	
 	protected int getNumberJob1() {
-		return 1;
+		return 5;
 	}
 	protected int getNumberJob22() {
 		return 30;
@@ -65,7 +65,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 	 * First launch
 	 */
 	@Test
-	public void test1() {
+	public void test1_initial() {
 		
 		String restartId = null;
 		String programQN = getProgramQN();
@@ -121,10 +121,70 @@ public abstract class AbstractTest extends RootAbstractTest {
 	}
 
 	/**
-	 * Restart launch from test1
+	 * Restart launch from test1 but wrong restarted id
 	 */
 	@Test
-	public void test2() {
+	public void test1_rest_but_no_rid() {
+		String restartId = "_WRONG_";
+		String programQN = getProgramQN();
+		String jobName = "JJP_TestJob1_"+this.getClass().getSimpleName();
+		String groupName = "DEFAULT";
+		String triggerName = "JJP_TestTrigger1_"+this.getClass().getSimpleName();
+		List<String> params = Arrays.asList(new String[]{"a","b","c"});
+
+		try {
+			Class<? extends Adapter> jobClass = ((Class<? extends Adapter>) Class.forName(programQN));
+			JobBuilder jobBuilder = newJob((Class<? extends Job>) jobClass);
+
+			JobDataMap jobDataMap = new JobDataMap();
+			jobDataMap.put("data1",params);
+
+			JobDetail job = createJob(groupName, jobName, restartId, jobBuilder, jobDataMap);
+
+			Trigger trigger = createTrigger(groupName, triggerName);
+			
+			CountDownLatch latcher = createLatcher(jl);
+			
+			sched.scheduleJob(job, trigger);
+
+			awaitingLatcher(latcher, jl);
+
+			Statement statement = null;
+			ResultSet resultSet = null;
+			Connection conn = null;
+			try {
+				conn = TestHelper.getInstance().getNonManagedTXConnection();
+				statement = conn.createStatement();
+				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
+				Assert.assertTrue(resultSet.first());
+				Assert.assertNull(resultSet.getString("restarted_uid"));
+//				String uid = resultSet.getString("uid");
+				Assert.assertFalse(resultSet.next());
+//				Assert.assertEquals(uid, resultSet.getString("restarted_uid"));
+//				Assert.assertEquals(params.size(),resultSet.getInt("total"));
+			} finally {
+				TestHelper.getInstance().closeStatement(statement);
+				TestHelper.getInstance().cleanupConnection(conn);
+			}
+			
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			fail();
+			return;
+		} catch (ClassNotFoundException e) {
+			fail();
+			return;
+		} catch (SQLException e) {
+			fail();
+			return;
+		}
+	}
+
+	/**
+	 * Restart launch from test1 (with _LAST_)
+	 */
+	@Test
+	public void test1_rest_with_last_rid() {
 		String restartId = "_LAST_";
 		String programQN = getProgramQN();
 		String jobName = "JJP_TestJob1_"+this.getClass().getSimpleName();
@@ -162,6 +222,61 @@ public abstract class AbstractTest extends RootAbstractTest {
 				Assert.assertTrue(resultSet.next());
 				Assert.assertEquals(uid, resultSet.getString("restarted_uid"));
 				Assert.assertEquals(params.size(),resultSet.getInt("total"));
+			} finally {
+				TestHelper.getInstance().closeStatement(statement);
+				TestHelper.getInstance().cleanupConnection(conn);
+			}
+			
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			fail();
+			return;
+		} catch (ClassNotFoundException e) {
+			fail();
+			return;
+		} catch (SQLException e) {
+			fail();
+			return;
+		}
+	}
+
+	/**
+	 * Restart launch from unknown job
+	 */
+	@Test
+	public void test2_rest_but_no_initial_job() {
+		String restartId = "_LAST_";
+		String programQN = getProgramQN();
+		String jobName = "JJP_UNKNOWN_JOB_"+this.getClass().getSimpleName();
+		String groupName = "DEFAULT";
+		String triggerName = "JJP__UNKNOWN_TRIGGER_"+this.getClass().getSimpleName();
+		List<String> params = Arrays.asList(new String[]{"a","b","c"});
+
+		try {
+			Class<? extends Adapter> jobClass = ((Class<? extends Adapter>) Class.forName(programQN));
+			JobBuilder jobBuilder = newJob((Class<? extends Job>) jobClass);
+
+			JobDataMap jobDataMap = new JobDataMap();
+			jobDataMap.put("data1",params);
+
+			JobDetail job = createJob(groupName, jobName, restartId, jobBuilder, jobDataMap);
+
+			Trigger trigger = createTrigger(groupName, triggerName);
+			
+			CountDownLatch latcher = createLatcher(jl);
+			
+			sched.scheduleJob(job, trigger);
+
+			awaitingLatcher(latcher, jl);
+
+			Statement statement = null;
+			ResultSet resultSet = null;
+			Connection conn = null;
+			try {
+				conn = TestHelper.getInstance().getNonManagedTXConnection();
+				statement = conn.createStatement();
+				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
+				Assert.assertFalse(resultSet.first());
 			} finally {
 				TestHelper.getInstance().closeStatement(statement);
 				TestHelper.getInstance().cleanupConnection(conn);
