@@ -120,11 +120,21 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 
 				Launch launch = launcher.newLaunch(jobClass)
 						.addDatas(jobDataMap).synchLaunch();
+				
+				JobDataMap jdm = launch.getLaunchResult();
+				String status = null; 
+				if (jdm == null) {
+					status = "NOTSTARTED";
+				} else {
+					status = String.valueOf(jdm.get(QuartzUtils.RETURN_CODE));
+				}
+				
 				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
 						jobClass.getCanonicalName(),
 						launch.getLaunchId(),
-						String.valueOf(launch.getLaunchResult().get(
-								QuartzUtils.RETURN_CODE)));
+						status);
+//						String.valueOf(launch.getLaunchResult().get(
+//								QuartzUtils.RETURN_CODE)));
 			} catch (LaunchException e) {
 				return LaunchingMessageKind.EQUARTZ0003
 						.format(adapterClassName);
