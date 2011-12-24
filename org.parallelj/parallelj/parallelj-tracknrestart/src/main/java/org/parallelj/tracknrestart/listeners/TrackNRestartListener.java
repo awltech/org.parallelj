@@ -119,6 +119,8 @@ public class TrackNRestartListener extends JDBCSupport implements ForEachListene
 			ps.setString(3, fireInstanceId);
 
 			ps.setString(4, oid);
+			//TODO verify it works with DB2v8
+			// DB2v8 : ps.setInt(5, ((success) ? 1 : 0));
 			ps.setBoolean(5, success);
 			insertResult = ps.executeUpdate();
 		} finally {

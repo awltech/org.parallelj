@@ -315,6 +315,16 @@ public class JDBCSupport implements Serializable {
             return getObjectFromBlob(rs, colName);
         }
 
+//TODO Sybase
+//    protected Object getJobDataFromBlob(ResultSet rs, String colName)
+//            throws ClassNotFoundException, IOException, SQLException {
+//            if (canUseProperties()) {
+//                InputStream binaryInput = rs.getBinaryStream(colName);
+//                return binaryInput;
+//            }
+//            return getObjectFromBlob(rs, colName);
+//        }
+        
     protected Object getObjectFromBlob(ResultSet rs, String colName)
             throws ClassNotFoundException, IOException, SQLException {
             Object obj = null;
@@ -340,6 +350,27 @@ public class JDBCSupport implements Serializable {
             }
             return obj;
         }
+
+//TODO Sybase
+//    protected Object getObjectFromBlob(ResultSet rs, String colName)
+//            throws ClassNotFoundException, IOException, SQLException {
+//            InputStream binaryInput = rs.getBinaryStream(colName);
+//
+//            if(binaryInput == null || binaryInput.available() == 0) {
+//                return null;
+//            }
+//
+//            Object obj = null;
+//
+//            ObjectInputStream in = new ObjectInputStream(binaryInput);
+//            try {
+//                obj = in.readObject();
+//            } finally {
+//                in.close();
+//            }
+//
+//            return obj;
+//        }
 
     public Map<?, ?> getMapFromProperties(ResultSet rs)
             throws ClassNotFoundException, IOException, SQLException {

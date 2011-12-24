@@ -625,10 +625,20 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
 			ps.setString(4, job.getDescription());
 			ps.setString(5, job.getJobClass().getName());
+			//TODO verify it works with DB2v8
+			// DB2v8 : ps.setInt(6, ((job.isDurable()) ? 1 : 0));
 			ps.setBoolean(6, job.isDurable());
+			//TODO verify it works with DB2v8
+			// DB2v8 : ps.setInt(7, ((job.isConcurrentExectionDisallowed()) ? 1 : 0));
 			ps.setBoolean(7, job.isConcurrentExectionDisallowed());
+			//TODO verify it works with DB2v8
+			// DB2v8 : ps.setInt(8, ((job.isPersistJobDataAfterExecution()) ? 1 : 0));
 			ps.setBoolean(8, job.isPersistJobDataAfterExecution());
+			//TODO verify it works with DB2v8
+			// DB2v8 : ps.setInt(9, ((job.requestsRecovery()) ? 1 : 0));
 			ps.setBoolean(9, job.requestsRecovery());
+			//TODO verify it works with Sybase
+	        // Sybase : ps.setBytes(10, (baos == null) ? null: baos.toByteArray());
 			ps.setBytes(10, (baos == null) ? new byte[0] : baos.toByteArray());
 			ps.setObject(11, context.getResult());
 			String restartedInstanceId = jobDataMap.getString(RESTARTED_FIRE_INSTANCE_ID);
