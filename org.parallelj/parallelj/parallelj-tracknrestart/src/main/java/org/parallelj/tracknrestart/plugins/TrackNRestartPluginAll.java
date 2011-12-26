@@ -285,17 +285,14 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
 	public void jobAdded(JobDetail jobDetail) {
 		TrackNRestartMessageKind.ITNRPLUGIN0003.format(jobDetail.getKey());
-		//getLog().info("Job "+jobDetail.getKey()+" added.");
 		JobKey jobKey = jobDetail.getKey();
-		JobDataMap jobDataMap = jobDetail.getJobDataMap();
-		String restart = jobDataMap.getString(RESTARTED_FIRE_INSTANCE_ID);
+		JobDataMap currentJobDataMap = jobDetail.getJobDataMap();
+		String restart = currentJobDataMap.getString(RESTARTED_FIRE_INSTANCE_ID);
 		try {
 			if (fetchJob(getNonManagedTXConnection(), jobKey)){ // group.job exists
-				if (restart == null){
+				if (restart == null){ // simple tracking mode but such an initial execution of this job has already been recorded
 					TrackNRestartMessageKind.ITNRPLUGIN0004.format(jobKey);
-					//getLog().info(jobKey+" is running in simple tracking (non-restarting) mode.");
 					TrackNRestartMessageKind.WTNRPLUGIN0005.format(jobKey);
-					//getLog().warn("At least one "+jobKey+" execution already exists in tracking history.");
 				} else {
 					if (restart.trim().equals("_LAST_")){ // Retrieve last execution to restart it
 						restart = fetchJobExecLast(getNonManagedTXConnection(), jobKey);
@@ -305,67 +302,69 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 							jobDetail.getJobBuilder().usingJobData(JOB_IDENTIFICATION_COMPLETE,false); 
 							
 							TrackNRestartMessageKind.ITNRPLUGIN0006.format(jobKey, restart);
-							//getLog().info("Replacing "+jobKey+" after resolving restarted id from _LAST_ to "+restart+".");
-
+							scheduler.pauseJob(jobKey);
 							scheduler.addJob(jobDetail, true); // WARNING recursivity !
 
 						} else {
-							//TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart);
-							//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
-							TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
-							//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
-							scheduler.deleteJob(jobKey);
-							throw new TrackNRestartException(TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart));
+							breakJob(jobKey, TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart));
 						}
 					} else {  // Retrieve numbered execution to restart it
-						if (!jobDataMap.getBoolean(JOB_IDENTIFICATION_COMPLETE)) { // to break recursivity
+						if (!currentJobDataMap.getBoolean(JOB_IDENTIFICATION_COMPLETE)) { // to break recursivity
 							if (fetchJobExec(getNonManagedTXConnection(),jobKey, restart)) { // found
 
-								JobDataMap currentJobDataMap = jobDataMap; // save current JDM
 								JobDataMap previousJobDataMap = (JobDataMap) getJobExecParams(getNonManagedTXConnection(), jobKey, restart); // retrieve JDM from job to restart
-								jobDetail.getJobBuilder().usingJobData(previousJobDataMap); // override current with previous JDM
-								jobDetail.getJobBuilder().usingJobData(currentJobDataMap); // override overridden with current JDM (especially restart id)
-								jobDetail.getJobBuilder().usingJobData(JOB_IDENTIFICATION_COMPLETE,true); 
-								
-								TrackNRestartMessageKind.ITNRPLUGIN0010.format(jobKey, restart);
-								//getLog().info("Restarting "+jobKey+" #"+restart+".");
 
+								completeWithMissingParams(currentJobDataMap, previousJobDataMap);
+
+								jobDetail.getJobBuilder().usingJobData(JOB_IDENTIFICATION_COMPLETE,true); 
+
+								TrackNRestartMessageKind.ITNRPLUGIN0010.format(jobKey, restart);
 								scheduler.addJob(jobDetail, true); // WARNING recursivity !
 
 							} else { // not found
-								//TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart); // not found
-								//getLog().error("Unable to restart "+jobKey+" caused by previous execution id #"+restart+" not found in tracking history.");
-								TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
-								//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
-								scheduler.deleteJob(jobKey);
-								throw new TrackNRestartException(TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart));
+								breakJob(jobKey, TrackNRestartMessageKind.ETNRPLUGIN0007.format(jobKey, restart));
 							}
+							scheduler.resumeJob(jobKey);
 						}
 					}
 				}
 			} else { // group.job doesn't exist
-				if (restart == null){
-					TrackNRestartMessageKind.ITNRPLUGIN0012.format(jobKey);
-					//getLog().info(jobKey+" is running in simple tracking (non-restarting) mode.");
-				} else {
-					//TrackNRestartMessageKind.ETNRPLUGIN0013.format(jobKey);
-					//getLog().error("Unable to restart "+jobKey+" caused by no previous execution in tracking history.");
-					TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
-					//getLog().warn("Deleting "+jobKey+" to prevent unexpected execution.");
-					scheduler.deleteJob(jobKey);
-					throw new TrackNRestartException(TrackNRestartMessageKind.ETNRPLUGIN0013.format(jobKey));
+				if (restart == null){ // simple tracking mode
+					TrackNRestartMessageKind.ITNRPLUGIN0004.format(jobKey);
+				} else { // inconsistent restarting mode
+					breakJob(jobKey, TrackNRestartMessageKind.ETNRPLUGIN0013.format(jobKey, restart));
 				}
 			}
 		} catch (TrackNRestartException e) {
 			throw e;
 		} catch (Exception e) {
 			try {
-				e.printStackTrace();
-				scheduler.deleteJob(jobKey);
+				breakJob(jobKey, TrackNRestartMessageKind.ETNRPLUGIN0002.format(e));
+//				e.printStackTrace();
+//				scheduler.deleteJob(jobKey);
 			} catch (SchedulerException e1) {
 				getLog().error("Deleting "+jobKey+" caused exception.", e);
 			}
 		}
+	}
+
+	private void completeWithMissingParams(JobDataMap jobDataMap,
+			JobDataMap previousJobDataMap) {
+		for (Iterator<Entry<String, Object>> iterator = previousJobDataMap.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String,Object> entryFromPrevious = (Entry<String,Object>) iterator.next();
+			if (!jobDataMap.containsKey(entryFromPrevious.getKey())){
+				if (!FOR_EACH_LISTENER.equals(entryFromPrevious.getKey())) {
+					jobDataMap.put(entryFromPrevious.getKey(), entryFromPrevious.getValue());
+				}
+			}
+		}
+	}
+
+	private void breakJob(JobKey jobKey, String message)
+			throws SchedulerException {
+		TrackNRestartMessageKind.WTNRPLUGIN0008.format(jobKey);
+		scheduler.deleteJob(jobKey);
+		throw new TrackNRestartException(message);
 	}
 
 	public void jobDeleted(JobKey jobKey) {
@@ -452,6 +451,8 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 	 */
 	public void jobToBeExecuted(JobExecutionContext context) {
 		
+		
+		
 		try {
 			ForEachListener forEachListener = 
 					new TrackNRestartListener(
@@ -517,21 +518,8 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 
 		Object[] args = null;
 
-
-		String result = "";
 		Object oResult = context.getResult();
-		if (oResult instanceof JobDataMap) {
-			for (Iterator<Entry<String, Object>> iterator = ((JobDataMap)oResult).entrySet().iterator(); iterator
-					.hasNext();) {
-				Entry<String,Object> entry = (Entry<String,Object>) iterator.next();
-				result+=entry.getKey()+"="+entry.getValue();
-				if (iterator.hasNext()){
-					result+=", ";
-				}
-			}
-		} else {
-			result = String.valueOf(context.getResult());
-		}
+		String result = showJobDataMap(oResult);
 
 		if (jobException != null) {
 
@@ -578,6 +566,23 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 				getLog().error(MessageFormat.format(getJobSuccessMessage(), args, e));
 			}
 		}
+	}
+
+	public static String showJobDataMap(Object oResult) {
+		String result = "";
+		if (oResult instanceof JobDataMap) {
+			for (Iterator<Entry<String, Object>> iterator = ((JobDataMap)oResult).entrySet().iterator(); iterator
+					.hasNext();) {
+				Entry<String,Object> entry = (Entry<String,Object>) iterator.next();
+				result+=entry.getKey()+"="+entry.getValue();
+				if (iterator.hasNext()){
+					result+=", ";
+				}
+			}
+		} else {
+			result = String.valueOf(oResult);
+		}
+		return result;
 	}
 
 	/**

@@ -130,14 +130,14 @@ public abstract class AbstractTest extends RootAbstractTest {
 		String jobName = "JJP_TestJob1_"+this.getClass().getSimpleName();
 		String groupName = "DEFAULT";
 		String triggerName = "JJP_TestTrigger1_"+this.getClass().getSimpleName();
-		List<String> params = Arrays.asList(new String[]{"a","b","c"});
+//		List<String> params = Arrays.asList(new String[]{"a","b","c"});
 
 		try {
 			Class<? extends Adapter> jobClass = ((Class<? extends Adapter>) Class.forName(programQN));
 			JobBuilder jobBuilder = newJob((Class<? extends Job>) jobClass);
 
 			JobDataMap jobDataMap = new JobDataMap();
-			jobDataMap.put("data1",params);
+//			jobDataMap.put("data1",params);
 
 			JobDetail job = createJob(groupName, jobName, restartId, jobBuilder, jobDataMap);
 
@@ -190,14 +190,15 @@ public abstract class AbstractTest extends RootAbstractTest {
 		String jobName = "JJP_TestJob1_"+this.getClass().getSimpleName();
 		String groupName = "DEFAULT";
 		String triggerName = "JJP_TestTrigger1_"+this.getClass().getSimpleName();
-		List<String> params = Arrays.asList(new String[]{"a","b","c"});
+//		List<String> params = Arrays.asList(new String[]{"a","b","c"});
+		List<String> params = Arrays.asList(new String[]{"","",""});
 
 		try {
 			Class<? extends Adapter> jobClass = ((Class<? extends Adapter>) Class.forName(programQN));
 			JobBuilder jobBuilder = newJob((Class<? extends Job>) jobClass);
 
 			JobDataMap jobDataMap = new JobDataMap();
-			jobDataMap.put("data1",params);
+//			jobDataMap.put("data1",params);
 
 			JobDetail job = createJob(groupName, jobName, restartId, jobBuilder, jobDataMap);
 
@@ -250,14 +251,14 @@ public abstract class AbstractTest extends RootAbstractTest {
 		String jobName = "JJP_UNKNOWN_JOB_"+this.getClass().getSimpleName();
 		String groupName = "DEFAULT";
 		String triggerName = "JJP__UNKNOWN_TRIGGER_"+this.getClass().getSimpleName();
-		List<String> params = Arrays.asList(new String[]{"a","b","c"});
+//		List<String> params = Arrays.asList(new String[]{"a","b","c"});
 
 		try {
 			Class<? extends Adapter> jobClass = ((Class<? extends Adapter>) Class.forName(programQN));
 			JobBuilder jobBuilder = newJob((Class<? extends Job>) jobClass);
 
 			JobDataMap jobDataMap = new JobDataMap();
-			jobDataMap.put("data1",params);
+//			jobDataMap.put("data1",params);
 
 			JobDetail job = createJob(groupName, jobName, restartId, jobBuilder, jobDataMap);
 
@@ -459,10 +460,11 @@ public abstract class AbstractTest extends RootAbstractTest {
 				Class<? extends Adapter> jobClass = ((Class<? extends Adapter>) Class.forName(programQN));
 				JobBuilder jobBuilder = newJob((Class<? extends Job>) jobClass);
 				JobDataMap jobDataMap = new JobDataMap();
-				jobDataMap.put("data1",params);
 				
 				if (i>0) {
 					restartId = "_LAST_";
+				} else {
+					jobDataMap.put("data1",params);
 				}
 
 				job = createJob(groupName, jobName, restartId, jobBuilder, jobDataMap);

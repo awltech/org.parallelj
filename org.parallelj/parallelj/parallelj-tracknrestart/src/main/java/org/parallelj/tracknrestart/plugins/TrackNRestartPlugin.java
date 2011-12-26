@@ -264,9 +264,9 @@ public class TrackNRestartPlugin extends JDBCSupport implements SchedulerPlugin,
 				}
 			} else { // group.job doesn't exist
 				if (restart == null){
-					TrackNRestartMessageKind.ITNRPLUGIN0012.format(jobKey);
+					TrackNRestartMessageKind.ITNRPLUGIN0004.format(jobKey);
 //					getLog().info(jobKey+" is running in simple tracking (non-restarting) mode.");
-					TrackNRestartMessageKind.ITNRPLUGIN0015.format(jobKey);
+//					TrackNRestartMessageKind.ITNRPLUGIN0015.format(jobKey);
 //					getLog().info("First tracked execution of "+jobKey+".");
 				} else {
 					TrackNRestartMessageKind.ETNRPLUGIN0013.format(jobKey);

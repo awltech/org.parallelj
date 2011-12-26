@@ -42,7 +42,7 @@ public enum TrackNRestartMessageKind {
 		
 		@Format("Registering Quartz Job Track&Restart Plug-in.")
 		ITNRPLUGIN0001,
-		@Format("Unexpected exception.")
+		@Format("Unexpected exception : %s.")
 		ETNRPLUGIN0002,
 		@Format("Job %s added.")
 		ITNRPLUGIN0003,
@@ -60,14 +60,13 @@ public enum TrackNRestartMessageKind {
 		@Format("Restarting %s #%s.")
 		ITNRPLUGIN0010,
 
-		@Format("%s is running in simple tracking (non-restarting) mode.")
-		ITNRPLUGIN0012,
+
 		@Format("Unable to restart %s caused by no previous execution in tracking history.")
 		ETNRPLUGIN0013,
 		@Format("Deleting %s caused exception.")
 		ETNRPLUGIN0014,
-		@Format("First tracked execution of %s.")
-		ITNRPLUGIN0015
+//		@Format("First tracked execution of %s.")
+//		ITNRPLUGIN0015
 		;
 	/**
 	 * Method used to format a message
