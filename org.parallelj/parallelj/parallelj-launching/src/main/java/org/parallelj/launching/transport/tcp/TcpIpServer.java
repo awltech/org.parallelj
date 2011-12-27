@@ -56,7 +56,7 @@ public class TcpIpServer {
 	 */
 	public TcpIpServer(String host, int port, IoHandler handler) {
 		this(host, port);
-		setHandler(handler);
+		this.acceptor.setHandler(handler);
 	}
 	
 	/**
