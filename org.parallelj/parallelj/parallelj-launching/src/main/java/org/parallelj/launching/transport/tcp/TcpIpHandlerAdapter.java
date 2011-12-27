@@ -116,7 +116,9 @@ extends IoHandlerAdapter {
 		if (result != null) {
 			session.write(result);
 		}
-		session.write("\n\r>");
+		session.write(ENDLINE);
+		session.write(ENDLINE);
+		session.write("> ");
 	}
 	
 	/* (non-Javadoc)
@@ -126,7 +128,7 @@ extends IoHandlerAdapter {
 	public final void sessionOpened(IoSession session) throws Exception {
 		session.write(this.welcome);
 		session.write(ENDLINE);
-		session.write(">");
+		session.write("> ");
 		super.sessionOpened(session);
 	}
 

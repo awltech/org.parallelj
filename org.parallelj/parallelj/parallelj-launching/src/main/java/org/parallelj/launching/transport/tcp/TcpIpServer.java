@@ -30,7 +30,7 @@ import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.service.IoHandler;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
+import org.apache.mina.filter.codec.textline.TextLineDecoder;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.parallelj.launching.LaunchingMessageKind;
@@ -39,7 +39,7 @@ import org.parallelj.launching.LaunchingMessageKind;
  * Class representing a Parallelj RcpIpServer Server for remote launching 
  */
 public class TcpIpServer {
-	
+	private final static String ENCODING = "UTF-8";
 	private static final int BUFFER_READER_SIZE = 2048;
 	private static final int IDLE_TIME = 10;
 	
@@ -73,8 +73,10 @@ public class TcpIpServer {
 		this.acceptor.getFilterChain().addLast("logger", new LoggingFilter());
 		this.acceptor.getFilterChain().addLast(
 				"codec",
-				new ProtocolCodecFilter(new TextLineCodecFactory(Charset
-						.forName("UTF-8"))));
+				new ProtocolCodecFilter( 
+						new TcpIpTextLineEncoder(Charset.forName(ENCODING)), 
+						new TextLineDecoder(Charset.forName(ENCODING))
+						));
 		this.acceptor.getSessionConfig().setReadBufferSize(BUFFER_READER_SIZE);
 		this.acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE_TIME);
 	}
