@@ -30,5 +30,5 @@ package org.parallelj.launching;
  */
 public enum ReturnCodes {
 
-	SUCCESS, FAILURE, ABORTED;
+	SUCCESS, FAILURE, ABORTED, NOTSTARTED;
 }

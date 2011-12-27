@@ -83,7 +83,7 @@ public class Launcher {
 	 * @return An instance of Launch.
 	 * @throws LaunchException 
 	 */
-	public Launch newLaunch(Class<?> jobClass) throws LaunchException {
+	public synchronized Launch newLaunch(Class<?> jobClass) throws LaunchException {
 		return new Launch(this.scheduler, jobClass);
 	}
 	

@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.mina.core.session.IoSession;
 import org.kohsuke.args4j.CmdLineException;
 import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.launching.ReturnCodes;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
@@ -124,7 +125,7 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 				JobDataMap jdm = launch.getLaunchResult();
 				String status = null; 
 				if (jdm == null) {
-					status = "NOTSTARTED";
+					status = ReturnCodes.NOTSTARTED.name();
 				} else {
 					status = String.valueOf(jdm.get(QuartzUtils.RETURN_CODE));
 				}
@@ -133,8 +134,6 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 						jobClass.getCanonicalName(),
 						launch.getLaunchId(),
 						status);
-//						String.valueOf(launch.getLaunchResult().get(
-//								QuartzUtils.RETURN_CODE)));
 			} catch (LaunchException e) {
 				return LaunchingMessageKind.EQUARTZ0003
 						.format(adapterClassName);
