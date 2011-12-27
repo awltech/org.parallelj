@@ -117,8 +117,8 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 					Parser parser = entry.getParser().newInstance();
 					parser.parse(arguments.get(index));
 				} catch (InstantiationException e) {
-					throw new RuntimeException(
-							String.valueOf(entry.getParser()));
+					throw new ParserException(
+							String.valueOf(entry.getParser()), e);
 				} catch (IllegalAccessException e) {
 					throw new ParserException(entry.getParser()
 							.getCanonicalName(), e);
