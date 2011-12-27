@@ -45,7 +45,7 @@ import org.quartz.JobDataMap;
 public class SyncLaunch extends AbstractLaunchTcpCommand {
 
 	private static final int PRIORITY = 80;
-	private final String usage = "  synclaunch -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
+	private static final String USAGE = "  synclaunch -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
 
 	/*
 	 * (non-Javadoc)
@@ -166,7 +166,7 @@ public class SyncLaunch extends AbstractLaunchTcpCommand {
 	 */
 	@Override
 	public String getUsage() {
-		return this.usage;
+		return USAGE;
 	}
 
 	/*

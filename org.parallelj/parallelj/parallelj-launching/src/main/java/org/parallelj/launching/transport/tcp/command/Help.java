@@ -34,7 +34,7 @@ import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 public class Help extends AbstractTcpCommand {
 	
 	private static final int PRIORITY=100;
-	private final String usage = "                            help : Print this help message";
+	private static final String USAGE = "                            help : Print this help message";
 
 	private String message;
 	
@@ -70,7 +70,7 @@ public class Help extends AbstractTcpCommand {
 	 */
 	@Override
 	public String getUsage() {
-		return this.usage;
+		return USAGE;
 	}
 
 	/* (non-Javadoc)

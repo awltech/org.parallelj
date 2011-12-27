@@ -308,7 +308,8 @@ public class AdapterJobListener implements JobListener, SchedulerListener {
 	 */
 	@Override
 	public void schedulerError(String msg, SchedulerException cause) {
-		System.err.println(msg);
+		// TODO: Add a warning message... 		
+		//System.err.println(msg);
 	}
 
 	/*

@@ -29,7 +29,7 @@ package org.parallelj.launching.transport.tcp.command;
 public class AlQuit extends Quit {
 
 	private static final int PRIORITY=59;
-	private final String usage = "                               q : Quit ";
+	private static final String USAGE = "                               q : Quit ";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.Quit#getType()
@@ -43,7 +43,7 @@ public class AlQuit extends Quit {
 	 */
 	@Override
 	public final String getUsage() {
-		return this.usage;
+		return USAGE;
 	}
 	
 	/* (non-Javadoc)

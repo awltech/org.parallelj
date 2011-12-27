@@ -42,7 +42,7 @@ import org.parallelj.launching.transport.ArgEntry;
 public class ListPrograms extends AbstractTcpCommand {
 
 	private static final int PRIORITY=90;
-	private final String usage = "                            list : Lists available programs and their associated IDs.";
+	private static final String USAGE = "                            list : Lists available programs and their associated IDs.";
 
 	/**
 	 * Represents an available program to be print to the client
@@ -152,7 +152,7 @@ public class ListPrograms extends AbstractTcpCommand {
 	 */
 	@Override
 	public String getUsage() {
-		return this.usage;
+		return USAGE;
 	}
 
 	/* (non-Javadoc)

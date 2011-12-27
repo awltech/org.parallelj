@@ -122,7 +122,7 @@ public class Launch {
 	 * @throws LaunchException
 	 *             When a SchedulerException occurred.
 	 */
-	public synchronized Launch synchLaunch() throws LaunchException {
+	public Launch synchLaunch() throws LaunchException {
 		try {
 			// Define a listener to get the jobId and to wait until the Job is
 			// completed
@@ -166,7 +166,7 @@ public class Launch {
 	 * @throws LaunchException
 	 *             When a SchedulerException occurred.
 	 */
-	public synchronized Launch aSynchLaunch() throws LaunchException {
+	public Launch aSynchLaunch() throws LaunchException {
 		try {
 			// Define a listener to get the jobId
 			AdapterJobListener listener = new AdapterJobListener(
@@ -247,7 +247,7 @@ public class Launch {
 	 * 
 	 * @return the JobId.
 	 */
-	public synchronized String getLaunchId() {
+	public String getLaunchId() {
 		return this.launchResult.getJobId();
 	}
 
@@ -256,7 +256,7 @@ public class Launch {
 	 * 
 	 * @return The result Object of the launch.
 	 */
-	public synchronized JobDataMap getLaunchResult() {
+	public JobDataMap getLaunchResult() {
 		return this.launchResult.getResult();
 	}
 

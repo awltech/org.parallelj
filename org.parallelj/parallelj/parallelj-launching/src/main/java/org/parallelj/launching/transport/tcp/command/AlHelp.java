@@ -29,7 +29,7 @@ package org.parallelj.launching.transport.tcp.command;
 public class AlHelp extends Help {
 	
 	private static final int PRIORITY=99;
-	private final String usage = "                               h : Print this help message";
+	private static final String USAGE = "                               h : Print this help message";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.Help#getType()
@@ -43,7 +43,7 @@ public class AlHelp extends Help {
 	 */
 	@Override
 	public final String getUsage() {
-		return this.usage;
+		return USAGE;
 	}
 
 	/* (non-Javadoc)

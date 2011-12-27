@@ -27,7 +27,7 @@ import org.quartz.SchedulerException;
 /**
  * Entry point for launching Programs.
  */
-public class Launcher {
+public final class Launcher {
 	/**
 	 * The ParalleljScheduler used for Program launching.
 	 */

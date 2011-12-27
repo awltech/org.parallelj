@@ -46,7 +46,7 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand {
 	// private final static String DONE = "Done.";
 
 	private static final int PRIORITY = 70;
-	private final String usage = " asynclaunch -id x -rid y params : Launches a new Program instance with ID x, and returns (asynchronous launch).";
+	private static final String USAGE = " asynclaunch -id x -rid y params : Launches a new Program instance with ID x, and returns (asynchronous launch).";
 
 	/*
 	 * (non-Javadoc)
@@ -155,7 +155,7 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand {
 	 */
 	@Override
 	public String getUsage() {
-		return this.usage;
+		return USAGE;
 	}
 
 	/*
