@@ -1,7 +1,7 @@
 /*
  *     ParallelJ, framework for parallel computing
  *
- *     Copyright (C) 2010 Atos Worldline or third-party contributors as
+ *     Copyright (C) 2010, 2011, 2012 Atos Worldline or third-party contributors as
  *     indicated by the @author tags or express copyright attribution
  *     statements applied by the authors.
  *

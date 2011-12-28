@@ -1,7 +1,7 @@
 /*
  *     ParallelJ, framework for parallel computing
  *
- *     Copyright (C) 2010 Atos Worldline or third-party contributors as
+ *     Copyright (C) 2010, 2011, 2012 Atos Worldline or third-party contributors as
  *     indicated by the @author tags or express copyright attribution
  *     statements applied by the authors.
  *
@@ -19,7 +19,6 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
 package jaxb;
 
 import java.io.StringReader;
