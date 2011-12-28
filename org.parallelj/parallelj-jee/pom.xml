@@ -11,11 +11,25 @@
 	<groupId>org.parallelj</groupId>
 	<artifactId>parallelj-jee</artifactId>
 	<version>0.2.0-SNAPSHOT</version>
-	<name>ParallelJ - Java EE modules - Aggregator Project</name>
+	<name>ParallelJ - Java EE modules</name>
 	<packaging>pom</packaging>
 
 	<url>http://www.parallelj.org/</url>
 	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
+	<inceptionYear>2011</inceptionYear>
+
+	<distributionManagement>
+		<site>
+			<id>www.parallelj.org</id>
+			<url>http://www.parallelj.org/site/${project.version}/</url>
+		</site>
+	</distributionManagement>
+
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/XA-Labs/ParallelJ-Runtime/issues</url>
+	</issueManagement>
+
 	<licenses>
 		<license>
 			<name>LGPL 2.1</name>
@@ -26,14 +40,63 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:svn:https://parallelj.svn.sourceforge.net/svnroot/parallelj/runtime/org.parallelj/parallelj-jee/trunk</connection>
-		<developerConnection>scm:svn:https://parallelj.svn.sourceforge.net/svnroot/parallelj/runtime/org.parallelj/parallelj-jee/trunk</developerConnection>
-		<url>https://parallelj.svn.sourceforge.net/svnroot/parallelj/runtime/org.parallelj/parallelj-jee/trunk</url>
+		<connection>scm:git:http://github.com/XA-Labs/ParallelJ-Runtime.git</connection>
+		<developerConnection>scm:git:git@github.com:XA-Labs/ParallelJ-Runtime.git</developerConnection>
+		<url>https://github.com/XA-Labs/ParallelJ-Runtime</url>
 	</scm>
 
 	<organization>
 		<name>Atos Worldline</name>
 	</organization>
+
+	<developers>
+		<developer>
+			<name>Antoine Neveux</name>
+			<email>antoine.neveux@atos.net</email>
+			<id>aneveux</id>
+			<url>https://github.com/aneveux</url>
+		</developer>
+		<developer>
+			<name>Christophe Wastiaux</name>
+			<email>christophe.wastiaux@atos.net</email>
+			<id>christophe-w</id>
+			<url>https://github.com/christophe-w</url>
+		</developer>
+		<developer>
+			<name>Abhijit Gurav</name>
+			<email>abhijit.gurav@atos.net</email>
+			<id>abhijit-g</id>
+			<url>https://github.com/abhijit-g</url>
+		</developer>
+		<developer>
+			<name>Pierre Devreux</name>
+			<email>pierre.devreux@atos.net</email>
+			<id>devreux</id>
+			<url>https://github.com/devreux</url>
+		</developer>
+		<developer>
+			<name>Thierry Beucher</name>
+			<email>thierry.beucher@atos.net</email>
+			<id>tbrgit</id>
+			<url>https://github.com/tbrgit</url>
+		</developer>
+		<developer>
+			<name>Thibaut Robert</name>
+			<email>thibaut.robert@atos.net</email>
+			<id>trobert</id>
+			<url>https://github.com/trobert</url>
+		</developer>
+	</developers>
+
+	<mailingLists>
+		<mailingList>
+			<archive>http://groups.google.com/group/parallelj-dev</archive>
+			<name>parallelj-dev</name>
+			<post>parallelj-dev@googlegroups.com</post>
+			<subscribe>http://groups.google.com/group/parallelj-dev</subscribe>
+			<unsubscribe>parallelj-dev+unsubscribe@googlegroups.com</unsubscribe>
+		</mailingList>
+	</mailingLists>
 
 	<modules>
 		<module>parallelj-jee-webapp</module>
@@ -62,7 +125,7 @@
 							<groupId>org.parallelj</groupId>
 							<artifactId>parallelj-core</artifactId>
 						</aspectLibrary>
-					</aspectLibraries>					
+					</aspectLibraries>
 				</configuration>
 				<executions>
 					<execution>
@@ -81,11 +144,11 @@
 				<configuration>
 					<ajdtVersion>1.5</ajdtVersion>
 					<additionalProjectnatures>
-						<additionalProjectnature>org.maven.ide.eclipse.maven2Nature</additionalProjectnature>
+						<additionalProjectnature>org.eclipse.m2e.core.maven2Nature</additionalProjectnature>
 					</additionalProjectnatures>
 					<additionalBuildcommands>
 						<buildCommand>
-							<name>org.maven.ide.eclipse.maven2Builder</name>
+							<name>org.eclipse.m2e.core.maven2Builder</name>
 							<arguments>
 							</arguments>
 						</buildCommand>
@@ -103,6 +166,7 @@
 					<quiet>false</quiet>
 					<failIfMissing>true</failIfMissing>
 					<aggregate>true</aggregate>
+					<strictCheck>true</strictCheck>
 					<includes>
 						<include>**/src/**</include>
 					</includes>
@@ -118,23 +182,16 @@
 					</mapping>
 					<useDefaultMapping>false</useDefaultMapping>
 					<properties>
-						<year>2010</year>
+						<year>2010, 2011, 2012</year>
 					</properties>
-					<!--encoding>UTF-8</encoding-->
 				</configuration>
 				<executions>
-					<execution>
-						<phase>test</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
 				</executions>
 			</plugin>
 
 		</plugins>
 	</build>
-	
+
 	<reporting>
 		<plugins>
 			<plugin>

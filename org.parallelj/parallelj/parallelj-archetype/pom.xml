@@ -1,18 +1,20 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<groupId>org.parallelj</groupId>
 		<artifactId>parallelj</artifactId>
 		<version>0.5.0-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>parallelj-archetype</artifactId>
 	<name>ParallelJ - Archetype Project</name>
 	<packaging>maven-archetype</packaging>
-	
+
 	<url>http://www.parallelj.org</url>
-	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
+	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution. This archetype projects allows to create a project skeleton using ParallelJ.</description>
+
 	<licenses>
 		<license>
 			<name>LGPL 2.1</name>
@@ -21,6 +23,7 @@
 			<comments>GNU LESSER GENERAL PUBLIC LICENSE</comments>
 		</license>
 	</licenses>
+
 	<organization>
 		<name>Atos Worldline</name>
 	</organization>
@@ -32,20 +35,55 @@
 		</dependency>
 	</dependencies>
 
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.archetype</groupId>
-        <artifactId>archetype-packaging</artifactId>
-        <version>2.0-alpha-4</version>
-      </extension>
-    </extensions>
-    <plugins>
-      <plugin>
-        <artifactId>maven-archetype-plugin</artifactId>
-        <version>2.0-alpha-4</version>
-        <extensions>true</extensions>
-      </plugin>
-    </plugins>
-  </build>
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.archetype</groupId>
+				<artifactId>archetype-packaging</artifactId>
+				<version>2.0-alpha-4</version>
+			</extension>
+		</extensions>
+		<plugins>
+			<plugin>
+				<artifactId>maven-archetype-plugin</artifactId>
+				<version>2.0-alpha-4</version>
+				<extensions>true</extensions>
+			</plugin>
+			<!-- Checking license headers -->
+			<plugin>
+				<inherited>false</inherited>
+				<groupId>com.mycila.maven-license-plugin</groupId>
+				<artifactId>maven-license-plugin</artifactId>
+				<configuration>
+					<basedir>${basedir}</basedir>
+					<header>etc/header.txt</header>
+					<quiet>false</quiet>
+					<failIfMissing>true</failIfMissing>
+					<aggregate>true</aggregate>
+					<strictCheck>true</strictCheck>
+					<includes>
+						<include>**/src/**</include>
+					</includes>
+					<useDefaultExcludes>true</useDefaultExcludes>
+					<mapping>
+						<ecmd>XML_STYLE</ecmd>
+						<mwe>XML_STYLE</mwe>
+						<ext>SLASHSTAR_STYLE</ext>
+						<xpt>XML_STYLE</xpt>
+						<java>SLASHSTAR_STYLE</java>
+						<aj>SLASHSTAR_STYLE</aj>
+						<properties>SCRIPT_STYLE</properties>
+						<xml>XML_STYLE</xml>
+					</mapping>
+					<useDefaultMapping>false</useDefaultMapping>
+					<properties>
+						<year>2010, 2011, 2012</year>
+					</properties>
+					<encoding>UTF-8</encoding>
+				</configuration>
+				<executions>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

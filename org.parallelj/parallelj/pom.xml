@@ -1,6 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
@@ -10,15 +11,25 @@
 	<groupId>org.parallelj</groupId>
 	<artifactId>parallelj</artifactId>
 	<version>0.5.0-SNAPSHOT</version>
-	<name>ParallelJ - Aggregator Project</name>
+	<name>ParallelJ</name>
 	<packaging>pom</packaging>
-	
+
 	<url>http://www.parallelj.org/</url>
 	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
+	<inceptionYear>2011</inceptionYear>
+
+	<distributionManagement>
+		<site>
+			<id>www.parallelj.org</id>
+			<url>http://www.parallelj.org/site/${project.version}/</url>
+		</site>
+	</distributionManagement>
+
 	<issueManagement>
-		<system>JIRA</system>
-		<url>http://www.parallelj.org/jira</url>
+		<system>github</system>
+		<url>https://github.com/XA-Labs/ParallelJ-Runtime/issues</url>
 	</issueManagement>
+
 	<licenses>
 		<license>
 			<name>LGPL 2.1</name>
@@ -27,23 +38,67 @@
 			<comments>GNU LESSER GENERAL PUBLIC LICENSE</comments>
 		</license>
 	</licenses>
+
 	<scm>
-		<connection>scm:svn:https://parallelj.svn.sourceforge.net/svnroot/parallelj/runtime/org.parallelj/parallelj/trunk</connection>
-		<developerConnection>scm:svn:https://parallelj.svn.sourceforge.net/svnroot/parallelj/runtime/org.parallelj/parallelj/trunk</developerConnection>
-		<url>https://parallelj.svn.sourceforge.net/svnroot/parallelj/runtime/org.parallelj/parallelj/trunk</url>
+		<connection>scm:git:http://github.com/XA-Labs/ParallelJ-Runtime.git</connection>
+		<developerConnection>scm:git:git@github.com:XA-Labs/ParallelJ-Runtime.git</developerConnection>
+		<url>https://github.com/XA-Labs/ParallelJ-Runtime</url>
 	</scm>
+
 	<organization>
 		<name>Atos Worldline</name>
 		<url>http://www.atosworldline.com/</url>
 	</organization>
-	
-	<distributionManagement>
-	    <site>
-			<id>www.parallelj.org</id>
-			<url>http://www.parallelj.org/site/${project.version}/</url>
-	    </site>
-	  </distributionManagement>
-  
+
+	<developers>
+		<developer>
+			<name>Antoine Neveux</name>
+			<email>antoine.neveux@atos.net</email>
+			<id>aneveux</id>
+			<url>https://github.com/aneveux</url>
+		</developer>
+		<developer>
+			<name>Christophe Wastiaux</name>
+			<email>christophe.wastiaux@atos.net</email>
+			<id>christophe-w</id>
+			<url>https://github.com/christophe-w</url>
+		</developer>
+		<developer>
+			<name>Abhijit Gurav</name>
+			<email>abhijit.gurav@atos.net</email>
+			<id>abhijit-g</id>
+			<url>https://github.com/abhijit-g</url>
+		</developer>
+		<developer>
+			<name>Pierre Devreux</name>
+			<email>pierre.devreux@atos.net</email>
+			<id>devreux</id>
+			<url>https://github.com/devreux</url>
+		</developer>
+		<developer>
+			<name>Thierry Beucher</name>
+			<email>thierry.beucher@atos.net</email>
+			<id>tbrgit</id>
+			<url>https://github.com/tbrgit</url>
+		</developer>
+		<developer>
+			<name>Thibaut Robert</name>
+			<email>thibaut.robert@atos.net</email>
+			<id>trobert</id>
+			<url>https://github.com/trobert</url>
+		</developer>
+	</developers>
+
+	<mailingLists>
+		<mailingList>
+			<archive>http://groups.google.com/group/parallelj-dev</archive>
+			<name>parallelj-dev</name>
+			<post>parallelj-dev@googlegroups.com</post>
+			<subscribe>http://groups.google.com/group/parallelj-dev</subscribe>
+			<unsubscribe>parallelj-dev+unsubscribe@googlegroups.com</unsubscribe>
+		</mailingList>
+	</mailingLists>
+
 	<modules>
 		<module>parallelj-core</module>
 		<module>parallelj-tools</module>
@@ -52,7 +107,7 @@
 		<module>parallelj-launching</module>
 		<module>parallelj-tracknrestart</module>
 	</modules>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -63,7 +118,7 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
@@ -81,10 +136,10 @@
 					</execution>
 				</executions>
 			</plugin>
-						
+
 			<!-- Checking license headers -->
 			<plugin>
-			    <inherited>false</inherited>
+				<inherited>false</inherited>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
 				<configuration>
@@ -93,6 +148,7 @@
 					<quiet>false</quiet>
 					<failIfMissing>true</failIfMissing>
 					<aggregate>true</aggregate>
+					<strictCheck>true</strictCheck>
 					<includes>
 						<include>**/src/**</include>
 					</includes>
@@ -105,32 +161,26 @@
 						<java>SLASHSTAR_STYLE</java>
 						<aj>SLASHSTAR_STYLE</aj>
 						<properties>SCRIPT_STYLE</properties>
+						<xml>XML_STYLE</xml>
 					</mapping>
 					<useDefaultMapping>false</useDefaultMapping>
 					<properties>
-						<year>2010, 2011</year>
+						<year>2010, 2011, 2012</year>
 					</properties>
-					<!--encoding>UTF-8</encoding-->
-	            </configuration>
-					<executions>
-<!--					<execution>-->
-<!--						<phase>test</phase>-->
-<!--						<goals>-->
-<!--							<goal>check</goal>-->
-<!--						</goals>-->
-<!--					</execution>-->
+					<encoding>UTF-8</encoding>
+				</configuration>
+				<executions>
 				</executions>
 			</plugin>
 
 		</plugins>
 	</build>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjrt</artifactId>
-<!-- 				<version>1.6.9</version> -->
 				<version>1.6.2</version>
 			</dependency>
 			<dependency>
@@ -156,7 +206,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<reporting>
 		<plugins>
 			<plugin>
