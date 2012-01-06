@@ -21,7 +21,10 @@
  */
 package org.parallelj.launching.transport.tcp.command;
 
+import java.util.List;
+
 import org.apache.mina.core.session.IoSession;
+import org.parallelj.launching.transport.tcp.command.option.IOption;
 
 /**
  * Define a Command available in a TcpIpServer for remote launching
@@ -58,5 +61,11 @@ public interface TcpCommand {
 	 * @return the usage priority of the command
 	 */
 	int getPriorityUsage();
+
+	public Class<? extends IOption> getOptionClass();
+
+	public String getHelp();
+	
+	public List<IOption> getOptions();
 
 }

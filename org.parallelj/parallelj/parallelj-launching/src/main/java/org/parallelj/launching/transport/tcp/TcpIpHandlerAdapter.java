@@ -30,6 +30,7 @@ import java.util.Arrays;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.parallelj.launching.transport.tcp.command.TcpCommand;
+import org.parallelj.launching.transport.tcp.command.TcpIpCommands;
 
 /**
  * Handler associated with the TcpIpServer

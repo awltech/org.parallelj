@@ -22,8 +22,10 @@
 package org.parallelj.launching.quartz;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.parallelj.Programs;
+import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ReturnCodes;
@@ -87,20 +89,20 @@ privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+
 	}
 
 	/**
-	 * Intercept Exception thrown in RunnableProcedure for tracing. If an
+	 * Intercept Exception thrown in RunnableProcedure/CallableProcedure for tracing. If an
 	 * Exception is thrown, the return code of a Launch becomes FAILURE.
 	 * 
 	 * @param self
 	 */
-	void around(Object self) : call(* run(..))
-		    && within(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall)
-		    && within(Runnable+)  && this(self)  {
-		try {
-			proceed(self);
-		} catch (Exception e) {
-			LaunchingMessageKind.ELAUNCH0002.format(this.adpater, e);
-			((JobDataMap) this.context.getResult()).put(
-					QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
-		}
-	}
+    pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
+    pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(ProgramJobsAdapter);
+    after(Object oo, KCall _kCall) throwing (InvocationTargetException ite) : 
+    	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
+		
+		LaunchingMessageKind.ELAUNCH0002.format(this.adpater, ite);
+		((JobDataMap) this.context.getResult()).put(
+				QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+//		this.result = ReturnCodes.FAILURE.name();
+//		track(_kCall, oo, false, ite);
+    }
 }

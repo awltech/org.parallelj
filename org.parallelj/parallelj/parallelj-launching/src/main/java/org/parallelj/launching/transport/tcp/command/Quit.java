@@ -21,7 +21,11 @@
  */
 package org.parallelj.launching.transport.tcp.command;
 
+import java.util.List;
+
 import org.apache.mina.core.session.IoSession;
+import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
+import org.parallelj.launching.transport.tcp.command.option.IOption;
 
 /**
  * Quit TcpCommand
@@ -30,7 +34,7 @@ import org.apache.mina.core.session.IoSession;
 public class Quit extends AbstractTcpCommand {
 
 	private static final int PRIORITY=60;
-	private static final String USAGE = "                            quit : Quit ";
+	private static final String USAGE = "quit : Quit ";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
@@ -62,6 +66,21 @@ public class Quit extends AbstractTcpCommand {
 	@Override
 	public int getPriorityUsage() {
 		return PRIORITY;
+	}
+
+	@Override
+	public Class<? extends IOption> getOptionClass() {
+		return null;
+	}
+
+	@Override
+	public List<IOption> getOptions() {
+		return null;
+	}
+
+	@Override
+	public String getHelp() {
+		return this.getUsage()+TcpIpHandlerAdapter.ENDLINE;
 	}
 
 }

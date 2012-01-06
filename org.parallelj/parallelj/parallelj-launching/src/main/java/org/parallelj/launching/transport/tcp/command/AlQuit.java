@@ -28,7 +28,7 @@ package org.parallelj.launching.transport.tcp.command;
 public class AlQuit extends Quit {
 
 	private static final int PRIORITY=59;
-	private static final String USAGE = "                               q : Quit ";
+	private static final String USAGE = "q : Quit ";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.Quit#getType()

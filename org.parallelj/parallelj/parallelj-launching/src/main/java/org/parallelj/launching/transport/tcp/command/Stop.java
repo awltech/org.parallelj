@@ -21,7 +21,11 @@
  */
 package org.parallelj.launching.transport.tcp.command;
 
+import java.util.List;
+
 import org.apache.mina.core.session.IoSession;
+import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
+import org.parallelj.launching.transport.tcp.command.option.IOption;
 
 /**
  * Stop TcpCommand
@@ -30,7 +34,7 @@ import org.apache.mina.core.session.IoSession;
 public class Stop extends AbstractTcpCommand {
 
 	private static final int PRIORITY=0;
-	private static final String USAGE = "                      stop -id x : stop the program with ID x";
+	private static final String USAGE = "stop: stop a launched program";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
@@ -59,5 +63,20 @@ public class Stop extends AbstractTcpCommand {
 	@Override
 	public final int getPriorityUsage() {
 		return PRIORITY;
+	}
+
+	@Override
+	public Class<? extends IOption> getOptionClass() {
+		return null;
+	}
+
+	@Override
+	public List<IOption> getOptions() {
+		return null;
+	}
+
+	@Override
+	public String getHelp() {
+		return this.getUsage()+TcpIpHandlerAdapter.ENDLINE;
 	}
 }

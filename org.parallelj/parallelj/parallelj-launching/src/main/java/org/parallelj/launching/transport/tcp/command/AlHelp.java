@@ -28,7 +28,7 @@ package org.parallelj.launching.transport.tcp.command;
 public class AlHelp extends Help {
 	
 	private static final int PRIORITY=99;
-	private static final String USAGE = "                               h : Print this help message";
+	private static final String USAGE = "h : Print this help message";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.Help#getType()

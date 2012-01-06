@@ -45,7 +45,7 @@ import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.quartz.QuartzUtils;
-import org.parallelj.launching.transport.ArgEntry;
+import org.parallelj.launching.transport.tcp.program.ArgEntry;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 

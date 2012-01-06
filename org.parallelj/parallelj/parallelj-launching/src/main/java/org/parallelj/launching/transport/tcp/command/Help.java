@@ -22,10 +22,11 @@
 package org.parallelj.launching.transport.tcp.command;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.mina.core.session.IoSession;
-import org.parallelj.launching.transport.tcp.TcpIpCommands;
 import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
+import org.parallelj.launching.transport.tcp.command.option.IOption;
 
 /**
  * Help TcpCommand
@@ -34,7 +35,7 @@ import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 public class Help extends AbstractTcpCommand {
 	
 	private static final int PRIORITY=100;
-	private static final String USAGE = "                            help : Print this help message";
+	private static final String USAGE = "help : Print this help message";
 
 	private String message;
 	
@@ -48,10 +49,14 @@ public class Help extends AbstractTcpCommand {
 			TcpCommand[] cmds = TcpIpCommands.getCommands().values().toArray(new TcpCommand[]{});
 			Arrays.sort(cmds);
 			for (TcpCommand cmd : cmds) {
-				String usage = cmd.getUsage(); 
-				if (usage!=null && usage.length()>0) {
-					strb.append(usage).append(TcpIpHandlerAdapter.ENDLINE);
+				String help = cmd.getHelp(); 
+				if (help!=null && help.length()>0) {
+					strb.append(help).append(TcpIpHandlerAdapter.ENDLINE);
 				}
+//				String usage = cmd.getUsage(); 
+//				if (usage!=null && usage.length()>0) {
+//					strb.append(usage).append(TcpIpHandlerAdapter.ENDLINE);
+//				}
 			}
 			this.message=strb.toString();
 		}
@@ -79,6 +84,21 @@ public class Help extends AbstractTcpCommand {
 	@Override
 	public int getPriorityUsage() {
 		return PRIORITY;
+	}
+
+	@Override
+	public Class<? extends IOption> getOptionClass() {
+		return null;
+	}
+
+	@Override
+	public List<IOption> getOptions() {
+		return null;
+	}
+
+	@Override
+	public String getHelp() {
+		return this.getUsage()+TcpIpHandlerAdapter.ENDLINE;
 	}
 
 }

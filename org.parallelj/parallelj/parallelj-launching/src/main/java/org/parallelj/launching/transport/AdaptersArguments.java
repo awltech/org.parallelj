@@ -29,6 +29,7 @@ import java.util.List;
 import org.parallelj.launching.In;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.parser.Parser;
+import org.parallelj.launching.transport.tcp.program.ArgEntry;
 
 /**
  * Entry point for all defined arguments of Adapters for remote launching

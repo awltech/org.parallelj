@@ -223,14 +223,20 @@ public enum LaunchingMessageKind {
 	/**
 	 * Illegal argument value. Program not launched!
 	 */
-	@Format("Illegal argument value. Program not launched!")
+	@Format("Illegal argument value %s. Program not launched!")
 	EREMOTE0006,
 	
 	/**
 	 * Error with Parser %s - Program not launched!
 	 */
 	@Format("Error with Parser %s - Program not launched!")
-	EREMOTE0007;
+	EREMOTE0007,
+	
+	/**
+	 * Invalid option value
+	 */
+	@Format("Invalid option value: %s - %s!")
+	EREMOTE0008;
 	
 
 	/**

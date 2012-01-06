@@ -47,7 +47,7 @@ import org.parallelj.internal.reflect.ProgramAdapter;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.transport.AdaptersArguments;
-import org.parallelj.launching.transport.ArgEntry;
+import org.parallelj.launching.transport.tcp.program.ArgEntry;
 
 /**
  * Class representing a Parallelj JMX Server for remote launching 

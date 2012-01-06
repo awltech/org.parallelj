@@ -90,4 +90,5 @@ abstract class AbstractTcpCommand implements TcpCommand, Comparable<TcpCommand> 
 		return o.getPriorityUsage()-this.getPriorityUsage();
 	}
 	
+	public abstract String getHelp();	
 }

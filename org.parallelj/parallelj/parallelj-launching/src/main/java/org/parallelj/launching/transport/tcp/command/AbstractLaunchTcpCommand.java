@@ -21,24 +21,50 @@
  */
 package org.parallelj.launching.transport.tcp.command;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.ServiceLoader;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.mina.core.session.IoSession;
-import org.kohsuke.args4j.CmdLineException;
-import org.kohsuke.args4j.CmdLineParser;
-import org.parallelj.launching.LaunchingMessageKind;
-import org.parallelj.launching.parser.NopParser;
-import org.parallelj.launching.parser.Parser;
 import org.parallelj.launching.parser.ParserException;
-import org.parallelj.launching.transport.AdaptersArguments.AdapterArguments;
-import org.parallelj.launching.transport.ArgEntry;
-import org.parallelj.launching.transport.tcp.TcpIpOptions;
-import org.quartz.JobDataMap;
+import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
+import org.parallelj.launching.transport.tcp.command.option.IIdOption;
+import org.parallelj.launching.transport.tcp.command.option.IOption;
+import org.parallelj.launching.transport.tcp.command.option.OptionException;
+import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
 
 /**
  * Define a Program launch Command available in a TcpIpServer
  */
 abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
+
+	/** default number of characters per line */
+	public static final int DEFAULT_WIDTH = 74;
+
+	/** default padding to the left of each line */
+	public static final int DEFAULT_LEFT_PAD = 4;
+
+	/**
+	 * the number of characters of padding to be prefixed to each description
+	 * line
+	 */
+	public static final int DEFAULT_DESC_PAD = 3;
+
+	private List<IOption> options;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -55,117 +81,119 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 	 */
 	public abstract String getType();
 
-	public TcpIpOptions parseCommandLine(String... args)
-			throws CmdLineException {
-		TcpIpOptions options = new TcpIpOptions();
-		CmdLineParser parser = new CmdLineParser(options);
-		parser.parseArgument(args);
-		return options;
-	}
+	public TcpIpProgram parseCommandLine(String... args) throws ParseException,
+			OptionException {
+		// Get sorted options
+		List<IOption> ioptions = getOptions();
+		Options options = new Options();
+		for (IOption ioption : ioptions) {
+			options.addOption(ioption.getOption());
+		}
 
-	protected JobDataMap buildJobDataMap(AdapterArguments adapterArguments,
-			Object[] params) {
-		JobDataMap jobDataMap = new JobDataMap();
-		/*
-		 * if no restartId: this.adapterArgs.size() == params[].length ==
-		 * signature[].length if a restartId: this.adapterArgs.size()+1 ==
-		 * params[].length == signature[].length In this case, params[0] is the
-		 * restartId If it is not the case, there is an error in initializing
-		 * JMX description methods for the Adpater MBean.
-		 */
+		// create the command line parser
+		CommandLineParser parser = new PosixParser();
+
+		// parse the command line arguments
+		// CommandLine cmdLine = parser.parse(options, args);
+		CommandLine cmdLine = parser.parse(options, args);
+		// As Options are reinitialized after parsing,
+		// we need to re-affect IOption.option
+		for (Option option : cmdLine.getOptions()) {
+			for (IOption ioption : getOptions()) {
+				if (ioption.getOption().getOpt().equals(option.getOpt())) {
+					ioption.setOption(option);
+					break;
+				}
+			}
+		}
+		
+		// First, we need to get the IIdOption to get the Program
+		// We are sure this option is present as it it mandatory!
+		IIdOption idOption = null;
+		for (IOption ioption : ioptions) {
+			if (ioption instanceof IIdOption) {
+				idOption = (IIdOption)ioption;
+				break;
+			}
+		}
+		TcpIpProgram tcpIpProgram = idOption.getProgram();
+		
+		// Check all defined Options with the selected Program
 		try {
-			int ind = 0;
-			for (ArgEntry arg : adapterArguments.getAdapterArguments()) {
-				// Do we have to use a Parser?
-				Object obj = null;
-				if (!arg.getParser().equals(NopParser.class)) {
-					obj = arg.getParser().newInstance()
-							.parse(String.valueOf(params[ind++]));
-				} else {
-					obj = params[ind++];
-				}
-				jobDataMap.put(arg.getName(), obj);
+			for (IOption ioption : ioptions) {
+				ioption.ckeckOption(tcpIpProgram);
 			}
-		} catch (InstantiationException e) {
-			LaunchingMessageKind.EREMOTE0002.format();
-		} catch (IllegalAccessException e) {
-			LaunchingMessageKind.EREMOTE0002.format();
+			return tcpIpProgram;
+		} catch (ParserException e) {
+			throw new OptionException(
+					e.getFormatedMessage());
 		}
-		return jobDataMap;
 	}
 
-	/**
-	 * Check the validity of arguments values coming from remote launching with
-	 * regard to types. If not done, the Quartz Exception thrown doesn't
-	 * stop the launch and Program may be launched with invalid arguments
-	 * values.
-	 * 
-	 * @param adapterArguments
-	 * @param arguments
-	 * @throws ParserException
-	 */
-	protected void checkArgsFormat(AdapterArguments adapterArguments,
-			List<String> arguments) throws ParserException {
-
-		int index = 0;
-		for (ArgEntry entry : adapterArguments.getAdapterArguments()) {
-			Class<?> clazz = entry.getType();
-			// If a Parser is defined...
-			if (!entry.getParser().equals(NopParser.class)) {
-				try {
-					Parser parser = entry.getParser().newInstance();
-					parser.parse(arguments.get(index));
-				} catch (InstantiationException e) {
-					throw new ParserException(
-							String.valueOf(entry.getParser()), e);
-				} catch (IllegalAccessException e) {
-					throw new ParserException(entry.getParser()
-							.getCanonicalName(), e);
-				} catch (Exception e) {
-					// Other Exceptions...
-					throw new ParserException(entry.getParser()
-							.getCanonicalName(), e);
-				}
-			} else {
-				// No Parser is defined
-				if (clazz.equals(int.class)) {
-					if (arguments.get(index) instanceof String) {
-						Integer.valueOf((String) arguments.get(index));
-					}
-				} else if (clazz.equals(long.class)) {
-					if (arguments.get(index) instanceof String) {
-						Long.valueOf((String) arguments.get(index));
-					}
-				} else if (clazz.equals(float.class)) {
-					if (arguments.get(index) instanceof String) {
-						Float.valueOf((String) arguments.get(index));
-					}
-				} else if (clazz.equals(double.class)) {
-					if (arguments.get(index) instanceof String) {
-						Double.valueOf((String) arguments.get(index));
-					}
-				} else if (clazz.equals(boolean.class)) {
-					if (arguments.get(index) instanceof String) {
-						Boolean.valueOf((String) arguments.get(index));
-					}
-				} else if (clazz.equals(byte.class)) {
-					if (arguments.get(index) instanceof String) {
-						Byte.valueOf((String) arguments.get(index));
-					}
-				} else if (clazz.equals(short.class)) {
-					if (arguments.get(index) instanceof String) {
-						Short.valueOf((String) arguments.get(index));
-					}
-				} else if (clazz.equals(char.class)) {
-					if (arguments.get(index) instanceof String) {
-						String str = (String) arguments.get(index);
-						if (str.length() == 1) {
-							Character.valueOf(str.charAt(0));
-						}
-					}
+	public List<IOption> getOptions() {
+		Class<? extends IOption> iOptionClass = this.getOptionClass();
+		if (iOptionClass != null) {
+			if (this.options == null) {
+				this.options = new ArrayList<IOption>();
+				ServiceLoader<? extends IOption> loader = ServiceLoader
+						.load(iOptionClass);
+				for (IOption option : loader) {
+					this.options.add(option);
 				}
 			}
-			index++;
 		}
+
+		// Sort the list of IOption.
+		// The first IOption should be "id" as it is the only once mandatory
+		Comparator<IOption> comparator = new Comparator<IOption>() {
+			public int compare(IOption o1, IOption o2) {
+				if (o1.getOption() != null && o1.getOption().isRequired()) {
+					return -1;
+				}
+				if (o2.getOption() != null && o2.getOption().isRequired()) {
+					return 1;
+				}
+				return 0;
+			}
+		};
+		Collections.sort(this.options, comparator);
+
+		return this.options;
+	}
+
+	public abstract Class<? extends IOption> getOptionClass();
+
+	@Override
+	public String getHelp() {
+		Writer writer = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(writer);
+		Options options = new Options();
+		for (IOption ioption : this.getOptions()) {
+			options.addOption(ioption.getOption());
+		}
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.setSyntaxPrefix("  ");
+		Comparator<Option> comparator = new Comparator<Option>() {
+			public int compare(Option o1, Option o2) {
+				if (o1.isRequired()) {
+					return -1;
+				}
+				if (o2.isRequired()) {
+					return 1;
+				}
+				return 0;
+			}
+		};
+		formatter.setOptionComparator(comparator);
+		printWriter.print(getUsage() + TcpIpHandlerAdapter.ENDLINE);
+		formatter.printHelp(printWriter, DEFAULT_WIDTH, getType(), null,
+				options, DEFAULT_LEFT_PAD, DEFAULT_DESC_PAD, null, true);
+		printWriter.flush();
+		try {
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return writer.toString();
 	}
 }

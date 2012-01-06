@@ -28,7 +28,7 @@ package org.parallelj.launching.transport.tcp.command;
 public class AlSyncLaunch extends SyncLaunch {
 	
 	private static final int PRIORITY=79;
-	private static final String USAGE = "          sl -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
+	private static final String USAGE = "sl : Launches a new Program instance and waits till return status (synchronous launch).";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.SyncLaunch#getType()

@@ -29,7 +29,7 @@ public class AlAsyncLaunch extends AsyncLaunch {
 	
 	private static final int PRIORITY=69;
 	
-	private static final String USAGE = "         asl -id x -rid y params : Launches a new Program instance with ID x, and returns (asynchronous launch).";
+	private static final String USAGE = "asl : Launches a new Program instance with ID x, and returns (asynchronous launch).";
 
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AsyncLaunch#getType()

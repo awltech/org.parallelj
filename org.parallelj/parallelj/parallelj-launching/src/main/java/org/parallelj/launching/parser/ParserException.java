@@ -23,21 +23,30 @@ package org.parallelj.launching.parser;
 
 public class ParserException extends Exception {
 
-	private String parser;
+	private String formatedMessage;
+	private Exception exception;
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 273243666792357288L;
+	private static final long serialVersionUID = -7793932389206020914L;
 
-	public ParserException(String parser, Throwable e) {
-		super(e);
-		this.parser = parser;
+	public ParserException(String formatedMessage) {
+		this.formatedMessage = formatedMessage;
 	}
 
-	public String getParser() {
-		return this.parser;
+	public ParserException(String formatedMessage, Exception e) {
+		this.formatedMessage = formatedMessage;
+		this.exception = e;
 	}
-	
+
+	public String getFormatedMessage() {
+		return formatedMessage;
+	}
+
+	public Throwable getException() {
+		return exception;
+	}
+
 	
 }
