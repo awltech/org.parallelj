@@ -51,6 +51,8 @@ public class AsyncLaunchRidOption implements IAsyncLaunchOption {
 	public void process(JobDataMap jobDataMap, Object... args)
 			throws OptionException, ParserException {
 		String restartId = this.getOption().getValue();
-		jobDataMap.put(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID, restartId);
+		if (restartId != null) {
+			jobDataMap.put(TrackNRestartPluginAll.RESTARTED_FIRE_INSTANCE_ID, restartId);
+		}
 	}
 }
