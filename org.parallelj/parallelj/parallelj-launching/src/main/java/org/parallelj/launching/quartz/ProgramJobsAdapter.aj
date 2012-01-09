@@ -100,7 +100,9 @@ privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+
     	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
 		
 		LaunchingMessageKind.ELAUNCH0002.format(this.adpater, ite);
-		if (this.context.getResult() != null && this.context.getResult() instanceof JobDataMap) {
+		if (this.context != null 
+				&& this.context.getResult() != null 
+				&& this.context.getResult() instanceof JobDataMap) {
 			((JobDataMap) this.context.getResult()).put(
 					QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
 		}
