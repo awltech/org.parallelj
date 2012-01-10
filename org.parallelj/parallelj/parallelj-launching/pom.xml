@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.parallelj</groupId>
 			<artifactId>parallelj-jmx</artifactId>
-			<version>${parent.version}</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.sshd</groupId>
@@ -90,6 +90,12 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
+					<aspectLibraries>
+						<aspectLibrary>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-core</artifactId>
+						</aspectLibrary>
+					</aspectLibraries>
 				</configuration>
 				<executions>
 					<execution>
@@ -116,6 +122,14 @@
 							</arguments>
 						</buildCommand>
 					</additionalBuildcommands>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>
+						"-javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/1.6.8/aspectjweaver-1.6.8.jar"
+					</argLine>
 				</configuration>
 			</plugin>
 			<!-- Checking license headers -->
