@@ -28,6 +28,7 @@ import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
+import org.parallelj.launching.transport.jmx.JmxCommand;
 import org.parallelj.launching.transport.tcp.command.option.IAsyncLaunchOption;
 import org.parallelj.launching.transport.tcp.command.option.IOption;
 import org.parallelj.launching.transport.tcp.command.option.OptionException;
@@ -39,7 +40,7 @@ import org.quartz.JobDataMap;
  * AsyncLaunch TcpCommand
  * 
  */
-public class AsyncLaunch extends AbstractLaunchTcpCommand {
+public class AsyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 
 	// private final static String DONE = "Done.";
 

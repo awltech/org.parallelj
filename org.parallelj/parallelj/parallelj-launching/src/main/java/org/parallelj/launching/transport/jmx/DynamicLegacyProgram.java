@@ -21,6 +21,8 @@
  */
 package org.parallelj.launching.transport.jmx;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.management.Attribute;
@@ -44,7 +46,6 @@ import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
-import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.launching.transport.tcp.program.ArgEntry;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -55,14 +56,17 @@ import org.quartz.JobDataMap;
  */
 public class DynamicLegacyProgram implements DynamicMBean {
 	/**
-	 * The adapter class 
+	 * The adapter class
 	 */
 	private Class<? extends Adapter> adapterClass;
-	
+
 	/**
 	 * 
 	 */
 	private List<ArgEntry> adapterArgs;
+
+	private JmxCommand[] cmds;
+	private MBeanOperationInfo[] operations;
 
 	/**
 	 * Default constructor
@@ -75,30 +79,53 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			List<ArgEntry> adapterArgs) {
 		this.adapterClass = adapterClass;
 		this.adapterArgs = adapterArgs;
+
+		// Get all available Commands
+		this.cmds = JmxCommands.getCommands().values()
+				.toArray(new JmxCommand[] {});
+		Arrays.sort(this.cmds);
+
+		this.operations = new MBeanOperationInfo[this.cmds.length];
+		int opIndex = 0;
+		for (JmxCommand cmd : this.cmds) {
+			List<MBeanParameterInfo> parameters = new ArrayList<MBeanParameterInfo>();
+			for (JmxOption option : JmxOptions.getOptions()) {
+				// Options "id" and "args" doesn't have to be shown using Jmx
+				MBeanParameterInfo param = new MBeanParameterInfo(
+						option.getName(), "java.lang.String", option.getDescription());
+				parameters.add(param);
+			}
+			MBeanOperationInfo operation = new MBeanOperationInfo(
+					cmd.getType(), cmd.getUsage(), ArrayUtils.addAll(
+							parameters.toArray(new MBeanParameterInfo[] {}),
+							createMBeanParameterInfos()), "java.lang.String",
+					MBeanOperationInfo.INFO);
+			operations[opIndex++] = operation;
+		}
 	}
 
 	/**
 	 * Initialize the JobDataMap with the Program arguments
 	 * 
-	 * @param job The JobDetail for the JobDataMap initialization
-	 * @param params The parameters Objects for the Program
-	 * @param signature The parameters type
-	 * @throws MBeanException If an error appends when initializing the JobDataMap
+	 * @param job
+	 *            The JobDetail for the JobDataMap initialization
+	 * @param params
+	 *            The parameters Objects for the Program
+	 * @param signature
+	 *            The parameters type
+	 * @throws MBeanException
+	 *             If an error appends when initializing the JobDataMap
 	 */
-	protected JobDataMap buildJobDataMap(Object[] params) throws MBeanException {
+	protected JobDataMap buildJobDataMap(JmxCommand jmxCommand, Object[] params)
+			throws MBeanException {
 		JobDataMap jobDataMap = new JobDataMap();
-		/*
-		 * if no restartId: this.adapterArgs.size() == params[].length ==
-		 * signature[].length if a restartId: this.adapterArgs.size()+1 ==
-		 * params[].length == signature[].length In this case, params[0] is the
-		 * restartId If it is not the case, there is an error in initializing
-		 * JMX description methods for the Adpater MBean.
-		 */
+
 		try {
-			// Is there a restartId?
 			int ind = 0;
-			if (params.length == this.adapterArgs.size() + 1) {
-				jobDataMap.put(QuartzUtils.getRestartedFireInstanceIdKey(), params[ind++]);
+
+			// Options are before the AdapterArguments
+			for (JmxOption option : JmxOptions.getOptions()) {
+				option.process(jobDataMap, String.valueOf(params[ind++]));
 			}
 
 			for (ArgEntry arg : this.adapterArgs) {
@@ -127,26 +154,36 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * java.lang.Object[], java.lang.String[])
 	 */
 	@Override
-	public final Object invoke(String actionName, Object[] params, String[] signature)
-			throws MBeanException, ReflectionException {
+	public final Object invoke(String actionName, Object[] params,
+			String[] signature) throws MBeanException, ReflectionException {
+		// Get the JmxCommand
+		JmxCommand curCmd = null;
+		for (JmxCommand cmd : this.cmds) {
+			if (cmd.getType().equals(actionName)) {
+				curCmd = cmd;
+				break;
+			}
+		}
+
 		boolean isSync = actionName.startsWith("sync");
 		Object result = null;
 		try {
 			// initialize arguments for Quartz
-			JobDataMap jobDataMap = buildJobDataMap(params);
+			JobDataMap jobDataMap = buildJobDataMap(curCmd, params);
 
 			@SuppressWarnings("unchecked")
 			Launch launch = Launcher.getLauncher()
-					.newLaunch((Class<Job>) adapterClass)
-					.addDatas(jobDataMap);
+					.newLaunch((Class<Job>) adapterClass).addDatas(jobDataMap);
 			if (isSync) {
 				// Launch and wait until terminated
 				launch.synchLaunch();
-				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(adapterClass.getCanonicalName(), launch.getLaunchId());
+				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
+						adapterClass.getCanonicalName(), launch.getLaunchId());
 			} else {
 				// Launch and continue
 				launch.aSynchLaunch();
-				return LaunchingMessageKind.IQUARTZ0002.getFormatedMessage(adapterClass.getCanonicalName(), launch.getLaunchId());
+				return LaunchingMessageKind.IQUARTZ0002.getFormatedMessage(
+						adapterClass.getCanonicalName(), launch.getLaunchId());
 			}
 		} catch (LaunchException e) {
 			LaunchingMessageKind.EQUARTZ0003.format(actionName, e);
@@ -161,37 +198,12 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @return an array of MBeanOperationInfo
 	 */
 	private MBeanOperationInfo[] createMBeanOperationInfo() {
-		MBeanOperationInfo[] mbeansInfos = new MBeanOperationInfo[] {
-				new MBeanOperationInfo("syncLaunch",
-						"the method for a syncLaunch",
-						ArrayUtils.addAll(createMBeanParameterInfos()),
-						"java.lang.String", MBeanOperationInfo.INFO),
-				new MBeanOperationInfo("asyncLaunch",
-						"the method for a syncLaunch",
-						ArrayUtils.addAll(createMBeanParameterInfos()), "void",
-						MBeanOperationInfo.INFO),
-				new MBeanOperationInfo(
-						"syncLaunch",
-						"the method for a syncLaunch",
-						ArrayUtils
-								.addAll(new MBeanParameterInfo[] { new MBeanParameterInfo(
-										"rid", "java.lang.String",
-										"the restarting Id") },
-										createMBeanParameterInfos()),
-						"java.lang.String", MBeanOperationInfo.INFO),
-				new MBeanOperationInfo(
-						"asyncLaunch",
-						"the method for a syncLaunch",
-						ArrayUtils
-								.addAll(new MBeanParameterInfo[] { new MBeanParameterInfo(
-										"rid", "java.lang.String",
-										"the restarting Id") },
-										createMBeanParameterInfos()), "void",
-						MBeanOperationInfo.INFO) };
-		return mbeansInfos;
+		return this.operations;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.management.DynamicMBean#getMBeanInfo()
 	 */
 	@Override
@@ -207,7 +219,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	}
 
 	/**
-	 * Generate MBean parameter info for all Program field annotated with @In 
+	 * Generate MBean parameter info for all Program field annotated with @In
 	 * 
 	 * @return an array of MBeanParameterInfo
 	 */
@@ -232,7 +244,9 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.management.DynamicMBean#getAttribute(java.lang.String)
 	 */
 	@Override
@@ -243,8 +257,11 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.management.DynamicMBean#setAttribute(javax.management.Attribute)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.management.DynamicMBean#setAttribute(javax.management.Attribute)
 	 */
 	@Override
 	public void setAttribute(Attribute attribute)
@@ -253,7 +270,9 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		// Do Nothing
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.management.DynamicMBean#getAttributes(java.lang.String[])
 	 */
 	@Override
@@ -262,8 +281,12 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		return list;
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.management.DynamicMBean#setAttributes(javax.management.AttributeList)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.management.DynamicMBean#setAttributes(javax.management.AttributeList
+	 * )
 	 */
 	@Override
 	public final AttributeList setAttributes(AttributeList attributes) {

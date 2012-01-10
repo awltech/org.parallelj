@@ -30,6 +30,7 @@ import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.quartz.QuartzUtils;
+import org.parallelj.launching.transport.jmx.JmxCommand;
 import org.parallelj.launching.transport.tcp.command.option.IOption;
 import org.parallelj.launching.transport.tcp.command.option.ISyncLaunchOption;
 import org.parallelj.launching.transport.tcp.command.option.OptionException;
@@ -41,7 +42,7 @@ import org.quartz.JobDataMap;
  * SuncLaunch TcpCommand
  * 
  */
-public class SyncLaunch extends AbstractLaunchTcpCommand {
+public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 
 	private static final int PRIORITY = 80;
 	//private static final String USAGE = "  synclaunch -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
