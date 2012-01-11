@@ -49,7 +49,7 @@ public final class AdaptersArguments {
 		/**
 		 * Available Adapter arguments
 		 */
-		private List<ArgEntry> adapterArguments = new ArrayList<ArgEntry>();
+		private List<ArgEntry> adapterArguments;
 
 		/**
 		 * Default constructor
@@ -57,8 +57,8 @@ public final class AdaptersArguments {
 		 * @param adapterClassName
 		 * @param adapterArguments
 		 */
-		private AdapterArguments(String adapterClassName,
-				List<ArgEntry> adapterArguments) {
+		private AdapterArguments(final String adapterClassName,
+				final List<ArgEntry> adapterArguments) {
 			this.adapterClassName = adapterClassName;
 			this.adapterArguments = adapterArguments;
 		}
@@ -69,7 +69,7 @@ public final class AdaptersArguments {
 		 * @return String, the adapater Type 
 		 */
 		public String getAdapterClassName() {
-			return adapterClassName;
+			return this.adapterClassName;
 		}
 
 		/**
@@ -78,7 +78,7 @@ public final class AdaptersArguments {
 		 * @return a List of arguments for the adapter
 		 */
 		public List<ArgEntry> getAdapterArguments() {
-			return adapterArguments;
+			return this.adapterArguments;
 		}
 	}
 	
@@ -99,7 +99,7 @@ public final class AdaptersArguments {
 	 * @param clazz the Adapter Type as a String 
 	 * @return a list of the Adapter arguments 
 	 */
-	public static List<ArgEntry> getAdapterArguments(Class<?> clazz) {
+	public static List<ArgEntry> getAdapterArguments(final Class<?> clazz) {
 		for (AdapterArguments adapterArgument:adaptersArguments) {
 			if (adapterArgument.adapterClassName.equalsIgnoreCase(clazz.getCanonicalName())) {
 				return adapterArgument.adapterArguments;
@@ -113,11 +113,11 @@ public final class AdaptersArguments {
 	 * 
 	 * @param clazzName the canonical name of the Program Class
 	 */
-	public static void addAdapter(String clazzName) {
+	public static void addAdapter(final String clazzName) {
 		Class<?> clazz;
 		try {
 			clazz = Class.forName(clazzName);
-			List<ArgEntry> adapterArgs = new ArrayList<ArgEntry>();
+			final List<ArgEntry> adapterArgs = new ArrayList<ArgEntry>();
 
 			// Search for annotation @In on attributes of
 			// class clazz
@@ -127,7 +127,7 @@ public final class AdaptersArguments {
 					if (annotation.annotationType().equals(In.class)) {
 						// Add the attribute where is the @In annotation and
 						// the Parser class
-						Class<? extends Parser> parserClass = ((In)annotation).parser();
+						final Class<? extends Parser> parserClass = ((In)annotation).parser();
 						adapterArgs.add(new ArgEntry(field.getName(), field.getType(), parserClass));
 					}
 				}
@@ -153,7 +153,7 @@ public final class AdaptersArguments {
 	 * @param index the position in the List
 	 * @return the AdaptersArguments
 	 */
-	public static AdapterArguments getAdapterArgument(int index) {
+	public static AdapterArguments getAdapterArgument(final int index) {
 		return adaptersArguments.get(index);
 	}
 }

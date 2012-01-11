@@ -32,17 +32,17 @@ abstract class AbstractTcpCommand implements TcpCommand, Comparable<TcpCommand> 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (obj instanceof String) {
-			return (this.getType().equals((String)obj));
+			return this.getType().equals((String)obj);
 		}
 		if (obj instanceof RemoteCommand) {
-			return (this.getType().equals(((RemoteCommand)obj).name()));
+			return this.getType().equals(((RemoteCommand)obj).name());
 		}
 		if (obj instanceof TcpCommand) {
-			String type = ((TcpCommand)obj).getType();
+			final String type = ((TcpCommand)obj).getType();
 			try  {
-				return (this.getType().equals(RemoteCommand.valueOf(type).name()));
+				return this.getType().equals(RemoteCommand.valueOf(type).name());
 			} catch (IllegalArgumentException e) {
 				return false;
 			} catch (NullPointerException e) {
@@ -86,8 +86,8 @@ abstract class AbstractTcpCommand implements TcpCommand, Comparable<TcpCommand> 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
-	public int compareTo(TcpCommand o) {
-		return o.getPriorityUsage()-this.getPriorityUsage();
+	public int compareTo(final TcpCommand command) {
+		return command.getPriorityUsage()-this.getPriorityUsage();
 	}
 	
 	public abstract String getHelp();	

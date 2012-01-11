@@ -32,13 +32,14 @@ public class OptionException extends Exception {
 	 */
 	private static final long serialVersionUID = -7793932389206020914L;
 
-	public OptionException(String formatedMessage) {
+	public OptionException(final String formatedMessage) {
+		super(formatedMessage);
 		this.formatedMessage = formatedMessage;
 	}
 
-	public OptionException(String formatedMessage, Throwable e) {
+	public OptionException(final String formatedMessage, final Throwable cause) {
 		this.formatedMessage = formatedMessage;
-		this.exception = e;
+		this.exception = cause;
 	}
 
 	public String getFormatedMessage() {
@@ -47,6 +48,14 @@ public class OptionException extends Exception {
 
 	public Throwable getException() {
 		return exception;
+	}
+
+	public void setFormatedMessage(final String formatedMessage) {
+		this.formatedMessage = formatedMessage;
+	}
+
+	public void setException(final Throwable exception) {
+		this.exception = exception;
 	}
 
 }

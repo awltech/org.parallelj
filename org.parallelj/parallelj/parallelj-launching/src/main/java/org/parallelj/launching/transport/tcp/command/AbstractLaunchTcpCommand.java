@@ -39,6 +39,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.mina.core.session.IoSession;
+import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 import org.parallelj.launching.transport.tcp.command.option.IIdOption;
@@ -81,21 +82,21 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 	 */
 	public abstract String getType();
 
-	public TcpIpProgram parseCommandLine(String... args) throws ParseException,
+	public TcpIpProgram parseCommandLine(final String... args) throws ParseException,
 			OptionException {
 		// Get sorted options
-		List<IOption> ioptions = getOptions();
-		Options options = new Options();
+		final List<IOption> ioptions = getOptions();
+		final Options options = new Options();
 		for (IOption ioption : ioptions) {
 			options.addOption(ioption.getOption());
 		}
 
 		// create the command line parser
-		CommandLineParser parser = new PosixParser();
+		final CommandLineParser parser = new PosixParser();
 
 		// parse the command line arguments
 		// CommandLine cmdLine = parser.parse(options, args);
-		CommandLine cmdLine = parser.parse(options, args);
+		final CommandLine cmdLine = parser.parse(options, args);
 		// As Options are reinitialized after parsing,
 		// we need to re-affect IOption.option
 		for (Option option : cmdLine.getOptions()) {
@@ -116,7 +117,7 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 				break;
 			}
 		}
-		TcpIpProgram tcpIpProgram = idOption.getProgram();
+		final TcpIpProgram tcpIpProgram = idOption.getProgram();
 		
 		// Check all defined Options with the selected Program
 		try {
@@ -131,11 +132,11 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 	}
 
 	public List<IOption> getOptions() {
-		Class<? extends IOption> iOptionClass = this.getOptionClass();
+		final Class<? extends IOption> iOptionClass = this.getOptionClass();
 		if (iOptionClass != null) {
 			if (this.options == null) {
 				this.options = new ArrayList<IOption>();
-				ServiceLoader<? extends IOption> loader = ServiceLoader
+				final ServiceLoader<? extends IOption> loader = ServiceLoader
 						.load(iOptionClass);
 				for (IOption option : loader) {
 					this.options.add(option);
@@ -145,12 +146,12 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 
 		// Sort the list of IOption.
 		// The first IOption should be "id" as it is the only once mandatory
-		Comparator<IOption> comparator = new Comparator<IOption>() {
-			public int compare(IOption o1, IOption o2) {
-				if (o1.getOption() != null && o1.getOption().isRequired()) {
+		final Comparator<IOption> comparator = new Comparator<IOption>() {
+			public int compare(final IOption option1, final IOption option2) {
+				if (option1.getOption() != null && option1.getOption().isRequired()) {
 					return -1;
 				}
-				if (o2.getOption() != null && o2.getOption().isRequired()) {
+				if (option2.getOption() != null && option2.getOption().isRequired()) {
 					return 1;
 				}
 				return 0;
@@ -165,20 +166,20 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 
 	@Override
 	public String getHelp() {
-		Writer writer = new StringWriter();
-		PrintWriter printWriter = new PrintWriter(writer);
-		Options options = new Options();
+		final Writer writer = new StringWriter();
+		final PrintWriter printWriter = new PrintWriter(writer);
+		final Options options = new Options();
 		for (IOption ioption : this.getOptions()) {
 			options.addOption(ioption.getOption());
 		}
-		HelpFormatter formatter = new HelpFormatter();
+		final HelpFormatter formatter = new HelpFormatter();
 		formatter.setSyntaxPrefix("  ");
-		Comparator<Option> comparator = new Comparator<Option>() {
-			public int compare(Option o1, Option o2) {
-				if (o1.isRequired()) {
+		final Comparator<Option> comparator = new Comparator<Option>() {
+			public int compare(final Option option1, final Option option2) {
+				if (option1.isRequired()) {
 					return -1;
 				}
-				if (o2.isRequired()) {
+				if (option2.isRequired()) {
 					return 1;
 				}
 				return 0;
@@ -192,7 +193,7 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 		try {
 			writer.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LaunchingMessageKind.EREMOTE0009.format(e);
 		}
 		return writer.toString();
 	}

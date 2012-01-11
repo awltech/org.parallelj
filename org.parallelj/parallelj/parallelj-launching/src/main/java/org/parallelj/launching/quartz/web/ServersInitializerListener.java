@@ -60,10 +60,10 @@ public class ServersInitializerListener implements ServletContextListener {
     /* (non-Javadoc)
      * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
      */
-    public final void contextInitialized(ServletContextEvent sce) {
+    public final void contextInitialized(final ServletContextEvent sce) {
         try {
             // Get the configuration
-            ParalleljConfiguration configuration = (ParalleljConfiguration) ConfigurationService
+        	final ParalleljConfiguration configuration = (ParalleljConfiguration) ConfigurationService
     				.getConfigurationService().getConfigurationManager()
     				.getConfiguration();
             
@@ -129,7 +129,7 @@ public class ServersInitializerListener implements ServletContextListener {
     /* (non-Javadoc)
      * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
      */
-    public final void contextDestroyed(ServletContextEvent sce) {
+    public final void contextDestroyed(final ServletContextEvent sce) {
 		// Stop the TciIpServer
 		if (this.tcpIpServer != null) {
 			this.tcpIpServer.stop();
@@ -147,4 +147,12 @@ public class ServersInitializerListener implements ServletContextListener {
         	LaunchingMessageKind.EQUARTZ0002.format(e);
         }
     }
+
+	public TcpIpServer getTcpIpServer() {
+		return tcpIpServer;
+	}
+
+	public JmxServer getJmxServer() {
+		return jmxServer;
+	}
 }

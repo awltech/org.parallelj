@@ -49,18 +49,18 @@ public class SyncLaunchArgsOption implements ISyncLaunchOption {
 	}
 
 	@Override
-	public void process(JobDataMap jobDataMap, Object... args)
+	public void process(final JobDataMap jobDataMap, final Object... args)
 			throws OptionException, ParserException {
 		OptionsUtils.processArgs(this, jobDataMap, args);
 	}
 
 	@Override
-	public void setOption(Option option) {
+	public void setOption(final Option option) {
 		this.option = option;
 	}
 
 	@Override
-	public void ckeckOption(TcpIpProgram tcpIpProgram) throws OptionException,
+	public void ckeckOption(final TcpIpProgram tcpIpProgram) throws OptionException,
 			ParserException {
 		OptionsUtils.checkArgs(this, tcpIpProgram);
 	}

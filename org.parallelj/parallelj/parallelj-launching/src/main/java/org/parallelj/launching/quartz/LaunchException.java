@@ -30,12 +30,12 @@ public class LaunchException extends Exception {
 	 */
 	private static final long serialVersionUID = 1368863721559256499L;
 
-	public LaunchException(SchedulerException e) {
-		super(e);
+	public LaunchException(final SchedulerException cause) {
+		super(cause);
 	}
 
-	public LaunchException(ClassCastException e) {
-		super(e);
+	public LaunchException(final ClassCastException cause) {
+		super(cause);
 	}
 
 }

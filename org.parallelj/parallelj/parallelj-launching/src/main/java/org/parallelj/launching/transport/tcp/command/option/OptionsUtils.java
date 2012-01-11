@@ -32,11 +32,14 @@ import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
 import org.parallelj.launching.transport.tcp.program.TcpIpPrograms;
 import org.quartz.JobDataMap;
 
-public class OptionsUtils {
+public final class OptionsUtils {
+	
+	private OptionsUtils() {
+	}
 
-	public static void processId(IOption ioption, JobDataMap jobDataMap)
+	public static void processId(final IOption ioption, final JobDataMap jobDataMap)
 			throws OptionException {
-		String strId = ioption.getOption().getValue("id");
+		final String strId = ioption.getOption().getValue("id");
 		// Check the Id
 		try {
 			int id = Integer.parseInt(strId);
@@ -51,11 +54,11 @@ public class OptionsUtils {
 		}
 	}
 
-	public static void processArgs(IOption ioption, JobDataMap jobDataMap,
-			Object... args) throws OptionException, ParserException {
+	public static void processArgs(final IOption ioption, final JobDataMap jobDataMap,
+			final Object... args) throws OptionException, ParserException {
 		// Check arguments number
-		String[] arguments = ioption.getOption().getValues();
-		TcpIpProgram tcpIpProgram = (TcpIpProgram) args[0];
+		final String[] arguments = ioption.getOption().getValues();
+		final TcpIpProgram tcpIpProgram = (TcpIpProgram) args[0];
 		if (arguments != null) {
 			if (tcpIpProgram.getArgEntries().size() > arguments.length) {
 				throw new OptionException(
@@ -99,12 +102,12 @@ public class OptionsUtils {
 	 * @param arguments
 	 * @throws ParserException
 	 */
-	public static void checkArgsFormat(TcpIpProgram tcpIpProgram, String[] arguments)
+	public static void checkArgsFormat(final TcpIpProgram tcpIpProgram, final String[] arguments)
 			throws OptionException, ParserException {
 
 		int index = 0;
 		for (ArgEntry entry : tcpIpProgram.getArgEntries()) {
-			Class<?> clazz = entry.getType();
+			final Class<?> clazz = entry.getType();
 			// If a Parser is defined...
 			if (!entry.getParser().equals(NopParser.class)) {
 				try {
@@ -128,39 +131,22 @@ public class OptionsUtils {
 				try {
 					// No Parser is defined
 					if (clazz.equals(int.class)) {
-						if (arguments[index] instanceof String) {
-							Integer.valueOf((String) arguments[index]);
-						}
+						Integer.valueOf((String) arguments[index]);
 					} else if (clazz.equals(long.class)) {
-						if (arguments[index] instanceof String) {
-							Long.valueOf((String) arguments[index]);
-						}
+						Long.valueOf((String) arguments[index]);
 					} else if (clazz.equals(float.class)) {
-						if (arguments[index] instanceof String) {
-							Float.valueOf((String) arguments[index]);
-						}
+						Float.valueOf((String) arguments[index]);
 					} else if (clazz.equals(double.class)) {
-						if (arguments[index] instanceof String) {
-							Double.valueOf((String) arguments[index]);
-						}
+						Double.valueOf((String) arguments[index]);
 					} else if (clazz.equals(boolean.class)) {
-						if (arguments[index] instanceof String) {
-							Boolean.valueOf((String) arguments[index]);
-						}
+						Boolean.valueOf((String) arguments[index]);
 					} else if (clazz.equals(byte.class)) {
-						if (arguments[index] instanceof String) {
-							Byte.valueOf((String) arguments[index]);
-						}
+						Byte.valueOf((String) arguments[index]);
 					} else if (clazz.equals(short.class)) {
-						if (arguments[index] instanceof String) {
-							Short.valueOf((String) arguments[index]);
-						}
+						Short.valueOf((String) arguments[index]);
 					} else if (clazz.equals(char.class)) {
-						if (arguments[index] instanceof String) {
-							String str = (String) arguments[index];
-							if (str.length() == 1) {
-								Character.valueOf(str.charAt(0));
-							}
+						if (arguments[index].length() == 1) {
+							Character.valueOf(arguments[index].charAt(0));
 						}
 					}
 				} catch (NumberFormatException e) {
@@ -173,20 +159,20 @@ public class OptionsUtils {
 		}
 	}
 
-	public static void checkArgs(IOption ioption,
-			TcpIpProgram tcpIpProgram) throws OptionException {
-		if (ioption.getOption().getLongOpt().equals("args") && tcpIpProgram.getArgEntries().size()>0) {
-			if ( ioption.getOption().getValues() == null
-					|| ioption.getOption().getValues().length < tcpIpProgram.getArgEntries().size()) {
-				throw new OptionException(
-						LaunchingMessageKind.EREMOTE0005.format(tcpIpProgram
-								.getAdapterClass().getCanonicalName(),
-								tcpIpProgram.getArgEntries().size()));
-			}
+	public static void checkArgs(final IOption ioption,
+			final TcpIpProgram tcpIpProgram) throws OptionException {
+		if (ioption.getOption().getLongOpt().equals("args") 
+				&& tcpIpProgram.getArgEntries().size()>0
+				&& ( ioption.getOption().getValues() == null
+					|| ioption.getOption().getValues().length < tcpIpProgram.getArgEntries().size())) {
+			throw new OptionException(
+					LaunchingMessageKind.EREMOTE0005.format(tcpIpProgram
+							.getAdapterClass().getCanonicalName(),
+							tcpIpProgram.getArgEntries().size()));
 		}
 	}
 
-	public static int checkId(String str) throws OptionException {
+	public static int checkId(final String str) throws OptionException {
 		int index = 0;
 		try {
 			index = Integer.parseInt(str);
@@ -197,10 +183,10 @@ public class OptionsUtils {
 		return index;
 	}
 
-	public static TcpIpProgram getProgram(IIdOption iIdOption) throws OptionException {
-		int index = checkId(iIdOption.getOption().getValue());
+	public static TcpIpProgram getProgram(final IIdOption iIdOption) throws OptionException {
+		final int index = checkId(iIdOption.getOption().getValue());
 		try {
-			TcpIpProgram tcpIpProgram = (TcpIpProgram) (TcpIpPrograms
+			final TcpIpProgram tcpIpProgram = (TcpIpProgram) (TcpIpPrograms
 					.getTcpIpPrograms().get(index));
 			return tcpIpProgram;
 		} catch (IndexOutOfBoundsException e) {

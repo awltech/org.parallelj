@@ -21,9 +21,13 @@
  */
 package org.parallelj.launching.quartz;
 
-public class QuartzUtils {
+public final class QuartzUtils {
+	
 	public static final String RETURN_CODE = "RETURN_CODE";
 	private static final String JOB_ID_KEY = "_RESTARTED_FIRE_INSTANCE_ID_";
+	
+	private QuartzUtils() {
+	}
 
 	public static String getRestartedFireInstanceIdKey() {
 		return JOB_ID_KEY;

@@ -21,6 +21,7 @@
  */
 package org.parallelj.launching.quartz;
 
+import org.parallelj.launching.LaunchingMessageKind;
 import org.quartz.SchedulerException;
 
 /**
@@ -30,12 +31,12 @@ public final class Launcher {
 	/**
 	 * The ParalleljScheduler used for Program launching.
 	 */
-	ParalleljScheduler scheduler;
+	private ParalleljScheduler scheduler;
 	
 	/**
 	 * The unique instance of Launcher.
 	 */
-	private static Launcher launcher;
+	private static Launcher instance;
 	
 	/**
 	 * Time to wait after the ParallelJ scheduler started to be able to launch Programs.
@@ -49,10 +50,10 @@ public final class Launcher {
 	 * @throws LaunchException If a SchedulerException occurred when creating instance.
 	 */
 	public static synchronized Launcher getLauncher() throws LaunchException {
-		if (launcher == null) {
-			launcher = new Launcher();
+		if (instance == null) {
+			instance = new Launcher();
 		}
-		return launcher;
+		return instance;
 	}
 	
 	/**
@@ -62,13 +63,14 @@ public final class Launcher {
 	 */
 	private Launcher() throws LaunchException {
 		try {
-			this.scheduler = (new ParalleljSchedulerFactory()).getScheduler();
+			this.scheduler = new ParalleljSchedulerFactory().getScheduler();
 			this.scheduler.start();
 			
 			// wait 5 seconds to give our jobs a chance to run
 			try {
 				Thread.sleep(FIVE_SECONDS);
 			} catch (Exception e) {
+				LaunchingMessageKind.EREMOTE0009.format(e);
 			}
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
@@ -82,7 +84,7 @@ public final class Launcher {
 	 * @return An instance of Launch.
 	 * @throws LaunchException 
 	 */
-	public synchronized Launch newLaunch(Class<?> jobClass) throws LaunchException {
+	public synchronized Launch newLaunch(final Class<?> jobClass) throws LaunchException {
 		return new Launch(this.scheduler, jobClass);
 	}
 	
@@ -94,7 +96,7 @@ public final class Launcher {
 		try {
 			this.scheduler.shutdown();
 		} catch (SchedulerException e) {
-			e.printStackTrace();
+			LaunchingMessageKind.EQUARTZ0005.format(e);
 		}
 	}
 	

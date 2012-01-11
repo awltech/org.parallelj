@@ -186,6 +186,18 @@ public enum LaunchingMessageKind {
 	@Format("Error invoking Program %s. Program not launched")
 	EQUARTZ0003,
 	
+	/**
+	 * Error deleting Job for Program %s.
+	 */
+	@Format("Error deleting Job for Program %s.")
+	EQUARTZ0004,
+	
+	/**
+	 * A Scheduler error occured.
+	 */
+	@Format("A Scheduler error occured.")
+	EQUARTZ0005,
+	
 	/*
 	 * Error messages for remote access
 	 */
@@ -236,7 +248,13 @@ public enum LaunchingMessageKind {
 	 * Invalid option value
 	 */
 	@Format("Invalid option value: %s - %s!")
-	EREMOTE0008;
+	EREMOTE0008,
+	
+	/**
+	 * Invalid option value
+	 */
+	@Format("An error occurred.")
+	EREMOTE0009;
 	
 
 	/**
@@ -246,19 +264,19 @@ public enum LaunchingMessageKind {
 	 *            the arguments used to format the message
 	 * @return the formatted message
 	 */
-	public String format(Object... args) {
+	public String format(final Object... args) {
 		// delegates to formatter
 		return formatter.print(this, args);
 	}
 	
-	public String getFormatedMessage(Object... args) {
-		String f[] = formatter.getFormatedMessage(this, args).split("\t");
-		if (f.length>=2) {
-			return f[1];
+	public String getFormatedMessage(final Object... args) {
+		final String format[] = formatter.getFormatedMessage(this, args).split("\t");
+		if (format.length>=2) {
+			return format[1];
 		}
-		return f[0];
+		return format[0];
 	}
 	
-	static Formatter<LaunchingMessageKind> formatter = new Formatter<LaunchingMessageKind>(LaunchingMessageKind.class);
+	private static Formatter<LaunchingMessageKind> formatter = new Formatter<LaunchingMessageKind>(LaunchingMessageKind.class);
 
 }

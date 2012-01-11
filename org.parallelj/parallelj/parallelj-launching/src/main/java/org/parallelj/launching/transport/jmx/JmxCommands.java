@@ -35,7 +35,7 @@ public final class JmxCommands {
 	/**
 	 * Available commands
 	 */
-	private Map<String, JmxCommand> commands = new HashMap<String, JmxCommand>();
+	private final Map<String, JmxCommand> commands = new HashMap<String, JmxCommand>();
 	
 	/**
 	 * The instance of JmxCommands
@@ -47,7 +47,7 @@ public final class JmxCommands {
 	 */
 	private JmxCommands() {
 		// Search for available commands
-		ServiceLoader<JmxCommand> loader = ServiceLoader.load(JmxCommand.class);
+		final ServiceLoader<JmxCommand> loader = ServiceLoader.load(JmxCommand.class);
 		for (JmxCommand command:loader) {
 			this.commands.put(command.getType(), command);
 		}

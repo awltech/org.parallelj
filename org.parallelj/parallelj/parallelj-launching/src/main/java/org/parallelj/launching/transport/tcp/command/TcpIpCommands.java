@@ -35,7 +35,7 @@ public final class TcpIpCommands {
 	/**
 	 * Available commands
 	 */
-	private Map<String, TcpCommand> commands = new HashMap<String, TcpCommand>();
+	private final Map<String, TcpCommand> commands = new HashMap<String, TcpCommand>();
 	
 	/**
 	 * The instance of TcpIpCommands
@@ -47,7 +47,7 @@ public final class TcpIpCommands {
 	 */
 	private TcpIpCommands() {
 		// Search for available commands
-		ServiceLoader<TcpCommand> loader = ServiceLoader.load(TcpCommand.class);
+		final ServiceLoader<TcpCommand> loader = ServiceLoader.load(TcpCommand.class);
 		for (TcpCommand command:loader) {
 			this.commands.put(command.getType(), command);
 		}

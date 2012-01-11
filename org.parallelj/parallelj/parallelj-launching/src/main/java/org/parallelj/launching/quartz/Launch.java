@@ -69,6 +69,8 @@ public class Launch {
 	 * The Quartz Job for this Launch.
 	 */
 	private JobDetail job;
+	
+	private Job adapter;
 
 	/**
 	 * The TriggerBuilder for this Launch.
@@ -95,7 +97,7 @@ public class Launch {
 	 * @throws LaunchException
 	 */
 	@SuppressWarnings("unchecked")
-	public Launch(Scheduler scheduler, Class<?> jobClass)
+	public Launch(final Scheduler scheduler, final Class<?> jobClass)
 			throws LaunchException {
 		this.scheduler = scheduler;
 		try {
@@ -125,13 +127,13 @@ public class Launch {
 		try {
 			// Define a listener to get the jobId and to wait until the Job is
 			// completed
-			AdapterJobListener listener = new AdapterJobListener(
+			final AdapterJobListener listener = new AdapterJobListener(
 					this.jobClass.getCanonicalName(), this.scheduler);
 			this.scheduler.getListenerManager().addJobListener(listener,
 					EverythingMatcher.allJobs());
 			this.scheduler.getListenerManager().addSchedulerListener(listener);
 
-			CountDownLatch latcher = createLatcher(listener);
+			final CountDownLatch latcher = createLatcher(listener);
 
 			// Launch the Job
 			this.scheduler.scheduleJob(this.job, this.trigger);
@@ -141,6 +143,7 @@ public class Launch {
 			try {
 				Thread.sleep(MSECONDS);
 			} catch (Exception e) {
+				LaunchingMessageKind.EREMOTE0009.format(e);
 			}
 
 			LaunchingMessageKind.IQUARTZ0002.format(
@@ -148,6 +151,7 @@ public class Launch {
 
 			awaitingLatcher(latcher, listener);
 
+			this.adapter = listener.getAdapter();
 			this.launchResult = new LaunchResult(listener.getJobId(),
 					listener.getResult());
 			//Object obj = this.launchResult.getResult();
@@ -168,7 +172,7 @@ public class Launch {
 	public Launch aSynchLaunch() throws LaunchException {
 		try {
 			// Define a listener to get the jobId
-			AdapterJobListener listener = new AdapterJobListener(
+			final AdapterJobListener listener = new AdapterJobListener(
 					this.jobClass.getCanonicalName(), this.scheduler);
 			this.scheduler.getListenerManager().addJobListener(listener,
 					EverythingMatcher.allJobs());
@@ -177,12 +181,14 @@ public class Launch {
 			// Launch the Job
 			this.scheduler.scheduleJob(this.job, this.trigger);
 			this.scheduler.start();
-
+			
 			// Wait few seconds for the JobId to be available.
 			try {
 				Thread.sleep(MSECONDS);
 			} catch (Exception e) {
+				LaunchingMessageKind.EREMOTE0009.format(e);
 			}
+			this.adapter = listener.getAdapter();
 
 			LaunchingMessageKind.IQUARTZ0002.format(
 					jobClass.getCanonicalName(), listener.getJobId());
@@ -202,8 +208,8 @@ public class Launch {
 	 *            The Quartz listener used for this Launch.
 	 * @return a CountDownLatch.
 	 */
-	private CountDownLatch createLatcher(AdapterJobListener listener) {
-		CountDownLatch latcher = new CountDownLatch(1);
+	private CountDownLatch createLatcher(final AdapterJobListener listener) {
+		final CountDownLatch latcher = new CountDownLatch(1);
 		listener.setLatcher(latcher);
 		return latcher;
 	}
@@ -216,13 +222,13 @@ public class Launch {
 	 * @param listener
 	 *            The listener which decrements the count of the latch.
 	 */
-	private void awaitingLatcher(CountDownLatch latcher,
-			AdapterJobListener listener) {
+	private void awaitingLatcher(final CountDownLatch latcher,
+			final AdapterJobListener listener) {
 		if (latcher.getCount() > 0) {
 			try {
 				latcher.await();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				LaunchingMessageKind.EREMOTE0009.format(e);
 			}
 		}
 		listener.setLatcher(null);
@@ -236,7 +242,7 @@ public class Launch {
 	 *            A JobDatamap
 	 * @return This Launch instance.
 	 */
-	public synchronized Launch addDatas(JobDataMap jobDataMap) {
+	public synchronized Launch addDatas(final JobDataMap jobDataMap) {
 		this.job.getJobDataMap().putAll(jobDataMap);
 		return this;
 	}
@@ -257,6 +263,13 @@ public class Launch {
 	 */
 	public JobDataMap getLaunchResult() {
 		return this.launchResult.getResult();
+	}
+
+	/**
+	 * @return
+	 */
+	public Job getAdapter() {
+		return adapter;
 	}
 
 }

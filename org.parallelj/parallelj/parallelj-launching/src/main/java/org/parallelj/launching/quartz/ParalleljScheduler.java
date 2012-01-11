@@ -70,7 +70,7 @@ public class ParalleljScheduler implements Scheduler {
 	 */
 	public ParalleljScheduler() throws SchedulerException {
 		super();
-		SchedulerFactory schedFact = new StdSchedulerFactory();
+		final SchedulerFactory schedFact = new StdSchedulerFactory();
 		this.scheduler = schedFact.getScheduler();
 		initialize();
 	}
@@ -86,6 +86,7 @@ public class ParalleljScheduler implements Scheduler {
 	}
 
 	private void stop() {
+		// Do nothing
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#startDelayed(int)
 	 */
 	@Override
-	public final void startDelayed(int seconds) throws SchedulerException {
+	public final void startDelayed(final int seconds) throws SchedulerException {
 		this.scheduler.startDelayed(seconds);
 	}
 
@@ -175,7 +176,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#shutdown(boolean)
 	 */
 	@Override
-	public final void shutdown(boolean waitForJobsToComplete)
+	public final void shutdown(final boolean waitForJobsToComplete)
 			throws SchedulerException {
 		stop();
 		this.scheduler.shutdown(waitForJobsToComplete);
@@ -210,7 +211,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#setJobFactory(org.quartz.spi.JobFactory)
 	 */
 	@Override
-	public final void setJobFactory(JobFactory factory) throws SchedulerException {
+	public final void setJobFactory(final JobFactory factory) throws SchedulerException {
 		this.scheduler.setJobFactory(factory);
 	}
 
@@ -226,7 +227,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#unscheduleJob(org.quartz.TriggerKey)
 	 */
 	@Override
-	public final boolean unscheduleJob(TriggerKey triggerKey)
+	public final boolean unscheduleJob(final TriggerKey triggerKey)
 			throws SchedulerException {
 		return this.scheduler.unscheduleJob(triggerKey);
 	}
@@ -235,7 +236,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#unscheduleJobs(java.util.List)
 	 */
 	@Override
-	public final boolean unscheduleJobs(List<TriggerKey> triggerKeys)
+	public final boolean unscheduleJobs(final List<TriggerKey> triggerKeys)
 			throws SchedulerException {
 		return this.scheduler.unscheduleJobs(triggerKeys);
 	}
@@ -244,7 +245,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#addJob(org.quartz.JobDetail, boolean)
 	 */
 	@Override
-	public final void addJob(JobDetail jobDetail, boolean replace)
+	public final void addJob(final JobDetail jobDetail, final boolean replace)
 			throws SchedulerException {
 		this.scheduler.addJob(jobDetail, replace);
 	}
@@ -253,7 +254,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#deleteJob(org.quartz.JobKey)
 	 */
 	@Override
-	public final boolean deleteJob(JobKey jobKey) throws SchedulerException {
+	public final boolean deleteJob(final JobKey jobKey) throws SchedulerException {
 		return this.scheduler.deleteJob(jobKey);
 	}
 
@@ -261,7 +262,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#deleteJobs(java.util.List)
 	 */
 	@Override
-	public final boolean deleteJobs(List<JobKey> jobKeys) throws SchedulerException {
+	public final boolean deleteJobs(final List<JobKey> jobKeys) throws SchedulerException {
 		return this.scheduler.deleteJobs(jobKeys);
 	}
 
@@ -269,7 +270,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#triggerJob(org.quartz.JobKey)
 	 */
 	@Override
-	public final void triggerJob(JobKey jobKey) throws SchedulerException {
+	public final void triggerJob(final JobKey jobKey) throws SchedulerException {
 		this.scheduler.triggerJob(jobKey);
 	}
 
@@ -277,7 +278,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#triggerJob(org.quartz.JobKey, org.quartz.JobDataMap)
 	 */
 	@Override
-	public final void triggerJob(JobKey jobKey, JobDataMap data)
+	public final void triggerJob(final JobKey jobKey, final JobDataMap data)
 			throws SchedulerException {
 		this.scheduler.triggerJob(jobKey, data);
 	}
@@ -286,7 +287,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#pauseJob(org.quartz.JobKey)
 	 */
 	@Override
-	public final void pauseJob(JobKey jobKey) throws SchedulerException {
+	public final void pauseJob(final JobKey jobKey) throws SchedulerException {
 		this.scheduler.pauseJob(jobKey);
 	}
 
@@ -294,7 +295,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#pauseJobs(org.quartz.impl.matchers.GroupMatcher)
 	 */
 	@Override
-	public final void pauseJobs(GroupMatcher<JobKey> matcher)
+	public final void pauseJobs(final GroupMatcher<JobKey> matcher)
 			throws SchedulerException {
 		this.scheduler.pauseJobs(matcher);
 	}
@@ -303,7 +304,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#pauseTrigger(org.quartz.TriggerKey)
 	 */
 	@Override
-	public final void pauseTrigger(TriggerKey triggerKey) throws SchedulerException {
+	public final void pauseTrigger(final TriggerKey triggerKey) throws SchedulerException {
 		this.scheduler.pauseTrigger(triggerKey);
 	}
 
@@ -311,7 +312,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#pauseTriggers(org.quartz.impl.matchers.GroupMatcher)
 	 */
 	@Override
-	public final void pauseTriggers(GroupMatcher<TriggerKey> matcher)
+	public final void pauseTriggers(final GroupMatcher<TriggerKey> matcher)
 			throws SchedulerException {
 		this.scheduler.pauseTriggers(matcher);
 	}
@@ -320,7 +321,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#resumeJob(org.quartz.JobKey)
 	 */
 	@Override
-	public final void resumeJob(JobKey jobKey) throws SchedulerException {
+	public final void resumeJob(final JobKey jobKey) throws SchedulerException {
 		this.scheduler.resumeJob(jobKey);
 	}
 
@@ -328,7 +329,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#resumeJobs(org.quartz.impl.matchers.GroupMatcher)
 	 */
 	@Override
-	public final void resumeJobs(GroupMatcher<JobKey> matcher)
+	public final void resumeJobs(final GroupMatcher<JobKey> matcher)
 			throws SchedulerException {
 		this.scheduler.resumeJobs(matcher);
 	}
@@ -337,7 +338,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#resumeTrigger(org.quartz.TriggerKey)
 	 */
 	@Override
-	public final void resumeTrigger(TriggerKey triggerKey) throws SchedulerException {
+	public final void resumeTrigger(final TriggerKey triggerKey) throws SchedulerException {
 		this.scheduler.resumeTrigger(triggerKey);
 	}
 
@@ -345,7 +346,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#resumeTriggers(org.quartz.impl.matchers.GroupMatcher)
 	 */
 	@Override
-	public final void resumeTriggers(GroupMatcher<TriggerKey> matcher)
+	public final void resumeTriggers(final GroupMatcher<TriggerKey> matcher)
 			throws SchedulerException {
 		this.scheduler.resumeTriggers(matcher);
 	}
@@ -378,7 +379,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#getJobKeys(org.quartz.impl.matchers.GroupMatcher)
 	 */
 	@Override
-	public final Set<JobKey> getJobKeys(GroupMatcher<JobKey> matcher)
+	public final Set<JobKey> getJobKeys(final GroupMatcher<JobKey> matcher)
 			throws SchedulerException {
 		return this.scheduler.getJobKeys(matcher);
 	}
@@ -395,7 +396,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#getTriggerKeys(org.quartz.impl.matchers.GroupMatcher)
 	 */
 	@Override
-	public final Set<TriggerKey> getTriggerKeys(GroupMatcher<TriggerKey> matcher)
+	public final Set<TriggerKey> getTriggerKeys(final GroupMatcher<TriggerKey> matcher)
 			throws SchedulerException {
 		return this.scheduler.getTriggerKeys(matcher);
 	}
@@ -412,7 +413,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#getJobDetail(org.quartz.JobKey)
 	 */
 	@Override
-	public final JobDetail getJobDetail(JobKey jobKey) throws SchedulerException {
+	public final JobDetail getJobDetail(final JobKey jobKey) throws SchedulerException {
 		return this.scheduler.getJobDetail(jobKey);
 	}
 
@@ -420,7 +421,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#getTriggerState(org.quartz.TriggerKey)
 	 */
 	@Override
-	public final TriggerState getTriggerState(TriggerKey triggerKey)
+	public final TriggerState getTriggerState(final TriggerKey triggerKey)
 			throws SchedulerException {
 		return this.scheduler.getTriggerState(triggerKey);
 	}
@@ -429,7 +430,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#deleteCalendar(java.lang.String)
 	 */
 	@Override
-	public final boolean deleteCalendar(String calName) throws SchedulerException {
+	public final boolean deleteCalendar(final String calName) throws SchedulerException {
 		return this.scheduler.deleteCalendar(calName);
 	}
 
@@ -445,7 +446,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#interrupt(org.quartz.JobKey)
 	 */
 	@Override
-	public final boolean interrupt(JobKey jobKey)
+	public final boolean interrupt(final JobKey jobKey)
 			throws UnableToInterruptJobException {
 		return this.scheduler.interrupt(jobKey);
 	}
@@ -454,7 +455,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#interrupt(java.lang.String)
 	 */
 	@Override
-	public final boolean interrupt(String fireInstanceId)
+	public final boolean interrupt(final String fireInstanceId)
 			throws UnableToInterruptJobException {
 		return this.scheduler.interrupt(fireInstanceId);
 	}
@@ -463,7 +464,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#checkExists(org.quartz.JobKey)
 	 */
 	@Override
-	public final boolean checkExists(JobKey jobKey) throws SchedulerException {
+	public final boolean checkExists(final JobKey jobKey) throws SchedulerException {
 		return this.scheduler.checkExists(jobKey);
 	}
 
@@ -471,7 +472,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#checkExists(org.quartz.TriggerKey)
 	 */
 	@Override
-	public final boolean checkExists(TriggerKey triggerKey) throws SchedulerException {
+	public final boolean checkExists(final TriggerKey triggerKey) throws SchedulerException {
 		return this.scheduler.checkExists(triggerKey);
 	}
 
@@ -486,7 +487,7 @@ public class ParalleljScheduler implements Scheduler {
 	/**
 	 * @param scheduler
 	 */
-	public final void setScheduler(Scheduler scheduler) {
+	public final void setScheduler(final Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
 
@@ -494,7 +495,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#scheduleJob(org.quartz.JobDetail, org.quartz.Trigger)
 	 */
 	@Override
-	public final Date scheduleJob(JobDetail jobDetail, Trigger trigger)
+	public final Date scheduleJob(final JobDetail jobDetail, final Trigger trigger)
 			throws SchedulerException {
 		return this.scheduler.scheduleJob(jobDetail, trigger);
 	}
@@ -503,7 +504,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#scheduleJob(org.quartz.Trigger)
 	 */
 	@Override
-	public final Date scheduleJob(Trigger trigger) throws SchedulerException {
+	public final Date scheduleJob(final Trigger trigger) throws SchedulerException {
 		return this.scheduler.scheduleJob(trigger);
 	}
 
@@ -511,8 +512,8 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#scheduleJobs(java.util.Map, boolean)
 	 */
 	@Override
-	public final void scheduleJobs(Map<JobDetail, List<Trigger>> triggersAndJobs,
-			boolean replace) throws SchedulerException {
+	public final void scheduleJobs(final Map<JobDetail, List<Trigger>> triggersAndJobs,
+			final boolean replace) throws SchedulerException {
 		this.scheduler.scheduleJobs(triggersAndJobs, replace);
 	}
 
@@ -520,7 +521,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#rescheduleJob(org.quartz.TriggerKey, org.quartz.Trigger)
 	 */
 	@Override
-	public final Date rescheduleJob(TriggerKey triggerKey, Trigger newTrigger)
+	public final Date rescheduleJob(final TriggerKey triggerKey, final Trigger newTrigger)
 			throws SchedulerException {
 		return this.scheduler.rescheduleJob(triggerKey, newTrigger);
 	}
@@ -529,7 +530,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#getTriggersOfJob(org.quartz.JobKey)
 	 */
 	@Override
-	public final List<? extends Trigger> getTriggersOfJob(JobKey jobKey)
+	public final List<? extends Trigger> getTriggersOfJob(final JobKey jobKey)
 			throws SchedulerException {
 		return this.scheduler.getTriggersOfJob(jobKey);
 	}
@@ -538,7 +539,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#getTrigger(org.quartz.TriggerKey)
 	 */
 	@Override
-	public final Trigger getTrigger(TriggerKey triggerKey) throws SchedulerException {
+	public final Trigger getTrigger(final TriggerKey triggerKey) throws SchedulerException {
 		return this.scheduler.getTrigger(triggerKey);
 	}
 
@@ -546,8 +547,8 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#addCalendar(java.lang.String, org.quartz.Calendar, boolean, boolean)
 	 */
 	@Override
-	public final void addCalendar(String calName, org.quartz.Calendar calendar,
-			boolean replace, boolean updateTriggers) throws SchedulerException {
+	public final void addCalendar(final String calName, final org.quartz.Calendar calendar,
+			final boolean replace, final boolean updateTriggers) throws SchedulerException {
 		this.scheduler.addCalendar(calName, calendar, replace, updateTriggers);
 	}
 
@@ -555,7 +556,7 @@ public class ParalleljScheduler implements Scheduler {
 	 * @see org.quartz.Scheduler#getCalendar(java.lang.String)
 	 */
 	@Override
-	public final org.quartz.Calendar getCalendar(String calName)
+	public final org.quartz.Calendar getCalendar(final String calName)
 			throws SchedulerException {
 		return this.scheduler.getCalendar(calName);
 	}

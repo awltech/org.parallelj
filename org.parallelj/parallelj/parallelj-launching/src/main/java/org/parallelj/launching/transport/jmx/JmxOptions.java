@@ -35,7 +35,7 @@ public final class JmxOptions {
 	/**
 	 * Available options for Jmx
 	 */
-	private List<JmxOption> options = new ArrayList<JmxOption>();
+	private final List<JmxOption> options = new ArrayList<JmxOption>();
 	
 	/**
 	 * The instance of JmxOptions
@@ -47,7 +47,7 @@ public final class JmxOptions {
 	 */
 	private JmxOptions() {
 		// Search for available commands
-		ServiceLoader<JmxOption> loader = ServiceLoader.load(JmxOption.class);
+		final ServiceLoader<JmxOption> loader = ServiceLoader.load(JmxOption.class);
 		for (JmxOption option:loader) {
 			this.options.add(option);
 		}

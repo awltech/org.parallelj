@@ -34,9 +34,9 @@ import org.parallelj.launching.parser.Parser;
 public class TcpIpProgram {
 	private Class<? extends Adapter> adapterClass;
 	
-	private List<ArgEntry> argEntries = new ArrayList<ArgEntry>();
+	private final List<ArgEntry> argEntries = new ArrayList<ArgEntry>();
 	
-	public TcpIpProgram(Class<? extends Adapter> adapterClass) {
+	public TcpIpProgram(final Class<? extends Adapter> adapterClass) {
 		this.adapterClass = adapterClass;
 
 		// Search for annotation @In on attributes of
@@ -48,7 +48,7 @@ public class TcpIpProgram {
 					// Add the attribute where is the @In annotation
 					// and
 					// the Parser class
-					Class<? extends Parser> parserClass = ((In) annotation)
+					final Class<? extends Parser> parserClass = ((In) annotation)
 							.parser();
 					this.argEntries.add(new ArgEntry(field.getName(),
 							field.getType(), parserClass));

@@ -53,7 +53,7 @@ public class TcpIpServer {
 	 * @param port
 	 * @param handler
 	 */
-	public TcpIpServer(String host, int port, IoHandler handler) {
+	public TcpIpServer(final String host, final int port, final IoHandler handler) {
 		this(host, port);
 		this.acceptor.setHandler(handler);
 	}
@@ -64,7 +64,7 @@ public class TcpIpServer {
 	 * @param host
 	 * @param port
 	 */
-	public TcpIpServer(String host, int port) {
+	public TcpIpServer(final String host, final int port) {
 		this.host = host;
 		this.port = port;
 		
@@ -106,7 +106,11 @@ public class TcpIpServer {
 		}
 	}
 
-	public void setHandler(IoHandler handler) {
+	public void setHandler(final IoHandler handler) {
 		this.acceptor.setHandler(handler);
+	}
+	
+	public boolean isStarted() {
+		return this.acceptor.isActive();
 	}
 }

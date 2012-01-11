@@ -31,22 +31,30 @@ public class ParserException extends Exception {
 	 */
 	private static final long serialVersionUID = -7793932389206020914L;
 
-	public ParserException(String formatedMessage) {
+	public ParserException(final String formatedMessage) {
+		super(formatedMessage);
 		this.formatedMessage = formatedMessage;
 	}
 
-	public ParserException(String formatedMessage, Exception e) {
+	public ParserException(final String formatedMessage, final Exception exception) {
+		super(formatedMessage, exception);
 		this.formatedMessage = formatedMessage;
-		this.exception = e;
+		this.exception = exception;
 	}
 
 	public String getFormatedMessage() {
-		return formatedMessage;
+		return this.formatedMessage;
 	}
 
 	public Throwable getException() {
-		return exception;
+		return this.exception;
 	}
 
-	
+	public void setException(final Exception exception) {
+		this.exception = exception;
+	}
+
+	public void setFormatedMessage(final String formatedMessage) {
+		this.formatedMessage = formatedMessage;
+	}
 }

@@ -33,7 +33,7 @@ import org.quartz.JobDataMap;
 public interface IOption {
 	public Option getOption();
 
-	public void setOption(Option option);
+	public void setOption(final Option option);
 
 	public int getPriority();
 

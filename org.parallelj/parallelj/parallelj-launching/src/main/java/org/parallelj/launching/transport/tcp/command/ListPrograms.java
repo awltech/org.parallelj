@@ -39,26 +39,20 @@ public class ListPrograms extends AbstractTcpCommand {
 	private static final int PRIORITY=90;
 	private static final String USAGE = "list : Lists available programs and their associated IDs.";
 
-	/**
-	 * Find and list all available Program for remote launching
-	 */
-	public ListPrograms() {
-	}
-
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
 	@Override
-	public final String process(IoSession session, String... args) {
-		List<TcpIpProgram> programs = TcpIpPrograms.getTcpIpPrograms();
-		StringBuffer stb = new StringBuffer();
+	public final String process(final IoSession session, final String... args) {
+		final List<TcpIpProgram> programs = TcpIpPrograms.getTcpIpPrograms();
+		final StringBuffer stb = new StringBuffer(20);
 		for (int index = 0; index < programs.size(); index++) {
-			stb.append("id:").append(index).append(" ").append(programs.get(index).getAdapterClass().getCanonicalName())
+			stb.append("id:").append(index).append(' ').append(programs.get(index).getAdapterClass().getCanonicalName())
 					.append(" args:[");
 			for (ArgEntry argEntry : programs.get(index).getArgEntries()) {
-				stb.append(argEntry.getName()).append(":")
+				stb.append(argEntry.getName()).append(':')
 						.append(argEntry.getType().getCanonicalName())
-						.append(" ");
+						.append(' ');
 			}
 			stb.append("]\n\r");
 		}

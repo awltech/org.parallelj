@@ -63,7 +63,7 @@ public final class ParalleljSchedulerRepository {
      * @param sched
      * @throws SchedulerException
      */
-    public synchronized void bind(ParalleljScheduler sched) throws SchedulerException {
+    public synchronized void bind(final ParalleljScheduler sched) throws SchedulerException {
 
         if (schedulers.get(sched.getSchedulerName()) != null) {
             throw new SchedulerException("Scheduler with name '"
@@ -77,7 +77,7 @@ public final class ParalleljSchedulerRepository {
      * @param schedName
      * @return
      */
-    public synchronized boolean remove(String schedName) {
+    public synchronized boolean remove(final String schedName) {
         return (schedulers.remove(schedName) != null);
     }
 
@@ -85,7 +85,7 @@ public final class ParalleljSchedulerRepository {
      * @param schedName
      * @return
      */
-    public synchronized ParalleljScheduler lookup(String schedName) {
+    public synchronized ParalleljScheduler lookup(final String schedName) {
         return schedulers.get(schedName);
     }
 

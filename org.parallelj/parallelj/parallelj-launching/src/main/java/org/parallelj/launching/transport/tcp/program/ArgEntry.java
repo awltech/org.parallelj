@@ -50,7 +50,7 @@ public class ArgEntry {
 	 * @param type
 	 * @param parserClass
 	 */
-	public ArgEntry(String name, Class<?> type, Class<? extends Parser> parserClass) {
+	public ArgEntry(final String name, final Class<?> type, final Class<? extends Parser> parserClass) {
 		this.name = name;
 		this.type = type;
 		this.parser = parserClass;

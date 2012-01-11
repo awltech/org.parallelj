@@ -19,42 +19,26 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package tests.jmx;
-import java.io.IOException;
+package org.parallelj.launching.programs;
 
-import org.junit.Test;
-import org.parallelj.launching.transport.jmx.JmxServer;
-import org.parallelj.launching.transport.tcp.TcpIpServer;
+import org.parallelj.Begin;
+import org.parallelj.Program;
+import org.parallelj.launching.QuartzExecution;
 
-
-public class TransportTest {
-
-	@Test
-	public void tcpIpServerTest() {
-		TcpIpServer server = new TcpIpServer("localhost", 8000);
-		try {
-			server.start();
-			Thread.sleep(1000);
-			server.stop();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+@QuartzExecution
+@Program
+public class BeginProgram {
+	
+	public boolean begin;
+	
+	public BeginProgram() {
+		super();
+		//throw new RuntimeException();
 	}
 
-	@Test
-	public void jmxServerTest() {
-		JmxServer server = new JmxServer("localhost", 9000);
-		try {
-			server.start();
-			Thread.sleep(1000);
-			server.stop();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+	@Begin
+	public void begin() {
+		this.begin = true;
 	}
 
 }

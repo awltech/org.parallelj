@@ -71,7 +71,7 @@ public class JmxServer {
 	 * @param host the host ip
 	 * @param port the port the JMX Server to listen to
 	 */
-	public JmxServer(String host, int port) {
+	public JmxServer(final String host, final int port) {
 		this.host = host;
 		this.port = port;
 		this.serverUrlFormat = DEFAULT_SERVER_URL_FORMAT;
@@ -87,13 +87,13 @@ public class JmxServer {
 		LaunchingMessageKind.IJMX0001.format(this.host, this.port);
 		this.mbs = ManagementFactory.getPlatformMBeanServer();
 
-		String oldRmiServerName = System
+		final String oldRmiServerName = System
 				.getProperty("java.rmi.server.hostname");
 		System.setProperty("java.rmi.server.hostname", this.host);
 
 		register = LocateRegistry.createRegistry(this.port);
 		if (oldRmiServerName == null) {
-			Properties props = System.getProperties();
+			final Properties props = System.getProperties();
 			for (Object key : props.keySet()) {
 				if (key.equals("java.rmi.server.hostname")) {
 					props.remove(key);
@@ -104,11 +104,11 @@ public class JmxServer {
 			System.setProperty("java.rmi.server.hostname", oldRmiServerName);
 		}
 
-		String serviceURL = String.format(serverUrlFormat, this.host,
+		final String serviceURL = String.format(serverUrlFormat, this.host,
 				this.host, this.port);
 		LaunchingMessageKind.IJMX0002.format(serviceURL);
 
-		JMXServiceURL url = new JMXServiceURL(serviceURL);
+		final JMXServiceURL url = new JMXServiceURL(serviceURL);
 		this.jmxConnectorServer = JMXConnectorServerFactory
 				.newJMXConnectorServer(url, null, mbs);
 		this.jmxConnectorServer.start();
@@ -140,16 +140,16 @@ public class JmxServer {
 	 * 
 	 * @param beanClass the class name of the MBean 
 	 */
-	public final void registerMBean(String className) {
+	public final boolean registerMBean(final String className) {
 		if (this.mbs != null && className != null) {
 			try {
-				Class<?> clazz = Class.forName(className);
+				final Class<?> clazz = Class.forName(className);
 
-				String fqnName = clazz.getCanonicalName();
-				String domain = fqnName.substring(0, fqnName.lastIndexOf('.'));
-				String type = fqnName.substring(fqnName.lastIndexOf('.') + 1);
+				final String fqnName = clazz.getCanonicalName();
+				final String domain = fqnName.substring(0, fqnName.lastIndexOf('.'));
+				final String type = fqnName.substring(fqnName.lastIndexOf('.') + 1);
 
-				ObjectName objectName = new ObjectName(String.format(
+				final ObjectName objectName = new ObjectName(String.format(
 						beanNameFormat, domain, type));
 				if (!mbs.isRegistered(objectName)) {
 					LaunchingMessageKind.IJMX0004.format(objectName);
@@ -158,10 +158,13 @@ public class JmxServer {
 				}
 			} catch (Exception e) {
 				LaunchingMessageKind.EJMX0004.format(className, e);
+				return false;
 			}
 		} else {
 			LaunchingMessageKind.EJMX0002.format();
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -170,36 +173,28 @@ public class JmxServer {
 	 * 
 	 * @param beanClass the class name of the Program 
 	 */
-	public final void registerProgramAsMBean(String beanClass) {
+	public final boolean registerProgramAsMBean(final String beanClass) {
 		if (this.mbs != null && beanClass != null) {
 			try {
 				@SuppressWarnings("unchecked")
-				Class<? extends Adapter> clazz = (Class<? extends Adapter>) Class
+				final Class<? extends Adapter> clazz = (Class<? extends Adapter>) Class
 						.forName(beanClass);
-				String fqnName = clazz.getCanonicalName();
-				String domain = fqnName.substring(0, fqnName.lastIndexOf('.'));
-				String type = fqnName.substring(fqnName.lastIndexOf('.') + 1);
+				final String fqnName = clazz.getCanonicalName();
+				final String domain = fqnName.substring(0, fqnName.lastIndexOf('.'));
+				final String type = fqnName.substring(fqnName.lastIndexOf('.') + 1);
 
 				/*
 				 * List of types annotated with @In and its Parser class:
 				 * adapterArgs[0] : the attribute name adapterArgs[1] : the
 				 * canonical name of the corresponding parser class
 				 */
-				List<ArgEntry> adapterArgs = AdaptersArguments.getAdapterArguments(clazz);
+				final List<ArgEntry> adapterArgs = AdaptersArguments.getAdapterArguments(clazz);
 
-				// Register the bean as a DynamicMBean in the JMX server...
-				/*
-				Class<?>[] cls = clazz.getInterfaces();
-				for (Class<?> class1 : cls) {
-					System.out.println("=>" + clazz + " implements ["
-							+ class1.getCanonicalName() + "]");
-				}
-				*/
 				if (Arrays.asList(clazz.getInterfaces()).contains(
 						ProgramAdapter.Adapter.class)) {
-					DynamicLegacyProgram dprogram = new DynamicLegacyProgram(
+					final DynamicLegacyProgram dprogram = new DynamicLegacyProgram(
 							clazz, adapterArgs);
-					ObjectName objectName = new ObjectName(String.format(
+					final ObjectName objectName = new ObjectName(String.format(
 							beanNameFormat, domain, type));
 					this.beanNames.add(objectName);
 
@@ -210,23 +205,32 @@ public class JmxServer {
 					}
 				} else {
 					LaunchingMessageKind.EJMX0003.format(clazz);
+					return false;
 				}
 			} catch (ClassNotFoundException e) {
 				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+				return false;
 			} catch (MalformedObjectNameException e) {
 				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+				return false;
 			} catch (NullPointerException e) {
 				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+				return false;
 			} catch (InstanceAlreadyExistsException e) {
 				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+				return false;
 			} catch (MBeanRegistrationException e) {
 				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+				return false;
 			} catch (NotCompliantMBeanException e) {
 				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+				return false;
 			}
 		} else {
 			LaunchingMessageKind.EJMX0002.format();
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -247,5 +251,9 @@ public class JmxServer {
 			}
 			beanNames.clear();
 		}
+	}
+	
+	public boolean isStarted() {
+		return this.jmxConnectorServer.isActive();
 	}
 }

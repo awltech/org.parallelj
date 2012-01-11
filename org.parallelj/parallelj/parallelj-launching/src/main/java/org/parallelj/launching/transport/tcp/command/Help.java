@@ -42,14 +42,14 @@ public class Help extends AbstractTcpCommand {
 	/* (non-Javadoc)
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
-	public final synchronized String process(IoSession session, String... args) {
+	public final synchronized String process(final IoSession session, final String... args) {
 		if (this.message == null) {
-			StringBuffer strb = new StringBuffer();
+			final StringBuffer strb = new StringBuffer();
 			// Get all available Commands and get its usage
-			TcpCommand[] cmds = TcpIpCommands.getCommands().values().toArray(new TcpCommand[]{});
+			final TcpCommand[] cmds = TcpIpCommands.getCommands().values().toArray(new TcpCommand[]{});
 			Arrays.sort(cmds);
 			for (TcpCommand cmd : cmds) {
-				String help = cmd.getHelp(); 
+				final String help = cmd.getHelp(); 
 				if (help!=null && help.length()>0) {
 					strb.append(help).append(TcpIpHandlerAdapter.ENDLINE);
 				}

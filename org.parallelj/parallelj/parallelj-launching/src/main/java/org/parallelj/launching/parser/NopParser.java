@@ -23,7 +23,7 @@ package org.parallelj.launching.parser;
 
 public class NopParser<E> implements Parser {
 
-	public final Object parse(String value) {
+	public final Object parse(final String value) {
 		return value;
 	}
 }

@@ -30,11 +30,8 @@ import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
 import javax.management.DynamicMBean;
 import javax.management.InvalidAttributeValueException;
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanConstructorInfo;
 import javax.management.MBeanException;
 import javax.management.MBeanInfo;
-import javax.management.MBeanNotificationInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanParameterInfo;
 import javax.management.ReflectionException;
@@ -75,8 +72,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 *            the Program's adapter type
 	 * @param adapterArgs
 	 */
-	public DynamicLegacyProgram(Class<? extends Adapter> adapterClass,
-			List<ArgEntry> adapterArgs) {
+	public DynamicLegacyProgram(final Class<? extends Adapter> adapterClass,
+			final List<ArgEntry> adapterArgs) {
 		this.adapterClass = adapterClass;
 		this.adapterArgs = adapterArgs;
 
@@ -88,14 +85,14 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		this.operations = new MBeanOperationInfo[this.cmds.length];
 		int opIndex = 0;
 		for (JmxCommand cmd : this.cmds) {
-			List<MBeanParameterInfo> parameters = new ArrayList<MBeanParameterInfo>();
+			final List<MBeanParameterInfo> parameters = new ArrayList<MBeanParameterInfo>();
 			for (JmxOption option : JmxOptions.getOptions()) {
 				// Options "id" and "args" doesn't have to be shown using Jmx
-				MBeanParameterInfo param = new MBeanParameterInfo(
+				final MBeanParameterInfo param = new MBeanParameterInfo(
 						option.getName(), "java.lang.String", option.getDescription());
 				parameters.add(param);
 			}
-			MBeanOperationInfo operation = new MBeanOperationInfo(
+			final MBeanOperationInfo operation = new MBeanOperationInfo(
 					cmd.getType(), cmd.getUsage(), ArrayUtils.addAll(
 							parameters.toArray(new MBeanParameterInfo[] {}),
 							createMBeanParameterInfos()), "java.lang.String",
@@ -116,9 +113,9 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @throws MBeanException
 	 *             If an error appends when initializing the JobDataMap
 	 */
-	protected JobDataMap buildJobDataMap(JmxCommand jmxCommand, Object[] params)
+	protected JobDataMap buildJobDataMap(final JmxCommand jmxCommand, final Object[] params)
 			throws MBeanException {
-		JobDataMap jobDataMap = new JobDataMap();
+		final JobDataMap jobDataMap = new JobDataMap();
 
 		try {
 			int ind = 0;
@@ -154,8 +151,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * java.lang.Object[], java.lang.String[])
 	 */
 	@Override
-	public final Object invoke(String actionName, Object[] params,
-			String[] signature) throws MBeanException, ReflectionException {
+	public final Object invoke(final String actionName, final Object[] params,
+			final String[] signature) throws MBeanException, ReflectionException {
 		// Get the JmxCommand
 		JmxCommand curCmd = null;
 		for (JmxCommand cmd : this.cmds) {
@@ -165,14 +162,13 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			}
 		}
 
-		boolean isSync = actionName.startsWith("sync");
-		Object result = null;
+		final boolean isSync = actionName.startsWith("sync");
 		try {
 			// initialize arguments for Quartz
-			JobDataMap jobDataMap = buildJobDataMap(curCmd, params);
+			final JobDataMap jobDataMap = buildJobDataMap(curCmd, params);
 
 			@SuppressWarnings("unchecked")
-			Launch launch = Launcher.getLauncher()
+			final Launch launch = Launcher.getLauncher()
 					.newLaunch((Class<Job>) adapterClass).addDatas(jobDataMap);
 			if (isSync) {
 				// Launch and wait until terminated
@@ -188,7 +184,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		} catch (LaunchException e) {
 			LaunchingMessageKind.EQUARTZ0003.format(actionName, e);
 		}
-		return result;
+		return null;
 	}
 
 	/**
@@ -208,14 +204,10 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 */
 	@Override
 	public final MBeanInfo getMBeanInfo() {
-		MBeanAttributeInfo[] attrs = null;
-		MBeanConstructorInfo[] ctors = null;
-		MBeanOperationInfo[] opers = createMBeanOperationInfo();
-		MBeanNotificationInfo[] notifs = null;
+		final MBeanOperationInfo[] opers = createMBeanOperationInfo();
 		String className = "ProgramAdapter.Adapter";
-		String description = null;
-		return new MBeanInfo(className, description, attrs, ctors, opers,
-				notifs);
+		return new MBeanInfo(className, null, null, null, opers,
+				null);
 	}
 
 	/**
@@ -224,22 +216,24 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @return an array of MBeanParameterInfo
 	 */
 	private MBeanParameterInfo[] createMBeanParameterInfos() {
-		int lg = this.adapterArgs.size();
+		final int lenght = this.adapterArgs!=null?this.adapterArgs.size():0;
 		int cpt = 0;
-		MBeanParameterInfo[] result = new MBeanParameterInfo[lg];
-		for (ArgEntry arg : adapterArgs) {
-			// Only simple Type are authorized
-			// System.out.println(arg);
-			String type = null;
-			if (!arg.getType().equals(String.class)
-					&& !arg.getType().equals(int.class)
-					&& !arg.getType().equals(long.class)
-					&& !arg.getType().equals(boolean.class)) {
-				type = String.class.getCanonicalName();
-			} else {
-				type = arg.getType().getCanonicalName();
+		MBeanParameterInfo[] result = new MBeanParameterInfo[lenght];
+		if (this.adapterArgs!=null) {
+			for (ArgEntry arg : adapterArgs) {
+				// Only simple Type are authorized
+				// System.out.println(arg);
+				String type = null;
+				if (!arg.getType().equals(String.class)
+						&& !arg.getType().equals(int.class)
+						&& !arg.getType().equals(long.class)
+						&& !arg.getType().equals(boolean.class)) {
+					type = String.class.getCanonicalName();
+				} else {
+					type = arg.getType().getCanonicalName();
+				}
+				result[cpt++] = new MBeanParameterInfo(arg.getName(), type, "");
 			}
-			result[cpt++] = new MBeanParameterInfo(arg.getName(), type, "");
 		}
 		return result;
 	}
@@ -250,7 +244,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @see javax.management.DynamicMBean#getAttribute(java.lang.String)
 	 */
 	@Override
-	public final Object getAttribute(String attribute)
+	public final Object getAttribute(final String attribute)
 			throws AttributeNotFoundException, MBeanException,
 			ReflectionException {
 		// Do Nothing
@@ -264,7 +258,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * javax.management.DynamicMBean#setAttribute(javax.management.Attribute)
 	 */
 	@Override
-	public void setAttribute(Attribute attribute)
+	public void setAttribute(final Attribute attribute)
 			throws AttributeNotFoundException, InvalidAttributeValueException,
 			MBeanException, ReflectionException {
 		// Do Nothing
@@ -276,9 +270,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @see javax.management.DynamicMBean#getAttributes(java.lang.String[])
 	 */
 	@Override
-	public final AttributeList getAttributes(String[] attributes) {
-		AttributeList list = new AttributeList();
-		return list;
+	public final AttributeList getAttributes(final String[] attributes) {
+		return new AttributeList();
 	}
 
 	/*
@@ -289,8 +282,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * )
 	 */
 	@Override
-	public final AttributeList setAttributes(AttributeList attributes) {
-		AttributeList list = new AttributeList();
-		return list;
+	public final AttributeList setAttributes(final AttributeList attributes) {
+		return new AttributeList();
 	}
 }

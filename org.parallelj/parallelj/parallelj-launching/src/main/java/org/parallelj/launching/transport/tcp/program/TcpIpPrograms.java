@@ -30,8 +30,8 @@ import org.parallelj.internal.conf.ParalleljConfiguration;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 
 
-public class TcpIpPrograms {
-	public List<TcpIpProgram> tcpIpPrograms = new ArrayList<TcpIpProgram>();
+public final class TcpIpPrograms {
+	private List<TcpIpProgram> tcpIpPrograms = new ArrayList<TcpIpProgram>();
 	
 	/**
 	 * The instance of TcpIpCommands

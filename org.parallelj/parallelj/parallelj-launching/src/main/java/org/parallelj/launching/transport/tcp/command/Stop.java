@@ -40,7 +40,7 @@ public class Stop extends AbstractTcpCommand {
 	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
 	@Override
-	public final String process(IoSession session, String... args) {
+	public final String process(final IoSession session, final String... args) {
 		// TODO Auto-generated method stub
 		return null;
 	}

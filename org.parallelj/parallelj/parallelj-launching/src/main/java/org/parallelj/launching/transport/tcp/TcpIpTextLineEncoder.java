@@ -47,7 +47,7 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
 
     private final Charset charset;
 
-    private final LineDelimiter delimiter;
+    //private final LineDelimiter delimiter;
 
     private int maxLineLength = Integer.MAX_VALUE;
 
@@ -63,7 +63,7 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
      * Creates a new instance with the current default {@link Charset}
      * and the specified <tt>delimiter</tt>.
      */
-    public TcpIpTextLineEncoder(String delimiter) {
+    public TcpIpTextLineEncoder(final String delimiter) {
         this(new LineDelimiter(delimiter));
     }
 
@@ -71,7 +71,7 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
      * Creates a new instance with the current default {@link Charset}
      * and the specified <tt>delimiter</tt>.
      */
-    public TcpIpTextLineEncoder(LineDelimiter delimiter) {
+    public TcpIpTextLineEncoder(final LineDelimiter delimiter) {
         this(Charset.defaultCharset(), delimiter);
     }
 
@@ -79,7 +79,7 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
      * Creates a new instance with the spcified <tt>charset</tt>
      * and {@link LineDelimiter#UNIX} delimiter.
      */
-    public TcpIpTextLineEncoder(Charset charset) {
+    public TcpIpTextLineEncoder(final Charset charset) {
         this(charset, LineDelimiter.UNIX);
     }
 
@@ -87,7 +87,7 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
      * Creates a new instance with the spcified <tt>charset</tt>
      * and the specified <tt>delimiter</tt>.
      */
-    public TcpIpTextLineEncoder(Charset charset, String delimiter) {
+    public TcpIpTextLineEncoder(final Charset charset, final String delimiter) {
         this(charset, new LineDelimiter(delimiter));
     }
 
@@ -95,7 +95,7 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
      * Creates a new instance with the spcified <tt>charset</tt>
      * and the specified <tt>delimiter</tt>.
      */
-    public TcpIpTextLineEncoder(Charset charset, LineDelimiter delimiter) {
+    public TcpIpTextLineEncoder(final Charset charset, final LineDelimiter delimiter) {
         if (charset == null) {
             throw new IllegalArgumentException("charset");
         }
@@ -108,7 +108,7 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
         }
 
         this.charset = charset;
-        this.delimiter = delimiter;
+        //this.delimiter = delimiter;
     }
 
     /**
@@ -127,7 +127,7 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
      * will throw a {@link IllegalArgumentException}.  The default value
      * is {@link Integer#MAX_VALUE}.
      */
-    public void setMaxLineLength(int maxLineLength) {
+    public void setMaxLineLength(final int maxLineLength) {
         if (maxLineLength <= 0) {
             throw new IllegalArgumentException("maxLineLength: "
                     + maxLineLength);
@@ -136,8 +136,8 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
         this.maxLineLength = maxLineLength;
     }
 
-    public void encode(IoSession session, Object message,
-            ProtocolEncoderOutput out) throws Exception {
+    public void encode(final IoSession session, final Object message,
+    		final ProtocolEncoderOutput out) throws Exception {
         CharsetEncoder encoder = (CharsetEncoder) session.getAttribute(ENCODER);
 
         if (encoder == null) {
@@ -145,8 +145,8 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
             session.setAttribute(ENCODER, encoder);
         }
 
-        String value = (message == null ? "" : message.toString());
-        IoBuffer buf = IoBuffer.allocate(value.length())
+        final String value = (message == null ? "" : message.toString());
+        final IoBuffer buf = IoBuffer.allocate(value.length())
                 .setAutoExpand(true);
         buf.putString(value, encoder);
 

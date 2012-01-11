@@ -31,7 +31,10 @@ import org.quartz.JobExecutionContext;
 /**
  *
  */
-public class ProgramFieldsBinder {
+public final class ProgramFieldsBinder {
+	
+	private ProgramFieldsBinder() {
+	}
 
 	/**
 	 * Initialize program's attributes with values of the result JobDataMap.
@@ -42,20 +45,20 @@ public class ProgramFieldsBinder {
 	 * @throws NoSuchFieldException
 	 * @throws IllegalAccessException
 	 */
-	public static void getProgramOutputFields(Object prog, JobExecutionContext context)
+	public static void getProgramOutputFields(final Object prog, final JobExecutionContext context)
 			throws NoSuchFieldException, IllegalAccessException {
-		Class<? extends Object> clazz = prog.getClass();
+		final Class<? extends Object> clazz = prog.getClass();
 		if (clazz.isAnnotationPresent(Program.class)) {
-			Field[] fields = clazz.getDeclaredFields();
+			final Field[] fields = clazz.getDeclaredFields();
 			for (int i = 0; i < fields.length; i++) {
 				if (fields[i].isAnnotationPresent(Out.class)) {
-					boolean wasAccessible = fields[i].isAccessible();
+					final boolean wasAccessible = fields[i].isAccessible();
 					if (!wasAccessible) {
 						fields[i].setAccessible(true);
 					}
-					Object oResult = context.getResult();
+					final Object oResult = context.getResult();
 					if (oResult instanceof JobDataMap){
-						JobDataMap result = (JobDataMap) oResult;
+						final JobDataMap result = (JobDataMap) oResult;
 						result.put(fields[i].getName(),fields[i].get(prog));
 					}
 					if (!wasAccessible) {

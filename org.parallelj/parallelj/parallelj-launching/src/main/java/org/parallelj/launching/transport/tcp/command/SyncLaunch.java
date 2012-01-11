@@ -56,8 +56,8 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 	 * (org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
 	@Override
-	public final String process(IoSession session, String... args) {
-		JobDataMap jobDataMap = new JobDataMap();
+	public final String process(final IoSession session, final String... args) {
+		final JobDataMap jobDataMap = new JobDataMap();
 		TcpIpProgram tcpIpProgram=null;
 		// Get the corresponding TcpIpProgram
 		try {
@@ -68,13 +68,13 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 			}
 			
 			@SuppressWarnings("unchecked")
-			Class<? extends Job> jobClass = (Class<? extends Job>) tcpIpProgram.getAdapterClass();
-			Launcher launcher = Launcher.getLauncher();
+			final Class<? extends Job> jobClass = (Class<? extends Job>) tcpIpProgram.getAdapterClass();
+			final Launcher launcher = Launcher.getLauncher();
 
-			Launch launch = launcher.newLaunch(jobClass)
+			final Launch launch = launcher.newLaunch(jobClass)
 					.addDatas(jobDataMap).synchLaunch();
 			
-			JobDataMap jdm = launch.getLaunchResult();
+			final JobDataMap jdm = launch.getLaunchResult();
 			String status = null; 
 			if (jdm == null) {
 				status = ReturnCodes.NOTSTARTED.name();
