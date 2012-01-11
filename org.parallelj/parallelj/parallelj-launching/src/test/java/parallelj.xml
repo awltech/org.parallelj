@@ -31,7 +31,7 @@
         <telnet port="10000" host="localhost"/>
         <jmx port="9000" host="localhost"/>
         <ns2:beans>
-            <bean class="sample.programs.MyProgram"/>
+            <bean class="org.parallelj.launching.programs.BeginProgram"/>
         </ns2:beans>
     </ns2:servers>
 </paralleljConfiguration>

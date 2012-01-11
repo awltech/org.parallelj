@@ -1,9 +1,11 @@
 package org.parallelj.launching.transport.tcp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.parallelj.internal.conf.ConfigurationService;
+import org.parallelj.internal.conf.ParalleljConfiguration;
 
 /**
  * The class <code>TcpIpServerTest</code> contains tests for the class <code>{@link TcpIpServer}</code>.
@@ -14,6 +16,21 @@ import org.junit.Test;
  */
 public class TcpIpServerTest {
 	
+	private TcpIpServer fixture;
+	private String host;
+	private int port;
+	
+	@Before
+	public void tearUp()
+		throws Exception {
+		ParalleljConfiguration conf = (ParalleljConfiguration)ConfigurationService.getConfigurationService().getConfigurationManager().getConfiguration();
+		this.host = conf.getServers().getTelnet().getHost();
+		this.port = conf.getServers().getTelnet().getPort();
+		
+		this.fixture = new TcpIpServer(this.host, this.port);
+		this.fixture.start();
+	}
+
 	/**
 	 * Run the TcpIpServer(String,int) constructor test.
 	 *
@@ -25,14 +42,10 @@ public class TcpIpServerTest {
 	public void testTcpIpServer_1()
 		throws Exception {
 
-		TcpIpServer result = new TcpIpServer("localhost", 10002);
-		result.start();
-		assertEquals(result.isStarted(), true);
-		result.stop();
-		assertEquals(result.isStarted(), false);
+		assertEquals(this.fixture.isStarted(), true);
 
-		// add additional test code here
-		assertNotNull(result);
+		this.fixture.stop();
+		assertEquals(this.fixture.isStarted(), false);
 	}
 
 	/**

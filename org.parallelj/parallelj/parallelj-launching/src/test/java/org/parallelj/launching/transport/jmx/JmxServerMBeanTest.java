@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.parallelj.internal.conf.ConfigurationService;
+import org.parallelj.internal.conf.ParalleljConfiguration;
 import org.parallelj.launching.programs.BeginProgram;
 
 /**
@@ -15,7 +17,9 @@ import org.parallelj.launching.programs.BeginProgram;
  * @version $Revision: 1.0 $
  */
 public class JmxServerMBeanTest {
-	private JmxServer fixture = new JmxServer("localhost", 10010);
+	private JmxServer fixture;
+	private String host;
+	private int port;
 	
 	/**
 	 * Run the void registerMBean(String) method test.
@@ -46,6 +50,11 @@ public class JmxServerMBeanTest {
 	@Before
 	public void tearUp()
 		throws Exception {
+		ParalleljConfiguration conf = (ParalleljConfiguration)ConfigurationService.getConfigurationService().getConfigurationManager().getConfiguration();
+		this.host = conf.getServers().getJmx().getHost();
+		this.port = conf.getServers().getJmx().getPort();
+		
+		this.fixture = new JmxServer(this.host, this.port);
 		this.fixture.start();
 
 	}

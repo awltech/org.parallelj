@@ -15,7 +15,6 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	JmxServerTest.class,
 	DynamicLegacyProgramTest.class,
 })
 public class TestAll {
