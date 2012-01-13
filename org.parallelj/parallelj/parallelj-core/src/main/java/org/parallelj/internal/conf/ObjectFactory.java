@@ -132,7 +132,7 @@ public class ObjectFactory {
      * Create an instance of {@link CServers.Telnet }
      * 
      */
-    public CServers.Ssh createCServersSsf() {
+    public CServers.Ssh createCServersSsh() {
         return new CServers.Ssh();
     }
 
