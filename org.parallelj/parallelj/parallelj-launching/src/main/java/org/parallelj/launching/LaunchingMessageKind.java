@@ -254,7 +254,46 @@ public enum LaunchingMessageKind {
 	 * Invalid option value
 	 */
 	@Format("An error occurred.")
-	EREMOTE0009;
+	EREMOTE0009,
+	
+	
+	/*
+	 * Information messages for Ssh
+	 */
+	
+	/**
+	 * Starting SshServer on [%s]
+	 */
+	@Format("Starting the SshServer on [%s]")
+	ISSH0001,
+	
+	/**
+	 * SshServer started on [%s]
+	 */
+	@Format("SshServer started on [%s]")
+	ISSH0002,
+	
+	/**
+	 * Stopping SshServer
+	 */
+	@Format("Stopping the SshServer")
+	ISSH0003,
+	
+	/*
+	 * Error messages for Ssh
+	 */
+	
+	/**
+	 * SshServer can't be started
+	 */
+	@Format("SshServer can't be started")
+	ESSH0001,
+	
+	/**
+	 * SshServer failed to shutdown cleanly
+	 */
+	@Format("SshServer failed to shutdown cleanly")
+	ESSH0002;
 	
 
 	/**

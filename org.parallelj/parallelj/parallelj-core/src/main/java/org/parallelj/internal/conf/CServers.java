@@ -66,6 +66,15 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
+ *         &lt;element name="ssh">
+ *           &lt;complexType>
+ *             &lt;complexContent>
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                 &lt;attribute name="port" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *               &lt;/restriction>
+ *             &lt;/complexContent>
+ *           &lt;/complexType>
+ *         &lt;/element>
  *         &lt;element ref="{parallelj}beans"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -79,6 +88,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "CServers", propOrder = {
     "telnet",
     "jmx",
+    "ssh",
     "beans"
 })
 public class CServers {
@@ -87,7 +97,10 @@ public class CServers {
     protected CServers.Telnet telnet;
     @XmlElement(required = true)
     protected CServers.Jmx jmx;
-    @XmlElement(namespace = "parallelj", required = true)
+    @XmlElement(required = true)
+    protected CServers.Ssh ssh;
+
+	@XmlElement(namespace = "parallelj", required = true)
     protected CBeans beans;
 
     /**
@@ -161,6 +174,29 @@ public class CServers {
     public void setBeans(CBeans value) {
         this.beans = value;
     }
+    
+    /**
+     * Gets the value of the ssh property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CServers.Ssh }
+     */
+    public CServers.Ssh getSsh() {
+		return ssh;
+	}
+
+    /**
+     * Sets the value of the ssh property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CServers.Ssh }
+     *     
+     */
+    public void setSsh(CServers.Ssh ssh) {
+		this.ssh = ssh;
+	}
 
 
     /**
@@ -291,6 +327,56 @@ public class CServers {
         public void setHost(String value) {
             this.host = value;
         }
+
+        /**
+         * Gets the value of the port property.
+         * 
+         * @return
+         *     possible object is
+         *     {@link Integer }
+         *     
+         */
+        public Integer getPort() {
+            return port;
+        }
+
+        /**
+         * Sets the value of the port property.
+         * 
+         * @param value
+         *     allowed object is
+         *     {@link Integer }
+         *     
+         */
+        public void setPort(Integer value) {
+            this.port = value;
+        }
+
+    }
+    
+    /**
+     * <p>Java class for anonymous complex type.
+     * 
+     * <p>The following schema fragment specifies the expected content contained within this class.
+     * 
+     * <pre>
+     * &lt;complexType>
+     *   &lt;complexContent>
+     *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *       &lt;attribute name="port" type="{http://www.w3.org/2001/XMLSchema}int" />
+     *     &lt;/restriction>
+     *   &lt;/complexContent>
+     * &lt;/complexType>
+     * </pre>
+     * 
+     * 
+     */
+    @XmlAccessorType(XmlAccessType.FIELD)
+    @XmlType(name = "")
+    public static class Ssh {
+
+        @XmlAttribute
+        protected Integer port;
 
         /**
          * Gets the value of the port property.

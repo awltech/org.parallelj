@@ -66,6 +66,11 @@
 			<artifactId>commons-cli</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+        	<version>140</version>
+		</dependency>
 	</dependencies>
 
 	<build>

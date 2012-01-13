@@ -127,6 +127,14 @@ public class ObjectFactory {
     public CServers createCServers() {
         return new CServers();
     }
+    
+    /**
+     * Create an instance of {@link CServers.Telnet }
+     * 
+     */
+    public CServers.Ssh createCServersSsf() {
+        return new CServers.Ssh();
+    }
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ParalleljConfiguration }{@code >}}

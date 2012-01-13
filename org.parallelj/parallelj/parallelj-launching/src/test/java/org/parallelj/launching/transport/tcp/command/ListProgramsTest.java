@@ -102,7 +102,7 @@ public class ListProgramsTest {
 		String result = fixture.process(session);
 
 		// add additional test code here
-		assertEquals(null, result);
+		assertNotNull(result);
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class ListProgramsTest {
 		String result = fixture.process(session);
 
 		// add additional test code here
-		assertEquals(null, result);
+		assertNotNull(result);
 	}
 
 	/**
@@ -140,7 +140,7 @@ public class ListProgramsTest {
 		String result = fixture.process(session);
 
 		// add additional test code here
-		assertEquals(null, result);
+		assertNotNull(result);
 	}
 
 	/**

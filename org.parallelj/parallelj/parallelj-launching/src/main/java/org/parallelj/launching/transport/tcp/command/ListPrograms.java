@@ -56,8 +56,8 @@ public class ListPrograms extends AbstractTcpCommand {
 			}
 			stb.append("]\n\r");
 		}
-		session.write(stb.toString());
-		return null;
+		//session.write(stb.toString());
+		return stb.toString();
 	}
 
 	/* (non-Javadoc)
