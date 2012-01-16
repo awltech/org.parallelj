@@ -110,7 +110,7 @@ public class SshShellFactory implements Factory<Command>, Command, Runnable {
 				out.flush();
 				while (true) {
 
-					String str = r.readLine();
+					String str = readLine(r);
 
 					// Parse the command
 					String cmd = null;
@@ -174,4 +174,24 @@ public class SshShellFactory implements Factory<Command>, Command, Runnable {
 	public void destroy() {
 		thread.interrupt();
 	}
+
+	private String readLine(BufferedReader r) throws IOException {
+		StringBuffer str = new StringBuffer();
+		int ch = r.read();
+		this.out.write(ch);
+		this.out.flush();
+		while ((char) ch != '\n' && ((char) ch != '\r')) {
+			str.append((char) ch);
+			ch = r.read();
+			this.out.write(ch);
+			this.out.flush();
+		}
+		for (int i = 0; i < ENDLINE.length(); i++) {
+			this.out.write(ENDLINE.charAt(i));
+		}
+		this.out.flush();
+
+		return str.toString();
+	}
+
 }
