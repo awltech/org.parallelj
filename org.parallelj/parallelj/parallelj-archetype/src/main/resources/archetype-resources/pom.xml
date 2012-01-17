@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>${groupId}</groupId>
 	<artifactId>${artifactId}</artifactId>
 	<version>${version}</version>
 	<packaging>war</packaging>
-	<repositories>
-		<repository>
-			<!-- This repository is mapped to a Maven2 proxy. This one gives access 
-				to O&D and common Maven2 repositories -->
-			<id>proxiedRepositories</id>
-			<name>OD and common proxied repositories</name>
-			<url>http://repository.atosworldline.com/maven2 </url>
-		</repository>
-	</repositories>
+
+	<properties>
+		<parallelj-version>0.7.0-SNAPSHOT</parallelj-version>
+	</properties>
 
 	<build>
 		<plugins>
@@ -43,7 +41,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -51,11 +48,11 @@
 				<configuration>
 					<ajdtVersion>1.6</ajdtVersion>
 					<additionalProjectnatures>
-						<additionalProjectnature>org.maven.ide.eclipse.maven2Nature</additionalProjectnature>
+						<additionalProjectnature>org.eclipse.m2e.core.maven2Nature</additionalProjectnature>
 					</additionalProjectnatures>
 					<additionalBuildcommands>
 						<buildCommand>
-							<name>org.maven.ide.eclipse.maven2Builder</name>
+							<name>org.eclipse.m2e.core.maven2Builder</name>
 							<arguments>
 							</arguments>
 						</buildCommand>
@@ -77,9 +74,6 @@
 							<version>2.1.0</version>
 						</jarArtifact>
 					</libs>
-					<!-- <webapps> <webappArtifact> <groupId>net.atos.xa.sample</groupId> 
-						<artifactId>parallelj-quartz</artifactId> <version>0.0.1-SNAPSHOT</version> 
-						</webappArtifact> </webapps> -->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -90,6 +84,14 @@
 					<scanIntervalSeconds>10</scanIntervalSeconds>
 					<stopKey>foo</stopKey>
 					<stopPort>9999</stopPort>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>
+						"-javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/1.6.2/aspectjweaver-1.6.2.jar"
+					</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -116,12 +118,12 @@
 		<dependency>
 			<groupId>org.parallelj</groupId>
 			<artifactId>parallelj-launching</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>${parallelj-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.parallelj</groupId>
 			<artifactId>parallelj-core</artifactId>
-			<version>0.7.0-SNAPSHOT</version>
+			<version>${parallelj-version}</version>
 		</dependency>
 	</dependencies>
 </project>
