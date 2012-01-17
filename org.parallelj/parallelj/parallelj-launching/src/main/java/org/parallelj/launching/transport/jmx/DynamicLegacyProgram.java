@@ -43,6 +43,7 @@ import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
+import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.launching.transport.tcp.program.ArgEntry;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -89,7 +90,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			for (JmxOption option : JmxOptions.getOptions()) {
 				// Options "id" and "args" doesn't have to be shown using Jmx
 				final MBeanParameterInfo param = new MBeanParameterInfo(
-						option.getName(), "java.lang.String", option.getDescription());
+						option.getName(), "java.lang.String",
+						option.getDescription());
 				parameters.add(param);
 			}
 			final MBeanOperationInfo operation = new MBeanOperationInfo(
@@ -113,8 +115,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @throws MBeanException
 	 *             If an error appends when initializing the JobDataMap
 	 */
-	protected JobDataMap buildJobDataMap(final JmxCommand jmxCommand, final Object[] params)
-			throws MBeanException {
+	protected JobDataMap buildJobDataMap(final JmxCommand jmxCommand,
+			final Object[] params) throws MBeanException {
 		final JobDataMap jobDataMap = new JobDataMap();
 
 		try {
@@ -152,7 +154,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 */
 	@Override
 	public final Object invoke(final String actionName, final Object[] params,
-			final String[] signature) throws MBeanException, ReflectionException {
+			final String[] signature) throws MBeanException,
+			ReflectionException {
 		// Get the JmxCommand
 		JmxCommand curCmd = null;
 		for (JmxCommand cmd : this.cmds) {
@@ -174,7 +177,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 				// Launch and wait until terminated
 				launch.synchLaunch();
 				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
-						adapterClass.getCanonicalName(), launch.getLaunchId());
+						adapterClass.getCanonicalName(), launch.getLaunchId(),
+						launch.getLaunchResult().get(QuartzUtils.RETURN_CODE));
 			} else {
 				// Launch and continue
 				launch.aSynchLaunch();
@@ -206,8 +210,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	public final MBeanInfo getMBeanInfo() {
 		final MBeanOperationInfo[] opers = createMBeanOperationInfo();
 		String className = "ProgramAdapter.Adapter";
-		return new MBeanInfo(className, null, null, null, opers,
-				null);
+		return new MBeanInfo(className, null, null, null, opers, null);
 	}
 
 	/**
@@ -216,10 +219,11 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @return an array of MBeanParameterInfo
 	 */
 	private MBeanParameterInfo[] createMBeanParameterInfos() {
-		final int lenght = this.adapterArgs!=null?this.adapterArgs.size():0;
+		final int lenght = this.adapterArgs != null ? this.adapterArgs.size()
+				: 0;
 		int cpt = 0;
 		MBeanParameterInfo[] result = new MBeanParameterInfo[lenght];
-		if (this.adapterArgs!=null) {
+		if (this.adapterArgs != null) {
 			for (ArgEntry arg : adapterArgs) {
 				// Only simple Type are authorized
 				// System.out.println(arg);
