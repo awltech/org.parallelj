@@ -28,6 +28,7 @@ import org.parallelj.launching.ReturnCodes;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
+import org.parallelj.launching.quartz.LaunchResult;
 import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.launching.transport.jmx.JmxCommand;
@@ -45,7 +46,8 @@ import org.quartz.JobDataMap;
 public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 
 	private static final int PRIORITY = 80;
-	//private static final String USAGE = "  synclaunch -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
+	// private static final String USAGE =
+	// "  synclaunch -id x -rid y params : Launches a new Program instance with ID x, waits till return status (synchronous launch).";
 	private static final String USAGE = "synclaunch : Launches a new Program instance and waits till return status (synchronous launch).";
 
 	/*
@@ -58,34 +60,34 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 	@Override
 	public final String process(final IoSession session, final String... args) {
 		final JobDataMap jobDataMap = new JobDataMap();
-		TcpIpProgram tcpIpProgram=null;
+		TcpIpProgram tcpIpProgram = null;
 		// Get the corresponding TcpIpProgram
 		try {
 			tcpIpProgram = parseCommandLine(args);
-			
-			for (IOption ioption:this.getOptions()) {
+
+			for (IOption ioption : this.getOptions()) {
 				ioption.process(jobDataMap, tcpIpProgram);
 			}
-			
+
 			@SuppressWarnings("unchecked")
-			final Class<? extends Job> jobClass = (Class<? extends Job>) tcpIpProgram.getAdapterClass();
+			final Class<? extends Job> jobClass = (Class<? extends Job>) tcpIpProgram
+					.getAdapterClass();
 			final Launcher launcher = Launcher.getLauncher();
 
 			final Launch launch = launcher.newLaunch(jobClass)
 					.addDatas(jobDataMap).synchLaunch();
-			
-			final JobDataMap jdm = launch.getLaunchResult();
-			String status = null; 
-			if (jdm == null) {
+
+			final LaunchResult launchResult = launch.getLaunchResult();
+			String status = null;
+			if (launchResult == null) {
 				status = ReturnCodes.NOTSTARTED.name();
 			} else {
-				status = String.valueOf(jdm.get(QuartzUtils.RETURN_CODE));
+				status = String.valueOf(launchResult.getResult().get(
+						QuartzUtils.RETURN_CODE));
 			}
-			
+
 			return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
-					jobClass.getCanonicalName(),
-					launch.getLaunchId(),
-					status);
+					jobClass.getCanonicalName(), launch.getLaunchId(), status);
 		} catch (ParseException e) {
 			return e.getMessage();
 		} catch (ParserException e) {
@@ -93,7 +95,9 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 		} catch (OptionException e) {
 			return e.getFormatedMessage();
 		} catch (LaunchException e) {
-			return  LaunchingMessageKind.EQUARTZ0003.format(tcpIpProgram!=null?tcpIpProgram.getAdapterClass():"unknown");
+			return LaunchingMessageKind.EQUARTZ0003
+					.format(tcpIpProgram != null ? tcpIpProgram
+							.getAdapterClass() : "unknown");
 		}
 	}
 

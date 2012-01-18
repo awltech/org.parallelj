@@ -69,7 +69,7 @@ public class Launch {
 	 * The Quartz Job for this Launch.
 	 */
 	private JobDetail job;
-	
+
 	private Job adapter;
 
 	/**
@@ -153,9 +153,9 @@ public class Launch {
 
 			this.adapter = listener.getAdapter();
 			this.launchResult = new LaunchResult(listener.getJobId(),
-					listener.getResult());
-			//Object obj = this.launchResult.getResult();
-			//System.out.println(obj);
+					listener.getResult(), jobClass.getCanonicalName());
+			// Object obj = this.launchResult.getResult();
+			// System.out.println(obj);
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
 		}
@@ -181,7 +181,7 @@ public class Launch {
 			// Launch the Job
 			this.scheduler.scheduleJob(this.job, this.trigger);
 			this.scheduler.start();
-			
+
 			// Wait few seconds for the JobId to be available.
 			try {
 				Thread.sleep(MSECONDS);
@@ -193,7 +193,7 @@ public class Launch {
 			LaunchingMessageKind.IQUARTZ0002.format(
 					jobClass.getCanonicalName(), listener.getJobId());
 			this.launchResult = new LaunchResult(listener.getJobId(),
-					listener.getResult());
+					listener.getResult(), jobClass.getCanonicalName());
 			// this.scheduler.getListenerManager().removeJobListener(listener.getName());
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
@@ -261,8 +261,8 @@ public class Launch {
 	 * 
 	 * @return The result Object of the launch.
 	 */
-	public JobDataMap getLaunchResult() {
-		return this.launchResult.getResult();
+	public LaunchResult getLaunchResult() {
+		return this.launchResult;
 	}
 
 	/**

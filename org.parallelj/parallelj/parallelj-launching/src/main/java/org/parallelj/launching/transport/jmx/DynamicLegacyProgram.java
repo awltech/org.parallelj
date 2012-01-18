@@ -43,7 +43,6 @@ import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
-import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.launching.transport.tcp.program.ArgEntry;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -175,15 +174,10 @@ public class DynamicLegacyProgram implements DynamicMBean {
 					.newLaunch((Class<Job>) adapterClass).addDatas(jobDataMap);
 			if (isSync) {
 				// Launch and wait until terminated
-				launch.synchLaunch();
-				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
-						adapterClass.getCanonicalName(), launch.getLaunchId(),
-						launch.getLaunchResult().get(QuartzUtils.RETURN_CODE));
+				return launch.synchLaunch().getLaunchResult();
 			} else {
 				// Launch and continue
-				launch.aSynchLaunch();
-				return LaunchingMessageKind.IQUARTZ0002.getFormatedMessage(
-						adapterClass.getCanonicalName(), launch.getLaunchId());
+				return launch.aSynchLaunch().getLaunchResult();
 			}
 		} catch (LaunchException e) {
 			LaunchingMessageKind.EQUARTZ0003.format(actionName, e);
