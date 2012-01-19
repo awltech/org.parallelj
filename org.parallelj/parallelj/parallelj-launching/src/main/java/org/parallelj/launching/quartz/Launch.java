@@ -192,8 +192,9 @@ public class Launch {
 
 			LaunchingMessageKind.IQUARTZ0002.format(
 					jobClass.getCanonicalName(), listener.getJobId());
+
 			this.launchResult = new LaunchResult(listener.getJobId(),
-					listener.getResult(), jobClass.getCanonicalName());
+					jobClass.getCanonicalName());
 			// this.scheduler.getListenerManager().removeJobListener(listener.getName());
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
