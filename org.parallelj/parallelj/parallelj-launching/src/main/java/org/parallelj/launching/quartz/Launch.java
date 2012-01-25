@@ -153,7 +153,7 @@ public class Launch {
 
 			this.adapter = listener.getAdapter();
 			this.launchResult = new LaunchResult(listener.getJobId(),
-					listener.getResult(), jobClass.getCanonicalName());
+					listener.getResult());
 			// Object obj = this.launchResult.getResult();
 			// System.out.println(obj);
 		} catch (SchedulerException e) {
@@ -192,8 +192,9 @@ public class Launch {
 
 			LaunchingMessageKind.IQUARTZ0002.format(
 					jobClass.getCanonicalName(), listener.getJobId());
+
 			this.launchResult = new LaunchResult(listener.getJobId(),
-					listener.getResult(), jobClass.getCanonicalName());
+					listener.getResult());
 			// this.scheduler.getListenerManager().removeJobListener(listener.getName());
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
@@ -261,8 +262,8 @@ public class Launch {
 	 * 
 	 * @return The result Object of the launch.
 	 */
-	public LaunchResult getLaunchResult() {
-		return this.launchResult;
+	public JobDataMap getLaunchResult() {
+		return this.launchResult.getResult();
 	}
 
 	/**
