@@ -67,20 +67,31 @@
 			<version>1.2</version>
 		</dependency>
 		<dependency>
-            <groupId>bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-        	<version>140</version>
+			<groupId>bouncycastle</groupId>
+			<artifactId>bcprov-jdk15</artifactId>
+			<version>140</version>
 		</dependency>
 		<dependency>
-            <groupId>org.jolokia</groupId>
-            <artifactId>jolokia-core</artifactId>
-        	<version>1.0.2</version>
-        </dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-core</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 		<dependency>
-            <groupId>org.jolokia</groupId>
-            <artifactId>jolokia-jsr160</artifactId>
-        	<version>1.0.2</version>
-        </dependency>
+			<groupId>org.jolokia</groupId>
+			<artifactId>jolokia-jsr160</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.6.4</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -88,11 +99,15 @@
 			<testResource>
 				<directory>${project.basedir}/src/test/java</directory>
 			</testResource>
+			<testResource>
+				<directory>${project.basedir}/src/test/resources</directory>
+			</testResource>
 		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.plugin.version}</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -101,7 +116,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.1</version>
+				<version>${aspectj.maven.plugin.version}</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -124,7 +139,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.8</version>
+				<version>${maven.eclipse.plugin.version}</version>
 				<configuration>
 					<ajdtVersion>1.5</ajdtVersion>
 					<additionalProjectnatures>
@@ -140,10 +155,12 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven.surefire.plugin.version}</version>
 				<configuration>
 					<argLine>
-						"-javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/1.6.8/aspectjweaver-1.6.8.jar"
+						"-javaagent:${aspectj.javaagent.location}"
 					</argLine>
 				</configuration>
 			</plugin>
@@ -152,6 +169,7 @@
 				<inherited>false</inherited>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
+				<version>${maven.license.plugin.version}</version>
 				<configuration>
 					<basedir>${basedir}</basedir>
 					<header>etc/header.txt</header>

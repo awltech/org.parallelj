@@ -54,6 +54,7 @@
 				<inherited>false</inherited>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
+				<version>${maven.license.plugin.version}</version>
 				<configuration>
 					<basedir>${basedir}</basedir>
 					<header>etc/header.txt</header>
