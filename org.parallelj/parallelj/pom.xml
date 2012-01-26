@@ -177,6 +177,7 @@
 			<plugin>
         			<groupId>org.apache.maven.plugins</groupId>
         			<artifactId>maven-gpg-plugin</artifactId>
+        			<version>${maven.gpg.plugin.version}</version>
         			<executions>
           				<execution>
             					<id>sign-artifacts</id>
@@ -254,6 +255,7 @@
 		<maven.surefire.plugin.version>2.11</maven.surefire.plugin.version>
 		<maven.source.plugin.version>2.1.2</maven.source.plugin.version>
 		<maven.site.plugin.version>3.0</maven.site.plugin.version>
+		<maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
 		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/1.6.8/aspectjweaver-1.6.8.jar</aspectj.javaagent.location>
 	</properties>
 </project>
