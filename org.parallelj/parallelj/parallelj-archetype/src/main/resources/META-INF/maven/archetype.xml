@@ -21,10 +21,10 @@
 		<resource>src/main/resources/log4j.properties</resource>
 		<resource>src/main/resources/parallelj.xml</resource>
 		<resource>src/main/webapp/WEB-INF/web.xml</resource>
+		<source>src/main/webapp/index.jsp</source>
 	</resources>
 	<sources>
 		<source>src/main/java/.touch</source>
-		<source>src/main/webapp/index.jsp</source>
 	</sources>
 	<testSources>
 		<source>src/test/java/.touch</source>
