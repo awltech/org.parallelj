@@ -4,7 +4,7 @@ ParallelJ, framework for parallel computing
 About
 -----
 
-ParallelJ-Runtime is a part of the ParallelJ project corresponding to the runtime part (obviously). 
+org.parallelj is a part of the ParallelJ project corresponding to the runtime part (obviously). 
 It contains the execution engine, and all runtime related components. 
 More information can be found on our website: http://www.parallelj.org
 
