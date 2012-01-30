@@ -27,7 +27,7 @@
 
 	<issueManagement>
 		<system>github</system>
-		<url>https://github.com/XA-Labs/ParallelJ-Runtime/issues</url>
+		<url>https://github.com/XA-Labs/org.parallelj/issues</url>
 	</issueManagement>
 
 	<licenses>
@@ -40,9 +40,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:http://github.com/XA-Labs/ParallelJ-Runtime.git</connection>
-		<developerConnection>scm:git:git@github.com:XA-Labs/ParallelJ-Runtime.git</developerConnection>
-		<url>https://github.com/XA-Labs/ParallelJ-Runtime</url>
+		<connection>scm:git:http://github.com/XA-Labs/org.parallelj.git</connection>
+		<developerConnection>scm:git:git@github.com:XA-Labs/org.parallelj.git</developerConnection>
+		<url>https://github.com/XA-Labs/org.parallelj</url>
 	</scm>
 
 	<organization>
