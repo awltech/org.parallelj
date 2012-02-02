@@ -34,7 +34,6 @@
 			<artifactId>parallelj-core</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
-		<!-- Gson: Java to Json conversion -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -88,7 +87,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Checking license headers -->
 			<plugin>
 				<inherited>false</inherited>
 				<groupId>com.mycila.maven-license-plugin</groupId>

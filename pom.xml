@@ -109,7 +109,8 @@
 	</modules>
 
 	<properties>
-		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/1.6.8/aspectjweaver-1.6.8.jar</aspectj.javaagent.location>
+		<aspectjweaver.version>1.6.12</aspectjweaver.version>
+		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjweaver.version}/aspectjweaver-${aspectjweaver.version}.jar</aspectj.javaagent.location>
 		<ajdtVersion>1.6.8</ajdtVersion>
 		<maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
 		<aspectj.maven.plugin.version>1.2</aspectj.maven.plugin.version>
@@ -132,14 +133,11 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven.compiler.plugin.version}</version>
 				</plugin>
-
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>aspectj-maven-plugin</artifactId>
 					<version>${aspectj.maven.plugin.version}</version>
 				</plugin>
-
-				<!-- Checking license headers -->
 				<plugin>
 					<groupId>com.mycila.maven-license-plugin</groupId>
 					<artifactId>maven-license-plugin</artifactId>
@@ -150,7 +148,6 @@
 					<artifactId>maven-gpg-plugin</artifactId>
 					<version>${maven.gpg.plugin.version}</version>
 				</plugin>
-
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-eclipse-plugin</artifactId>
@@ -161,25 +158,21 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${maven.surefire.plugin.version}</version>
 				</plugin>
-
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-report-plugin</artifactId>
 					<version>${maven.surefire.report.plugin.version}</version>
 				</plugin>
-
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>cobertura-maven-plugin</artifactId>
 					<version>${cobertura.maven.plugin.version}</version>
 				</plugin>
-
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
 					<version>${maven.site.plugin.version}</version>
 				</plugin>
-
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
@@ -202,7 +195,6 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
@@ -219,7 +211,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<inherited>false</inherited>
 				<groupId>com.mycila.maven-license-plugin</groupId>
@@ -254,21 +245,6 @@
 				<executions>
 				</executions>
 			</plugin>
-			<!-- 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			 -->
 		</plugins>
 	</build>
 
@@ -331,6 +307,11 @@
 				<artifactId>servlet-api</artifactId>
 				<version>2.5</version>
 			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>${aspectjweaver.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -339,7 +320,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
-				<version>${maven.surefire.report.plugin.version}</version>
 				<configuration>
 					<ajdtVersion>${ajdtVersion}</ajdtVersion>
 					<additionalProjectnatures>
@@ -357,7 +337,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>${maven.javadoc.plugin.version}</version>
 				<configuration>
 					<show>public</show>
 				</configuration>
@@ -365,7 +344,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>${cobertura.maven.plugin.version}</version>
 			</plugin>
 		</plugins>
 	</reporting>

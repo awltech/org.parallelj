@@ -73,7 +73,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Checking license headers -->
 			<plugin>
 				<inherited>false</inherited>
 				<groupId>com.mycila.maven-license-plugin</groupId>
