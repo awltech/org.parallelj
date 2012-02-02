@@ -27,11 +27,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.parallelj.internal.MessageKind;
 import org.parallelj.mirror.Event;
@@ -48,6 +51,120 @@ import org.parallelj.mirror.Reflection;
  * @since 0.5.0
  */
 public class KReflection implements Reflection {
+
+	static class EventConsumer extends Thread {
+		
+		static class Task extends TimerTask {
+			EventConsumer consumer;
+
+			public Task(EventConsumer consumer) {
+				this.consumer = consumer;
+			}
+
+			double consumerId;
+
+			@Override
+			public void run() {
+				if (this.consumer != null
+						&& this.consumer.getState() == State.WAITING) {
+					// The randomId of the consumer is the same as the last check?: the consumer
+					// didn't do anything since last check. => it can be stopped.
+					if (this.consumerId == this.consumer.getRandomId()) {
+						this.consumer.interrupt();
+					} else {
+						this.consumerId = this.consumer.getRandomId();
+					}
+				}
+			}
+		}
+		public static long timerPeriod = 500;
+		
+		BlockingQueue<Event<?>> queue = new ArrayBlockingQueue<Event<?>>(100);
+
+		double randomId;
+		
+		Timer timer;
+
+		public EventConsumer(BlockingQueue<Event<?>> queue) {
+			this.queue = queue;
+			this.timer = new Timer();
+			this.timer.schedule(new Task(this), 0, timerPeriod);
+			this.setName("Consumer");
+		}
+
+		@Override
+		public void run() {
+			try {
+				while (true) {
+					this.randomId = Math.random();
+					Event<?> event;
+					event = this.queue.take();
+					send(event);
+				}
+			} catch (InterruptedException e) {
+				this.timer.cancel();
+			}
+		}
+
+		public double getRandomId() {
+			return this.randomId;
+		}
+
+		private void send(Event<?> event) {
+			synchronized (KReflection.Holder.INSTANCE.listeners) {
+				for (EventListener listener : KReflection.Holder.INSTANCE.listeners) {
+					try {
+						listener.handleEvent(event);
+					} catch (Exception e) {
+						// ignore
+						// TODO add message kind
+					}
+				}
+			}
+		}
+	}
+
+	static class EventManagement extends Thread {
+		BlockingQueue<Event<?>> queue = new ArrayBlockingQueue<Event<?>>(5);
+
+		private static class Holder {
+			private static final EventManagement INSTANCE = new EventManagement();
+		}
+
+		public static EventManagement getInstance() {
+			return EventManagement.Holder.INSTANCE;
+		}
+
+		EventConsumer consumer;
+
+		Lock lock = new ReentrantLock();
+
+		public synchronized void dispatch(Event<?> event) {
+			try {
+				lock.lock();
+				// Make a consumer available
+				checkConsumer();
+				synchronized (this.consumer) {
+					try {
+						checkConsumer();
+						this.queue.put(event);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			} finally {
+				lock.unlock();
+			}
+		}
+
+		private void checkConsumer() {
+			if (this.consumer == null
+					|| (this.consumer != null && this.consumer.getState() == State.TERMINATED)) {
+				this.consumer = new EventConsumer(this.queue);
+				this.consumer.start();
+			}
+		}
+	}
 
 	/**
 	 * http://en.wikipedia.org/wiki/Initialization_on_demand_holder_idiom
@@ -72,13 +189,9 @@ public class KReflection implements Reflection {
 	Set<EventListener> listeners = Collections
 			.synchronizedSet(new HashSet<EventListener>());
 
-	/**
-	 * The executor that dispatch the event
-	 */
-	ExecutorService service = Executors.newSingleThreadExecutor();
-
-	BlockingQueue<Event<?>> queue = new ArrayBlockingQueue<Event<?>>(100);
-
+	
+	EventManagement eventManagement = EventManagement.getInstance();
+	
 	/**
 	 * Return the singleton instance.
 	 * 
@@ -94,32 +207,6 @@ public class KReflection implements Reflection {
 		for (EventListener listener : ServiceLoader.load(EventListener.class)) {
 			this.listeners.add(listener);
 		}
-
-		this.service.submit(new Callable<Void>() {
-
-			/**
-			 * @throws InterruptedException
-			 *             when calling take
-			 */
-			@Override
-			public Void call() throws Exception {
-				// TODO avoid while true if possible
-				while (true) {
-					System.out.println(KReflection.this.queue);
-					Event<?> event = KReflection.this.queue.take();
-					synchronized (KReflection.this.listeners) {
-						for (EventListener listener : KReflection.this.listeners) {
-							try {
-								listener.handleEvent(event);
-							} catch (Exception e) {
-								// ignore
-								// TODO add message kind
-							}
-						}
-					}
-				}
-			}
-		});
 	}
 
 	@Override
@@ -168,11 +255,7 @@ public class KReflection implements Reflection {
 	 * @param event the event to dispatch
 	 */
 	public void dispatch(Event<?> event) {
-		try {
-			this.queue.put(event);
-		} catch (InterruptedException e) {
-			// TODO add message kind
-		}
+		eventManagement.dispatch(event);
 	}
 
 	@Override
