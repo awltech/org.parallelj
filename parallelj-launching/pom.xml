@@ -107,7 +107,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.plugin.version}</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -116,7 +115,6 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>${aspectj.maven.plugin.version}</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -139,9 +137,8 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>${maven.eclipse.plugin.version}</version>
 				<configuration>
-					<ajdtVersion>1.5</ajdtVersion>
+					<ajdtVersion>${ajdtVersion}</ajdtVersion>
 					<additionalProjectnatures>
 						<additionalProjectnature>org.eclipse.m2e.core.maven2Nature</additionalProjectnature>
 					</additionalProjectnatures>
@@ -157,19 +154,17 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${maven.surefire.plugin.version}</version>
-				<configuration>
-					<argLine>
-						"-javaagent:${aspectj.javaagent.location}"
-					</argLine>
-				</configuration>
+<!-- 				<configuration> -->
+<!-- 					<argLine> -->
+<!-- 						"-javaagent:${aspectj.javaagent.location}" -->
+<!-- 					</argLine> -->
+<!-- 				</configuration> -->
 			</plugin>
 			<!-- Checking license headers -->
 			<plugin>
 				<inherited>false</inherited>
 				<groupId>com.mycila.maven-license-plugin</groupId>
 				<artifactId>maven-license-plugin</artifactId>
-				<version>${maven.license.plugin.version}</version>
 				<configuration>
 					<basedir>${basedir}</basedir>
 					<header>etc/header.txt</header>
