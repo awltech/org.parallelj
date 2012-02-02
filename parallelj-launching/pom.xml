@@ -95,10 +95,8 @@
 	</dependencies>
 
 	<build>
+		<testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
 		<testResources>
-			<testResource>
-				<directory>${project.basedir}/src/test/java</directory>
-			</testResource>
 			<testResource>
 				<directory>${project.basedir}/src/test/resources</directory>
 			</testResource>
