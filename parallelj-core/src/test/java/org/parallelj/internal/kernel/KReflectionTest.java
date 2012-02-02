@@ -93,6 +93,8 @@ public class KReflectionTest {
 		KReflection.getInstance().addEventListener(listener);
 		KProgram program = new KProgram();
 		new KProcessor().execute(program.newProcess(null));
+		// Must wait more than KReflection.EventConsumer.timerPeriod
+		Thread.sleep(800);
 		Assert.assertFalse(listener.events.isEmpty());
 	}
 	
