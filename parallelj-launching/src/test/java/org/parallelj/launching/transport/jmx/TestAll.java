@@ -15,7 +15,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	DynamicLegacyProgramTest.class,
+	DynamicLegacyProgramTest.class
 })
 public class TestAll {
 

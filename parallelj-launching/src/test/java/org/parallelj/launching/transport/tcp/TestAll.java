@@ -18,7 +18,7 @@ import org.junit.runners.Suite;
 	TcpIpHandlerAdapterTest.class,
 	TcpIpServerTest.class,
 	TcpIpCommandsTest.class,
-	org.parallelj.launching.transport.tcp.command.TestAll.class,
+	org.parallelj.launching.transport.tcp.command.TestAll.class
 })
 public class TestAll {
 

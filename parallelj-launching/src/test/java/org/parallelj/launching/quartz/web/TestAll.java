@@ -15,7 +15,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	ServersInitializerListenerTest.class,
+	ServersInitializerListenerTest.class
 })
 public class TestAll {
 

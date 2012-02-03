@@ -17,7 +17,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	ParalleljSchedulerTest.class,
 	ParalleljSchedulerFactoryTest.class,
-	org.parallelj.launching.quartz.web.TestAll.class,
+	org.parallelj.launching.quartz.web.TestAll.class
 })
 public class TestAll {
 

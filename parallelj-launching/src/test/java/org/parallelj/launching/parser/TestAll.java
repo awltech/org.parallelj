@@ -15,7 +15,7 @@ import org.junit.runners.Suite;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	NopParserTest.class,
+	NopParserTest.class
 })
 public class TestAll {
 

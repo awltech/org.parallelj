@@ -18,7 +18,7 @@ import org.junit.runners.Suite;
 	LaunchingMessageKindTest.class,
 	org.parallelj.launching.parser.TestAll.class,
 	org.parallelj.launching.quartz.TestAll.class,
-	org.parallelj.launching.transport.TestAll.class,
+	org.parallelj.launching.transport.TestAll.class
 })
 public class TestAll {
 

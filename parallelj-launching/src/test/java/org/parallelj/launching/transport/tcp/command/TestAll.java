@@ -26,7 +26,7 @@ import org.junit.runners.Suite;
 	AbstractTcpCommandTest.class,
 	HelpTest.class,
 	AlSyncLaunchTest.class,
-	SyncLaunchTest.class,
+	SyncLaunchTest.class
 })
 public class TestAll {
 

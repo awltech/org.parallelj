@@ -16,7 +16,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	org.parallelj.launching.transport.jmx.TestAll.class,
-	org.parallelj.launching.transport.tcp.TestAll.class,
+	org.parallelj.launching.transport.tcp.TestAll.class
 })
 public class TestAll {
 
