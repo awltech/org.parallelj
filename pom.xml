@@ -17,13 +17,6 @@
 	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
 	<inceptionYear>2011</inceptionYear>
 
-	<distributionManagement>
-		<site>
-			<id>www.parallelj.org</id>
-			<url>http://www.parallelj.org/site/${project.version}/</url>
-		</site>
-	</distributionManagement>
-
 	<issueManagement>
 		<system>github</system>
 		<url>https://github.com/XA-Labs/org.parallelj/issues</url>

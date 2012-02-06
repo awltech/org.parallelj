@@ -192,14 +192,6 @@
 				<executions>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<configuration>
-					<locales>fr,en</locales>
-					<outputEncoding>UTF-8</outputEncoding>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
