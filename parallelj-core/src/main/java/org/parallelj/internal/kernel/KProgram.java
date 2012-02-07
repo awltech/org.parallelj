@@ -162,6 +162,10 @@ public class KProgram implements ProgramType {
 		this.liveness.setCapacity(capacity);
 	}
 
+	public short getCapacity() {
+		return this.liveness.getCapacity();
+	}
+
 	/**
 	 * Return the input condition of this program
 	 * 
