@@ -23,12 +23,19 @@ package org.parallelj.launching.quartz;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.parallelj.Programs;
+import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KCall;
+import org.parallelj.internal.kernel.KProgram;
+import org.parallelj.internal.kernel.KReflection;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ReturnCodes;
+import org.parallelj.mirror.ProgramType;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -76,7 +83,23 @@ privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+
 			proceed(self, context);
 
 			try {
-				Programs.as((Adapter) self).execute().join();
+				// Initialize an ExecutorService with the Capacity of the Program
+				ProcessHelper<?> processHelper = Programs.as((Adapter) self);
+				ProgramType programType = processHelper.getProcess().getProgram();
+				ExecutorService service = null;
+				if (programType instanceof KProgram) {
+					short programCapacity = ((KProgram) programType)
+							.getCapacity();
+					service = (programCapacity == Short.MAX_VALUE) ? Executors
+							.newCachedThreadPool() : Executors
+							.newFixedThreadPool(programCapacity);
+				} else {
+					service = Executors
+							.newCachedThreadPool();
+				}
+				// Launch the program with the initialized ExecutorService
+				processHelper.execute(service).join();
+				service.shutdown();
 				ProgramFieldsBinder.getProgramOutputFields(this, context);
 			} catch (IllegalAccessException e) {
 				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
@@ -89,22 +112,24 @@ privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+
 	}
 
 	/**
-	 * Intercept Exception thrown in RunnableProcedure/CallableProcedure for tracing. If an
-	 * Exception is thrown, the return code of a Launch becomes FAILURE.
+	 * Intercept Exception thrown in RunnableProcedure/CallableProcedure for
+	 * tracing. If an Exception is thrown, the return code of a Launch becomes
+	 * FAILURE.
 	 * 
 	 * @param self
 	 */
-    pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
-    pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(ProgramJobsAdapter);
-    after(Object oo, KCall _kCall) throwing (InvocationTargetException ite) : 
+	pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
+
+	pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(ProgramJobsAdapter);
+
+	after(Object oo, KCall _kCall) throwing (InvocationTargetException ite) : 
     	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
-		
+
 		LaunchingMessageKind.ELAUNCH0002.format(this.adpater, ite);
-		if (this.context != null 
-				&& this.context.getResult() != null 
+		if (this.context != null && this.context.getResult() != null
 				&& this.context.getResult() instanceof JobDataMap) {
 			((JobDataMap) this.context.getResult()).put(
 					QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
 		}
-    }
+	}
 }
