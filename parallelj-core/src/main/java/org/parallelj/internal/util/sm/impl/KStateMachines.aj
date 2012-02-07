@@ -70,7 +70,7 @@ public privileged aspect KStateMachines {
 			occurrence.trigger(trigger.trigger(occurrence,
 					thisJoinPoint.getArgs()));
 			KVertex current = occurrence.getCurrent();
-			if (previous != current) {
+			if (previous != current && current != null) {
 				occurrence.getSupport().fireStateChanded(current.value);
 			}
 		}
