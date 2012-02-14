@@ -52,6 +52,7 @@ import org.parallelj.mirror.Reflection;
  */
 public class KReflection implements Reflection {
 
+	/*
 	static class EventConsumer extends Thread {
 		
 		static class Task extends TimerTask {
@@ -165,6 +166,7 @@ public class KReflection implements Reflection {
 			}
 		}
 	}
+	*/
 
 	/**
 	 * http://en.wikipedia.org/wiki/Initialization_on_demand_holder_idiom
@@ -190,7 +192,7 @@ public class KReflection implements Reflection {
 			.synchronizedSet(new HashSet<EventListener>());
 
 	
-	EventManagement eventManagement = EventManagement.getInstance();
+	//EventManagement eventManagement = EventManagement.getInstance();
 	
 	/**
 	 * Return the singleton instance.
@@ -255,7 +257,15 @@ public class KReflection implements Reflection {
 	 * @param event the event to dispatch
 	 */
 	public void dispatch(Event<?> event) {
-		eventManagement.dispatch(event);
+		//eventManagement.dispatch(event);
+		for (EventListener listener : KReflection.Holder.INSTANCE.listeners) {
+			try {
+				listener.handleEvent(event);
+			} catch (Exception e) {
+				// ignore
+				// TODO add message kind
+			}
+		}
 	}
 
 	@Override
