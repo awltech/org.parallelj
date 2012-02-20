@@ -24,6 +24,8 @@ package org.parallelj.tracknrestart.aspects;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.parallelj.Programs;
@@ -42,7 +44,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobPersistenceException;
 
-privileged public aspect QuartzContextAdapter percflow (execution(public void Job+.execute(..) throws JobExecutionException)) {
+privileged public aspect QuartzContextAdapter percflow(execution(public void Job+.execute(..) throws JobExecutionException)) {
 	
 	declare precedence :
 		org.parallelj.tracknrestart.aspects.QuartzContextAdapter,
@@ -83,12 +85,17 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 	
 	public void Job.execute(JobExecutionContext context) throws JobExecutionException {
 		
+//		ExecutorService service = null;
+		
 		try {
 			logger.debug("-----------------------------------------------------------------------------------------------------");
 			logger.debug("STARTING //J Root Program "+this.getClass().getName());
 	
 			context.setResult(new JobDataMap());
 
+//			service = Executors.newFixedThreadPool(5);
+
+//			ProcessHelper<?> p = Programs.as((Adapter) this).execute(service).join();
 			ProcessHelper<?> p = Programs.as((Adapter) this).execute().join();
 
 			ProgramFieldsBinder.getProgramOutputFields(this, context);
@@ -104,6 +111,7 @@ privileged public aspect QuartzContextAdapter percflow (execution(public void Jo
 		} finally {
 			logger.debug("ENDING   //J Root Program "+this.getClass().getName());
 			logger.debug("-----------------------------------------------------------------------------------------------------");
+//			service.shutdown();
 		}
 	}
 

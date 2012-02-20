@@ -143,9 +143,6 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 	    + COL_UID_SUBST + " = ?"; 
  
     private String FETCH_JOB_DETAIL_EXEC_LAST_TRACK = "SELECT MAX(" + COL_UID_SUBST + ") " 
-    	+ Constants.COL_SCHEDULER_NAME + ", "
-    	+ Constants.COL_JOB_GROUP + ", "
-    	+ Constants.COL_JOB_NAME
     	+ " FROM "
         + TABLE_PREFIX_SUBST + Constants.TABLE_JOB_DETAILS 
 	    + " WHERE " 
@@ -635,7 +632,12 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 		JobDetail job = context.getJobDetail();
 		JobDataMap jobDataMap = job.getJobDataMap();
 		
-		ByteArrayOutputStream baos = serializeJobData(job.getJobDataMap());
+		Object oResult = context.getResult();
+
+		ByteArrayOutputStream baos = serializeJobData(jobDataMap);
+
+		ByteArrayOutputStream baosResult = serializeObject(oResult);
+
 
 		PreparedStatement ps = null;
 
@@ -666,16 +668,15 @@ public class TrackNRestartPluginAll extends JDBCSupport implements SchedulerPlug
 			//TODO verify it works with Sybase
 	        // Sybase : ps.setBytes(10, (baos == null) ? null: baos.toByteArray());
 			ps.setBytes(10, (baos == null) ? new byte[0] : baos.toByteArray());
-			ps.setObject(11, context.getResult());
+			ps.setBytes(11, (baosResult == null) ? new byte[0] : baosResult.toByteArray());
 			String restartedInstanceId = jobDataMap.getString(RESTARTED_FIRE_INSTANCE_ID);
 			ps.setString(12, restartedInstanceId);
 
 			String returnCode = null;
-			Object oResult = context.getResult();
 			if (oResult instanceof JobDataMap) {
 				returnCode = ((JobDataMap)oResult).getString(QuartzContextAdapter.RETURN_CODE);
 			} else {
-				returnCode = String.valueOf(context.getResult());
+				returnCode = String.valueOf(oResult);
 			}
 			ps.setString(13, returnCode);
 

@@ -119,7 +119,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 				conn = TestHelper.getInstance().getNonManagedTXConnection();
 				statement = conn.createStatement();
 				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
-				Assert.assertTrue(resultSet.first());
+				Assert.assertTrue(resultSet.next());
 				Assert.assertNull(resultSet.getString("restarted_uid"));
 				Assert.assertEquals(params.size(),resultSet.getInt("total"));
 			} finally {
@@ -177,7 +177,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 				conn = TestHelper.getInstance().getNonManagedTXConnection();
 				statement = conn.createStatement();
 				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
-				Assert.assertTrue(resultSet.first());
+				Assert.assertTrue(resultSet.next());
 				Assert.assertNull(resultSet.getString("restarted_uid"));
 //				String uid = resultSet.getString("uid");
 				Assert.assertFalse(resultSet.next());
@@ -238,7 +238,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 				conn = TestHelper.getInstance().getNonManagedTXConnection();
 				statement = conn.createStatement();
 				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
-				Assert.assertTrue(resultSet.first());
+				Assert.assertTrue(resultSet.next());
 				Assert.assertNull(resultSet.getString("restarted_uid"));
 				String uid = resultSet.getString("uid");
 				Assert.assertTrue(resultSet.next());
@@ -298,7 +298,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 				conn = TestHelper.getInstance().getNonManagedTXConnection();
 				statement = conn.createStatement();
 				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
-				Assert.assertFalse(resultSet.first());
+				Assert.assertFalse(resultSet.next());
 			} finally {
 				TestHelper.getInstance().closeStatement(statement);
 				TestHelper.getInstance().cleanupConnection(conn);
@@ -355,7 +355,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 				conn = TestHelper.getInstance().getNonManagedTXConnection();
 				statement = conn.createStatement();
 				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
-				Assert.assertTrue(resultSet.first());
+				Assert.assertTrue(resultSet.next());
 				Assert.assertNull(resultSet.getString("restarted_uid"));
 //				Assert.assertEquals("ABORTED", resultSet.getString("result"));
 				Assert.assertEquals("ABORTED", TestHelper.getInstance().getJobDataMapResultFromBlob(resultSet).get(QuartzContextAdapter.RETURN_CODE));
@@ -435,7 +435,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 					conn = TestHelper.getInstance().getNonManagedTXConnection();
 					statement = conn.createStatement();
 					resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job[i].getKey().getName()+ "' and report.job_group='"+job[i].getKey().getGroup()+"'");
-					Assert.assertTrue(resultSet.first());
+					Assert.assertTrue(resultSet.next());
 					Assert.assertEquals(letters.length,resultSet.getInt("total"));
 				} finally {
 					TestHelper.getInstance().closeStatement(statement);
@@ -511,7 +511,7 @@ public abstract class AbstractTest extends RootAbstractTest {
 				statement = conn.createStatement();
 				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" + job.getKey().getName()	+ "' and report.job_group='" + job.getKey().getGroup() + "'");
 
-				Assert.assertTrue(resultSet.first());
+				Assert.assertTrue(resultSet.next());
 				Assert.assertNull(resultSet.getString("restarted_uid"));
 				Assert.assertEquals(params.size(),resultSet.getInt("total"));
 				while (!resultSet.isLast()) {

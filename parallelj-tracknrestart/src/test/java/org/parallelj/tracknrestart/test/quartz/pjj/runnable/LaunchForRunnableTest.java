@@ -110,7 +110,7 @@ public class LaunchForRunnableTest extends RootAbstractTest {
 				conn = TestHelper.getInstance().getNonManagedTXConnection();
 				statement = conn.createStatement();
 				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
-				Assert.assertTrue(resultSet.first());
+				Assert.assertTrue(resultSet.next());
 				Assert.assertNull(resultSet.getString("restarted_uid"));
 				Assert.assertEquals(l.size(),resultSet.getInt("total"));
 				int failures = resultSet.getInt("failure");
@@ -181,7 +181,7 @@ public class LaunchForRunnableTest extends RootAbstractTest {
 				conn = TestHelper.getInstance().getNonManagedTXConnection();
 				statement = conn.createStatement();
 				resultSet = statement.executeQuery("select * from (" + TestHelper.req + ") as report where report.job_name='" +job.getKey().getName()+ "' and report.job_group='"+job.getKey().getGroup()+"'");
-				Assert.assertTrue(resultSet.first());
+				Assert.assertTrue(resultSet.next());
 				Assert.assertNull(resultSet.getString("restarted_uid"));
 				String uid = resultSet.getString("uid");
 				Assert.assertTrue(resultSet.next());

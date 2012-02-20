@@ -50,6 +50,8 @@ import org.slf4j.LoggerFactory;
 
 public class AllTest {
 
+	protected static final String DB = "hsqldb"; //"mysql"
+
 	static Scheduler sched = null;
 	
 	static TestListener jl = null;
@@ -59,11 +61,11 @@ public class AllTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 
-		TrackNRestartLoader.cleanTrackingDatabase("scripts/quartz-database-init-mysql.sql", "database.properties");
+		TrackNRestartLoader.cleanTrackingDatabase("scripts/quartz-database-init-"+DB+".sql", "database."+DB+".properties");
 
-		TrackNRestartLoader.cleanTrackingDatabase("scripts/quartz-track-database-init-mysql.sql", "database.properties");
+		TrackNRestartLoader.cleanTrackingDatabase("scripts/quartz-track-database-init-"+DB+".sql", "database."+DB+".properties");
 
-		SchedulerFactory sf = new StdSchedulerFactory("quartz.properties");
+		SchedulerFactory sf = new StdSchedulerFactory("quartz."+DB+".properties");
 
 		sched = sf.getScheduler();
 		

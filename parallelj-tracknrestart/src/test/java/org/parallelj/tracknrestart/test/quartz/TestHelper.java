@@ -41,12 +41,12 @@ public class TestHelper extends JDBCSupport implements SchedulerPlugin {
 	"	    coalesce(s.success,0)+coalesce(aa.failure,0) as total from " +
 	"	(" +
 	"	    SELECT a.job_group, a.job_name, a.uid, a.restarted_uid, a.result, f.failure FROM qrtz_track_job_details as a " +
-	"	    left join " +
-	"	    (SELECT uid,count(*) as failure FROM qrtz_track_iterations where success='0' group by uid) as f " +
+	"	    left outer join " +
+	"	    (SELECT uid,count(*) as failure FROM qrtz_track_iterations where success=0 group by uid) as f " +
 	"	    on a.uid = f.uid " +
 	"	) aa " +
-	"	left join " +
-	"	(SELECT uid,count(*) as success FROM qrtz_track_iterations where success='1' group by uid) as s " +
+	"	left outer join " +
+	"	(SELECT uid,count(*) as success FROM qrtz_track_iterations where success=1 group by uid) as s " +
 	"	on aa.uid = s.uid " +
 	"	order by aa.job_group asc, aa.job_name asc, aa.uid asc ";
 			

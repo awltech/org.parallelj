@@ -72,6 +72,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public abstract class RootAbstractTest {
+	
+	protected static final String DB = "hsqldb"; //"mysql"
 
 	protected static Logger log = LoggerFactory.getLogger(RootAbstractTest.class);
 
@@ -86,14 +88,13 @@ public abstract class RootAbstractTest {
 
 		if (!DBinitializationDone) {
 			TrackNRestartLoader.cleanTrackingDatabase(
-					"scripts/quartz-database-init-mysql.sql",
-					"database.properties");
+					"scripts/quartz-database-init-"+DB+".sql",
+					"database."+DB+".properties");
 			TrackNRestartLoader.cleanTrackingDatabase(
-					"scripts/quartz-track-database-init-mysql.sql",
-					"database.properties");
-			DBinitializationDone = true;
+					"scripts/quartz-track-database-init-"+DB+".sql",
+					"database."+DB+".properties");
 		}
-		SchedulerFactory sf = new ParalleljSchedulerFactory("quartz.properties");
+		SchedulerFactory sf = new ParalleljSchedulerFactory("quartz."+DB+".properties");
 		sched = sf.getScheduler();
 		sched.start();
 

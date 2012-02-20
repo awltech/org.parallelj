@@ -72,14 +72,14 @@
 	</dependencies>
 
 	<build>
-		<testResources>
-			<testResource>
-				<directory>${project.basedir}/src/test/java</directory>
-			</testResource>
-			<testResource>
-				<directory>${project.basedir}/src/test/resources</directory>
-			</testResource>
-		</testResources>
+<!-- 		<testResources> -->
+<!-- 			<testResource> -->
+<!-- 				<directory>${project.basedir}/src/test/java</directory> -->
+<!-- 			</testResource> -->
+<!-- 			<testResource> -->
+<!-- 				<directory>${project.basedir}/src/test/resources</directory> -->
+<!-- 			</testResource> -->
+<!-- 		</testResources> -->
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -155,7 +155,7 @@
 					<argLine>
 						"-javaagent:${aspectj.javaagent.location}"
 					</argLine>
-					<skipTests>true</skipTests>
+					<skipTests>false</skipTests>
 				</configuration>
 			</plugin>
 			<plugin>

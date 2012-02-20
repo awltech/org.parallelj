@@ -28,13 +28,15 @@ import java.sql.SQLException;
 
 public final class TrackNRestartLoader {
 
+	protected static final String DB = "hsqldb"; //"mysql"
+
 	private TrackNRestartLoader() {
 	}
 
 	public static void main(String[] args) {
 		try {
-			FileReader sqlScriptFileReader = new FileReader("scripts/quartz-track-database-init-mysql.sql");
-			InputStream databaseProperties = TrackNRestartLoader.class.getResourceAsStream("/database.properties");
+			FileReader sqlScriptFileReader = new FileReader("scripts/quartz-track-database-init-"+DB+".sql");
+			InputStream databaseProperties = TrackNRestartLoader.class.getResourceAsStream("/database."+DB+".properties");
 			ScriptRunner.runScript(sqlScriptFileReader, databaseProperties);
 		} catch (IOException e) {
 			e.printStackTrace();
