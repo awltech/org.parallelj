@@ -90,7 +90,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>
-						"-javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/1.6.2/aspectjweaver-1.6.2.jar"
+						"-javaagent:${settings.localRepository}/org/aspectj/aspectjweaver/1.6.12/aspectjweaver-1.6.12.jar"
 					</argLine>
 				</configuration>
 			</plugin>
