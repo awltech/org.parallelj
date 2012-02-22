@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="parallelj"
+	xmlns="parallelj">
+	<!--
+	  To create pojos used for configuration, 
+	  use this command in src/main/resources folder:
+	  
+	  xjc.exe  -d ..\java -p org.parallelj.configuration -episode parallelj.episode parallelj.xsd 
+	 -->
+
+	<xs:complexType name="ParalleljConfiguration">
+		<xs:sequence>
+			<xs:element ref="procedures" />
+			<xs:element ref="servers" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="CProcedures">
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name="procedure">
+				<xs:complexType>
+					<xs:attribute name="name" type="xs:string" />
+					<xs:attribute name="capacity" type="xs:int" />
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="CServers">
+		<xs:sequence>
+			<xs:element name="telnet">
+				<xs:complexType>
+					<xs:attribute name="host" type="xs:string" />
+					<xs:attribute name="port" type="xs:int" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="jmx">
+				<xs:complexType>
+					<xs:attribute name="host" type="xs:string" />
+					<xs:attribute name="port" type="xs:int" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ssh">
+				<xs:complexType>
+<!-- 					<xs:attribute name="host" type="xs:string" /> -->
+					<xs:attribute name="port" type="xs:int" />
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref="beans" />
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="CBeans">
+		<xs:choice maxOccurs="unbounded">
+			<xs:element name="bean">
+				<xs:complexType>
+					<xs:attribute name="class" type="xs:string" />
+				</xs:complexType>
+			</xs:element>
+		</xs:choice>
+	</xs:complexType>
+
+
+	<xs:element name="configuration" type="ParalleljConfiguration" />
+	<xs:element name="procedures" type="CProcedures" />
+	<xs:element name="servers" type="CServers" />
+	<xs:element name="beans" type="CBeans" />
+</xs:schema>

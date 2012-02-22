@@ -56,6 +56,16 @@ public class ConfigurationTest {
 				assertEquals(procedure.getCapacity().longValue(), 10);
 			}
 		}
+		
+		assertNotNull(conf.getServers());
+		assertNotNull(conf.getServers().getJmx());
+		assertEquals("localhost",conf.getServers().getJmx().getHost());
+		assertEquals(9000,conf.getServers().getJmx().getPort().intValue());
+		assertNotNull(conf.getServers().getTelnet());
+		assertEquals("localhost",conf.getServers().getTelnet().getHost());
+		assertEquals(10000,conf.getServers().getTelnet().getPort().intValue());
+		assertNotNull(conf.getServers().getSsh());
+		assertEquals(22,conf.getServers().getSsh().getPort().intValue());
 	}
 
 }
