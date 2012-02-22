@@ -28,15 +28,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.parallelj.internal.util.sm.Entry;
-import org.parallelj.internal.util.sm.StateEvent;
-import org.parallelj.internal.util.sm.StateListener;
 import org.parallelj.internal.util.sm.StateMachine;
-import org.parallelj.internal.util.sm.StateMachines;
 import org.parallelj.internal.util.sm.Transition;
 import org.parallelj.internal.util.sm.TransitionKind;
 import org.parallelj.internal.util.sm.Transitions;
 import org.parallelj.internal.util.sm.Trigger;
-import org.parallelj.mirror.CallState;
 import org.parallelj.mirror.MachineKind;
 import org.parallelj.mirror.ProcessState;
 import org.parallelj.mirror.Processor;
@@ -53,8 +49,7 @@ import org.parallelj.mirror.ProcessorState;
 		@Transition(source = "PENDING", target = "SUSPENDED", triggers = "suspend"),
 		@Transition(source = "RUNNING", target = "SUSPENDED", triggers = "suspend"),
 		@Transition(source = "RUNNING", target = "PENDING", triggers = "complete", guard = "isEmpty") })
-public class KProcessor extends KMachine<ProcessorState> implements Processor,
-		StateListener<KCall, CallState> {
+public class KProcessor extends KMachine<ProcessorState> implements Processor {
 
 	/**
 	 * stores the current processor; if any.
@@ -187,11 +182,13 @@ public class KProcessor extends KMachine<ProcessorState> implements Processor,
 		Set<KCall> calls = new HashSet<KCall>();
 		process.fire(calls);
 		for (KCall call : calls) {
-			StateMachines.addStateListener(call, this);
+			// Next line removed: The event is only catch by the KProcess
+			//StateMachines.addStateListener(call, this);
 			KProcessor.this.submit(call.toRunnable());
 		}
 	}
 
+/* MOVED to KProcess.stateChanged(..) 
 	@Override
 	public void stateChanged(StateEvent<KCall, CallState> event) {
 		if (event.getState().isFinal()) {
@@ -199,7 +196,8 @@ public class KProcessor extends KMachine<ProcessorState> implements Processor,
 			this.fire(event.getSource().getProcess());
 		}
 	}
-
+*/
+	
 	/**
 	 * Submit a runnable to be executed by the executor
 	 * 

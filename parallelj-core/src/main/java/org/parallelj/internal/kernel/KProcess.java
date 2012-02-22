@@ -285,10 +285,13 @@ public class KProcess extends KMachine<ProcessState> implements Process, StateLi
 
 	@Override
 	public void stateChanged(StateEvent<KCall, CallState> event) {
-		switch (event.getState()) {
-		case COMPLETED:
+		// Changed to test COMPLETED and CANCELED
+		if (event.getState().isFinal()) {
 			StateMachines.removeStateListener(event.getSource(), this);
 			this.handleCompletedCall(event.getSource());
+			
+			// Moved from KProcessor.stateChanged(..)
+			this.getProcessor().fire(this);
 		}
 	}
 }
