@@ -23,7 +23,6 @@ package org.parallelj.launching.quartz;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,7 +30,7 @@ import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.internal.kernel.KReflection;
+import org.parallelj.internal.reflect.ProgramAdapter;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ReturnCodes;
@@ -58,6 +57,7 @@ privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+
 	 * The Aspect JobsAdapter must be passed before this.
 	 */
 	declare precedence :
+		org.parallelj.internal.reflect.ProgramAdapter,
 		org.parallelj.launching.quartz.JobsAdapter;
 
 	private Adapter adpater;
