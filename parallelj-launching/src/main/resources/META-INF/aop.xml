@@ -23,7 +23,15 @@
 -->
 <aspectj>
 	<aspects>
+		<!-- declare two existing aspects to the weaver -->
 		<aspect name="org.parallelj.launching.quartz.JobsAdapter"/>
 		<aspect name="org.parallelj.launching.quartz.ProgramJobsAdapter"/>
+
+		<!-- Of the set of aspects declared to the weaver
+             declare witch ones must be used for weaving. -->
+        <include within="org.parallelj.launching.quartz.JobsAdapter"/>
+        <include within="org.parallelj.launching.quartz.ProgramJobsAdapter"/>
     </aspects>
+    <weaver options="-verbose">
+    </weaver>
 </aspectj>
