@@ -34,6 +34,7 @@
 		
 		<!-- Of the set of aspects declared to the weaver
              declare witch ones must be used for weaving. -->
+<!-- 
         <include within="org.parallelj.internal.kernel.Identifiers"/>
 		<include within="org.parallelj.internal.reflect.ProgramAdapter"/>
 		<include within="org.parallelj.internal.util.sm.impl.KStateMachines"/>
@@ -41,6 +42,7 @@
 		<include within="org.parallelj.Executables$PerExecutable"/>
 		<include within="org.parallelj.internal.reflect.ProgramAdapter$PerProgram"/>
 		<include within="org.parallelj.internal.log.Logs"/>
+-->
     </aspects>
     <weaver options="-verbose">
     </weaver>
