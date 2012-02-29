@@ -48,6 +48,12 @@ public enum LaunchingMessageKind {
 	@Format("An Error occurred when running the Program %s!")
 	ELAUNCH0002,
 	
+	/**
+	 * An Error occurred
+	 */
+	@Format("An Error occurred when launching the Program %s!")
+	ELAUNCH0003,
+	
 	/*
 	 * Information messages for TcpIp
 	 */
