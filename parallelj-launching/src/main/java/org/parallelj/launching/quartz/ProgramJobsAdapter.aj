@@ -85,6 +85,10 @@ privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+
 			try {
 				// Initialize an ExecutorService with the Capacity of the Program
 				ProcessHelper<?> processHelper = Programs.as((Adapter) self);
+				if (processHelper == null) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.NOTSTARTED);
+					throw new JobExecutionException(LaunchingMessageKind.ELAUNCH0003.getFormatedMessage(self));
+				}
 				ProgramType programType = processHelper.getProcess().getProgram();
 				ExecutorService service = null;
 				if (programType instanceof KProgram) {
