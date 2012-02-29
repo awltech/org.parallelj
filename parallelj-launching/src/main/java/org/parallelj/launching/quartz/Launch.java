@@ -25,6 +25,8 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 import org.parallelj.launching.LaunchingMessageKind;
 import org.quartz.Job;
@@ -44,6 +46,7 @@ import org.quartz.impl.matchers.EverythingMatcher;
 public class Launch {
 
 	private static final String DEFAULT_GROUP_NAME = "DEFAULT";
+	protected static final String DEFAULT_EXECUTOR_KEY = "EXECUTOR";
 
 	/**
 	 * The scheduler used to launch Programs.
@@ -71,6 +74,12 @@ public class Launch {
 	private JobDetail job;
 
 	private Job adapter;
+	
+	/**
+	 * The Executor service to use when launching the program 
+	 * associated to this Launch
+	 */
+	private Executor executorService = null;
 
 	/**
 	 * The TriggerBuilder for this Launch.
@@ -96,10 +105,15 @@ public class Launch {
 	 *            The Program Adapter class
 	 * @throws LaunchException
 	 */
+	public Launch(final Scheduler scheduler, final Class<?> jobClass) throws LaunchException {
+		this(scheduler, jobClass, null);
+	}
+
 	@SuppressWarnings("unchecked")
-	public Launch(final Scheduler scheduler, final Class<?> jobClass)
+	public Launch(final Scheduler scheduler, final Class<?> jobClass, ExecutorService executorService)
 			throws LaunchException {
 		this.scheduler = scheduler;
+		this.executorService = executorService;
 		try {
 			this.jobClass = (Class<? extends Job>) jobClass;
 		} catch (ClassCastException e) {
@@ -111,6 +125,12 @@ public class Launch {
 		this.job = jobBuilder.withIdentity(this.jobClass.getCanonicalName(),
 				DEFAULT_GROUP_NAME).build();
 
+		// If an ExecutorService was specified, 
+		// we put it in the JobDataMap to be able to use it when the program will be launched.
+		if (this.executorService!=null) {
+			this.job.getJobDataMap().put(DEFAULT_EXECUTOR_KEY, executorService);
+		}
+		
 		this.trigger = triggerBuilder
 				.withIdentity(String.valueOf(triggerBuilder),
 						String.valueOf(triggerBuilder)).startNow().build();

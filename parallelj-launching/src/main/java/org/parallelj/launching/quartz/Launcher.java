@@ -21,6 +21,8 @@
  */
 package org.parallelj.launching.quartz;
 
+import java.util.concurrent.ExecutorService;
+
 import org.parallelj.launching.LaunchingMessageKind;
 import org.quartz.SchedulerException;
 
@@ -86,6 +88,18 @@ public final class Launcher {
 	 */
 	public synchronized Launch newLaunch(final Class<?> jobClass) throws LaunchException {
 		return new Launch(this.scheduler, jobClass);
+	}
+	
+	/**
+	 * Create a new instance of Launch.
+	 * 
+	 * @param jobClass The Program Adapter class.
+	 * @param executorService The ExecutorService instance to use.
+	 * @return An instance of Launch.
+	 * @throws LaunchException 
+	 */
+	public synchronized Launch newLaunch(final Class<?> jobClass, ExecutorService executorService) throws LaunchException {
+		return new Launch(this.scheduler, jobClass, executorService);
 	}
 	
 	/**

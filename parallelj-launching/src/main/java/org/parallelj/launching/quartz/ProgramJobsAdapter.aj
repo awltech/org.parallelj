@@ -91,6 +91,10 @@ privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+
 				}
 				ProgramType programType = processHelper.getProcess().getProgram();
 				ExecutorService service = null;
+				// If an executorService was specified, we use it
+				if (context.getJobDetail().getJobDataMap().get(Launch.DEFAULT_EXECUTOR_KEY) != null) {
+					service = (ExecutorService)context.getJobDetail().getJobDataMap().get(Launch.DEFAULT_EXECUTOR_KEY);
+				} else 
 				if (programType instanceof KProgram) {
 					short programCapacity = ((KProgram) programType)
 							.getCapacity();
