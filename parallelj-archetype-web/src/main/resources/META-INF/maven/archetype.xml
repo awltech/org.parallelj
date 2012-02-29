@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ParallelJ, framework for parallel computing Copyright (C) 2010, 2011, 
+	2012 Atos Worldline or third-party contributors as indicated by the @author 
+	tags or express copyright attribution statements applied by the authors. 
+	This library is free software; you can redistribute it and/or modify it under 
+	the terms of the GNU Lesser General Public License as published by the Free 
+	Software Foundation; either version 2.1 of the License. This library is distributed 
+	in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even 
+	the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+	See the GNU Lesser General Public License for more details. You should have 
+	received a copy of the GNU Lesser General Public License along with this 
+	library; if not, write to the Free Software Foundation, Inc., 51 Franklin 
+	Street, Fifth Floor, Boston, MA 02110-1301 USA -->
+<archetype>
+	<id>parallelj-archetype</id>
+	<resources>
+		<resource>.project</resource>
+		<resource>src/main/resources/META-INF/ParallelJ/.touch</resource>
+		<resource>src/main/resources/META-INF/aop.xml</resource>
+		<resource>src/main/resources/quartz.properties</resource>
+		<resource>src/main/resources/log4j.xml</resource>
+		<resource>src/main/resources/parallelj.xml</resource>
+		<resource>src/main/webapp/WEB-INF/web.xml</resource>
+		<source>src/main/webapp/index.jsp</source>
+	</resources>
+	<sources>
+		<source>src/main/java/.touch</source>
+	</sources>
+	<testSources>
+		<source>src/test/java/.touch</source>
+	</testSources>
+</archetype>
