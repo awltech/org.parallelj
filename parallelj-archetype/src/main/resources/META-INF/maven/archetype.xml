@@ -18,10 +18,8 @@
 		<resource>src/main/resources/META-INF/ParallelJ/.touch</resource>
 		<resource>src/main/resources/META-INF/aop.xml</resource>
 		<resource>src/main/resources/quartz.properties</resource>
-		<resource>src/main/resources/log4j.properties</resource>
+		<resource>src/main/resources/log4j.xml</resource>
 		<resource>src/main/resources/parallelj.xml</resource>
-		<resource>src/main/webapp/WEB-INF/web.xml</resource>
-		<source>src/main/webapp/index.jsp</source>
 	</resources>
 	<sources>
 		<source>src/main/java/.touch</source>
