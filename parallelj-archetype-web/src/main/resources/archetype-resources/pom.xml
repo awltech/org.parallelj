@@ -52,10 +52,22 @@
 					<ajdtVersion>1.6</ajdtVersion>
 					<additionalProjectnatures>
 						<additionalProjectnature>org.eclipse.m2e.core.maven2Nature</additionalProjectnature>
+						<additionalProjectnature>org.eclipse.jdt.core.javanature</additionalProjectnature>
+						<additionalProjectnature>org.parallelj.designer.validation.ParallelJNature</additionalProjectnature>
 					</additionalProjectnatures>
 					<additionalBuildcommands>
 						<buildCommand>
 							<name>org.eclipse.m2e.core.maven2Builder</name>
+							<arguments>
+							</arguments>
+						</buildCommand>
+						<buildCommand>
+							<name>org.eclipse.jdt.core.javabuilder</name>
+							<arguments>
+							</arguments>
+						</buildCommand>
+						<buildCommand>
+							<name>org.parallelj.designer.validation.ParallelJBuilder</name>
 							<arguments>
 							</arguments>
 						</buildCommand>
