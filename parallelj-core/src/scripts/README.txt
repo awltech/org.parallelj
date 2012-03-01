@@ -4,8 +4,8 @@ Note: valid on Windows environment
 1. Modify parallelj.xsd
 2. Go to src/scripts with a command prompt (DOS windows)
 3. run gen.bat
-   The Jaxb Pojos should be available in src/main/java/org/parallelj/internal/conf
-4. Modify the generated file org.parallelj.internal.conf.ParalleljConfiguration as this:
+   The Jaxb Pojos should be available in src/main/java/org/parallelj/internal/conf/pojos
+4. Modify the generated file org.parallelj.internal.conf.pojos.ParalleljConfiguration as this:
    - add "import javax.xml.bind.annotation.XmlRootElement;"
    - add this annotation on the class: @XmlRootElement(name="parallelj")
 

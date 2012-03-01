@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="parallelj"
-	xmlns="parallelj">
+targetNamespace="http://parallelj.org"
+xmlns="http://parallelj.org">
 	<!--
 	  To create pojos used for configuration, 
 	  use this command in src/main/resources folder:
@@ -15,55 +15,59 @@
 			<xs:element ref="servers" />
 		</xs:sequence>
 	</xs:complexType>
+	<xs:element name="configuration" type="ParalleljConfiguration" />
+
+	<xs:complexType name="CProcedure">
+		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="capacity" type="xs:int" />
+	</xs:complexType>
+	<xs:element name="procedure" type="CProcedure" />
 
 	<xs:complexType name="CProcedures">
 		<xs:choice maxOccurs="unbounded">
-			<xs:element name="procedure">
-				<xs:complexType>
-					<xs:attribute name="name" type="xs:string" />
-					<xs:attribute name="capacity" type="xs:int" />
-				</xs:complexType>
-			</xs:element>
+			<xs:element ref="procedure"/>
 		</xs:choice>
 	</xs:complexType>
+	<xs:element name="procedures" type="CProcedures" />
+
+	<xs:complexType name="CTelnet">
+		<xs:attribute name="host" type="xs:string" />
+		<xs:attribute name="port" type="xs:int" />
+	</xs:complexType>
+	<xs:element name="telnet" type="CTelnet" />
+	
+	<xs:complexType name="CJmx">
+		<xs:attribute name="host" type="xs:string" />
+		<xs:attribute name="port" type="xs:int" />
+	</xs:complexType>
+	<xs:element name="jmx" type="CJmx" />
+
+	<xs:complexType name="CSsh">
+<!-- 		<xs:attribute name="host" type="xs:string" /> -->
+		<xs:attribute name="port" type="xs:int" />
+	</xs:complexType>
+	<xs:element name="ssh" type="CSsh" />
 
 	<xs:complexType name="CServers">
 		<xs:sequence>
-			<xs:element name="telnet">
-				<xs:complexType>
-					<xs:attribute name="host" type="xs:string" />
-					<xs:attribute name="port" type="xs:int" />
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="jmx">
-				<xs:complexType>
-					<xs:attribute name="host" type="xs:string" />
-					<xs:attribute name="port" type="xs:int" />
-				</xs:complexType>
-			</xs:element>
-			<xs:element name="ssh">
-				<xs:complexType>
-<!-- 					<xs:attribute name="host" type="xs:string" /> -->
-					<xs:attribute name="port" type="xs:int" />
-				</xs:complexType>
-			</xs:element>
+			<xs:element ref="telnet"/>
+			<xs:element ref="jmx"/>
+			<xs:element ref="ssh"/>
 			<xs:element ref="beans" />
 		</xs:sequence>
 	</xs:complexType>
+	<xs:element name="servers" type="CServers" />
+	
+	<xs:complexType name="CBean">
+		<xs:attribute name="class" type="xs:string" />
+	</xs:complexType>
+	<xs:element name="bean" type="CBean" />
 	
 	<xs:complexType name="CBeans">
 		<xs:choice maxOccurs="unbounded">
-			<xs:element name="bean">
-				<xs:complexType>
-					<xs:attribute name="class" type="xs:string" />
-				</xs:complexType>
-			</xs:element>
+			<xs:element ref="bean"/>
 		</xs:choice>
 	</xs:complexType>
-
-
-	<xs:element name="configuration" type="ParalleljConfiguration" />
-	<xs:element name="procedures" type="CProcedures" />
-	<xs:element name="servers" type="CServers" />
 	<xs:element name="beans" type="CBeans" />
+
 </xs:schema>

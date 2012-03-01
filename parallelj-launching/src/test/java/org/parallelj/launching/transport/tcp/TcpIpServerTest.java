@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.parallelj.internal.conf.ConfigurationService;
-import org.parallelj.internal.conf.ParalleljConfiguration;
+import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 
 /**
  * The class <code>TcpIpServerTest</code> contains tests for the class <code>{@link TcpIpServer}</code>.

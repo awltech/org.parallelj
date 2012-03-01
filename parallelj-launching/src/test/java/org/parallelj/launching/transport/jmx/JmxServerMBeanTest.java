@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.parallelj.internal.conf.ConfigurationService;
-import org.parallelj.internal.conf.ParalleljConfiguration;
+import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.launching.programs.BeginProgram;
 
 /**

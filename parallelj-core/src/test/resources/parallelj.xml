@@ -22,17 +22,17 @@
         Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 -->
-<ns2:parallelj xmlns:ns2="parallelj">
-    <ns2:procedures>
+<parallelj xmlns="http://parallelj.org">
+    <procedures>
         <procedure capacity="5" name="pr1"/>
         <procedure capacity="10" name="pr2"/>
-    </ns2:procedures>
-    <ns2:servers>
+    </procedures>
+    <servers>
         <telnet port="10000" host="localhost"/>
         <jmx port="9000" host="localhost"/>
         <ssh port="22"/>
-        <ns2:beans>
+        <beans>
             <bean class="sample.programs.MyProgram"/>
-        </ns2:beans>
-    </ns2:servers>
-</ns2:parallelj>
+        </beans>
+    </servers>
+</parallelj>

@@ -26,9 +26,9 @@ import java.io.IOException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.parallelj.internal.conf.CBeans.Bean;
 import org.parallelj.internal.conf.ConfigurationService;
-import org.parallelj.internal.conf.ParalleljConfiguration;
+import org.parallelj.internal.conf.pojos.CBean;
+import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
@@ -136,7 +136,7 @@ public class ServersInitializerListener implements ServletContextListener {
 			// Scan all defined Program in parallej.xml
 			if (configuration.getServers().getBeans() != null
 					&& configuration.getServers().getBeans().getBean() != null) {
-				for (Bean bean : configuration.getServers().getBeans()
+				for (CBean bean : configuration.getServers().getBeans()
 						.getBean()) {
 					// Initialize the Arguments of the Programs in
 					// AdaptersArguments

@@ -27,9 +27,9 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.junit.Test;
-import org.parallelj.internal.conf.CProcedures.Procedure;
 import org.parallelj.internal.conf.ConfigurationService;
-import org.parallelj.internal.conf.ParalleljConfiguration;
+import org.parallelj.internal.conf.pojos.CProcedure;
+import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 
 public class ConfigurationTest {
 
@@ -45,8 +45,8 @@ public class ConfigurationTest {
 		assertNotNull(conf.getProcedures().getProcedure());
 		assertEquals(conf.getProcedures().getProcedure().size(), 2);
 
-		List<Procedure> prs = conf.getProcedures().getProcedure();
-		for (Procedure procedure : prs) {
+		List<CProcedure> prs = conf.getProcedures().getProcedure();
+		for (CProcedure procedure : prs) {
 			String name = procedure.getName();
 			assertNotNull(name);
 			if (name.equals("pr1")) {
@@ -66,6 +66,11 @@ public class ConfigurationTest {
 		assertEquals(10000,conf.getServers().getTelnet().getPort().intValue());
 		assertNotNull(conf.getServers().getSsh());
 		assertEquals(22,conf.getServers().getSsh().getPort().intValue());
+		
+		assertNotNull(conf.getServers().getBeans());
+		assertNotNull(conf.getServers().getBeans().getBean());
+		assertEquals(conf.getServers().getBeans().getBean().size(), 1);
+		assertEquals(conf.getServers().getBeans().getBean().get(0).getClazz(), "sample.programs.MyProgram");
 	}
 
 }

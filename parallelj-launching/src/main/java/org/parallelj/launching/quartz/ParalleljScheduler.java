@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.parallelj.internal.conf.ConfigurationService;
-import org.parallelj.internal.conf.ParalleljConfiguration;
+import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;

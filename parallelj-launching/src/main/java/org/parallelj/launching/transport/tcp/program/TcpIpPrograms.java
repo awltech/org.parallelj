@@ -24,9 +24,9 @@ package org.parallelj.launching.transport.tcp.program;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.parallelj.internal.conf.CBeans.Bean;
 import org.parallelj.internal.conf.ConfigurationService;
-import org.parallelj.internal.conf.ParalleljConfiguration;
+import org.parallelj.internal.conf.pojos.CBean;
+import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 
 
@@ -49,7 +49,7 @@ public final class TcpIpPrograms {
 				.getConfiguration();
 		if (configuration.getServers().getBeans() != null
 				&& configuration.getServers().getBeans().getBean() != null) {
-			for (Bean bean : configuration.getServers().getBeans().getBean()) {
+			for (CBean bean : configuration.getServers().getBeans().getBean()) {
 				//
 				/*
 				 * List of types annotated with @In and its Parser class:

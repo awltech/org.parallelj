@@ -19,27 +19,9 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.internal.conf;
+package org.parallelj.launching.quartz;
 
-import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
-
-public class ParalleljConfigurationManager extends AbstractConfigurationManager {
-
-	private static final String CONFIGURATION_FILE = "/parallelj.xml";
-	
-	@Override
-	public String getConfigurationFile() {
-		return CONFIGURATION_FILE;
-	}
-
-	@Override
-	public int getPriority() {
-		return 0;
-	}
-
-	@Override
-	public Class<?> getConfigurationObjectClass() {
-		return ParalleljConfiguration.class;
-	}
-
+public enum ExecutorServiceType {
+	CACHED,
+	FIXED;
 }
