@@ -11,11 +11,15 @@
 	received a copy of the GNU Lesser General Public License along with this 
 	library; if not, write to the Free Software Foundation, Inc., 51 Franklin 
 	Street, Fifth Floor, Boston, MA 02110-1301 USA -->
-<ns2:parallelj xmlns:ns2="parallelj">
-	<ns2:servers>
-		<telnet port="10000" host="localhost" />
-		<jmx port="9000" host="localhost" />
-		<ssh port="22" />
-		<!--ns2:beans> <bean class="" /> </ns2:beans -->
-	</ns2:servers>
-</ns2:parallelj>
+<parallelj xmlns="http://parallelj.org">
+    <servers>
+        <telnet port="10000" host="localhost"/>
+        <jmx port="9000" host="localhost"/>
+        <ssh port="22"/>
+        <!-- 
+        <beans>
+            <bean class=""/>
+        </beans>
+         -->
+    </servers>
+</parallelj>
