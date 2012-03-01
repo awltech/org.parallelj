@@ -12,9 +12,8 @@
 	library; if not, write to the Free Software Foundation, Inc., 51 Franklin 
 	Street, Fifth Floor, Boston, MA 02110-1301 USA -->
 <archetype>
-	<id>parallelj-archetype</id>
+	<id>parallelj-archetype-web</id>
 	<resources>
-		<resource>.project</resource>
 		<resource>src/main/resources/META-INF/ParallelJ/.touch</resource>
 		<resource>src/main/resources/META-INF/aop.xml</resource>
 		<resource>src/main/resources/quartz.properties</resource>
