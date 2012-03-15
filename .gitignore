@@ -1,6 +1,8 @@
 .cache
 .classpath
 .project
+!parallelj-archetype-web/src/main/resources/archetype-resources/.project
+!parallelj-archetype/src/main/resources/archetype-resources/.project
 .settings
 target/
 bin/

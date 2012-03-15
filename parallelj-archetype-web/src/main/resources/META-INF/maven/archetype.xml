@@ -14,6 +14,7 @@
 <archetype>
 	<id>parallelj-archetype-web</id>
 	<resources>
+		<resource>.project</resource>
 		<resource>src/main/resources/META-INF/ParallelJ/.touch</resource>
 		<resource>src/main/resources/META-INF/aop.xml</resource>
 		<resource>src/main/resources/quartz.properties</resource>
