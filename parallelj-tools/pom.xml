@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.parallelj</groupId>
 		<artifactId>parallelj</artifactId>
-		<version>0.7.1-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>parallelj-tools</artifactId>
