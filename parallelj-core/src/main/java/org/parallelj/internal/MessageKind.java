@@ -41,7 +41,7 @@ public enum MessageKind {
 	/**Error: Can't find configuration file.
 	 * 
 	 */
-	@Format("Can't find configuration file. Make sure [%s] is in the classpath!!")
+	@Format("Can't find configuration file for [%s]. Make sure [%s] is in the classpath!!")
 	E0002,
 	
 	/**
