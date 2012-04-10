@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.parallelj.internal.conf.ConfigurationService;
+import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.pojos.CBean;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
@@ -46,7 +47,7 @@ public final class TcpIpPrograms {
 		// Available Programs are defined in parallej.xml as MBeans
 		ParalleljConfiguration configuration = (ParalleljConfiguration) ConfigurationService
 				.getConfigurationService().getConfigurationManager()
-				.getConfiguration();
+				.get(ParalleljConfigurationManager.class).getConfiguration();
 		if (configuration.getServers().getBeans() != null
 				&& configuration.getServers().getBeans().getBean() != null) {
 			for (CBean bean : configuration.getServers().getBeans().getBean()) {

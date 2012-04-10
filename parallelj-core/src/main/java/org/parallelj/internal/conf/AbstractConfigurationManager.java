@@ -35,11 +35,6 @@ public abstract class AbstractConfigurationManager implements ConfigurationManag
 
 	private Object configuration;
 	
-	@Override
-	public int compareTo(ConfigurationManager o) {
-		return this.getPriority()-o.getPriority();
-	}
-
 	public abstract Class<?> getConfigurationObjectClass();
 
 	public Object getConfiguration() {
@@ -51,8 +46,6 @@ public abstract class AbstractConfigurationManager implements ConfigurationManag
 
 	public abstract String getConfigurationFile();
 
-	public abstract int getPriority();
-
 	@Override
 	public void reloadConfiguration() {
 		initialize();
@@ -62,12 +55,16 @@ public abstract class AbstractConfigurationManager implements ConfigurationManag
 		InputStream inputStream = null;
 		InputStreamReader inputStreamReader = null;
 		Reader reader = null;
-		inputStream = this.getConfigurationObjectClass().getResourceAsStream(this.getConfigurationFile());
+		try {
+		  inputStream = this.getConfigurationObjectClass().getResourceAsStream(this.getConfigurationFile());
+		} catch (NullPointerException e) {
+			MessageKind.E0002.format(this, this.getConfigurationFile());
+		}
 		if (inputStream == null) {
 			inputStream = this.getConfigurationObjectClass().getClassLoader().getResourceAsStream(this.getConfigurationFile());
 		}
 		if (inputStream == null) {
-			MessageKind.E0002.format(this.getConfigurationFile());
+			MessageKind.E0002.format(this, this.getConfigurationFile());
 		}
 		try {
 			inputStreamReader = new InputStreamReader(inputStream);

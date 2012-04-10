@@ -1,1 +1,1 @@
-xjc -d ..\..\src\main\java -p org.parallelj.internal.conf.pojos -episode ..\..\target\parallelj.episode parallelj.xsd
+xjc -d ..\..\src\main\java -p org.parallelj.internal.conf.pojos parallelj.xsd

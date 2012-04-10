@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.parallelj.internal.conf.ConfigurationService;
+import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.pojos.CProcedure;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 
@@ -38,7 +39,7 @@ public class ConfigurationTest {
 
 		ParalleljConfiguration conf = (ParalleljConfiguration) ConfigurationService
 				.getConfigurationService().getConfigurationManager()
-				.getConfiguration();
+				.get(ParalleljConfigurationManager.class).getConfiguration();
 
 		assertNotNull(conf);
 		assertNotNull(conf.getProcedures());

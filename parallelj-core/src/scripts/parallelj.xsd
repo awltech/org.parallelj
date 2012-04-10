@@ -8,14 +8,14 @@ xmlns="http://parallelj.org">
 	  
 	  xjc.exe  -d ..\java -p org.parallelj.configuration -episode parallelj.episode parallelj.xsd 
 	 -->
-
-	<xs:complexType name="ParalleljConfiguration">
-		<xs:sequence>
-			<xs:element ref="procedures" />
-			<xs:element ref="servers" />
-		</xs:sequence>
-	</xs:complexType>
-	<xs:element name="configuration" type="ParalleljConfiguration" />
+	<xs:element name="ParalleljConfiguration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="procedures" />
+				<xs:element ref="servers" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 
 	<xs:complexType name="CProcedure">
 		<xs:attribute name="name" type="xs:string" />

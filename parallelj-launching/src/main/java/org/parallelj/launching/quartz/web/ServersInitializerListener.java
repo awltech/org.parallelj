@@ -27,6 +27,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.parallelj.internal.conf.ConfigurationService;
+import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.pojos.CBean;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.launching.LaunchingMessageKind;
@@ -73,7 +74,7 @@ public class ServersInitializerListener implements ServletContextListener {
 			// Get the configuration
 			final ParalleljConfiguration configuration = (ParalleljConfiguration) ConfigurationService
 					.getConfigurationService().getConfigurationManager()
-					.getConfiguration();
+					.get(ParalleljConfigurationManager.class).getConfiguration();
 
 			// Initialize the scheduler
 			Launcher.getLauncher();

@@ -21,29 +21,40 @@
  */
 package org.parallelj.internal.conf;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ServiceLoader;
 
 public class ConfigurationService {
 
-	private static ConfigurationService configurationService;
+	private static ConfigurationService configurationService = new ConfigurationService();
+	
+	private Map<Class<?>, ConfigurationManager> configurationManagers = new HashMap<Class<?>, ConfigurationManager>();
+	
+	private ConfigurationService() {
+		initialize();
+	}
+
+	private synchronized void initialize() {
+		ServiceLoader<ConfigurationManager> loader = ServiceLoader.load(ConfigurationManager.class);
+		for (ConfigurationManager conf:loader) {
+			conf.reloadConfiguration();
+			configurationManagers.put(conf.getClass(), conf);
+		}
+	}
 	
 	public static synchronized ConfigurationService getConfigurationService() {
-		if (configurationService == null) {
-			configurationService = new ConfigurationService();
-		}
 		return configurationService;
 	}
 	
-	public ConfigurationManager getConfigurationManager() {
-		List<ConfigurationManager> lstConf = new ArrayList<ConfigurationManager>();
-		ServiceLoader<ConfigurationManager> loader = ServiceLoader.load(ConfigurationManager.class);
-		for (ConfigurationManager conf:loader) {
-			lstConf.add(conf);
-		}
-		return Collections.max(lstConf);
+	public  Map<Class<?>, ConfigurationManager> getConfigurationManager() {
+		return configurationManagers;
 	}
 	
+	public void reloadConfiguration() {
+		for (ConfigurationManager conf:configurationManagers.values()) {
+			conf.reloadConfiguration();
+		}
+	}
+
 }

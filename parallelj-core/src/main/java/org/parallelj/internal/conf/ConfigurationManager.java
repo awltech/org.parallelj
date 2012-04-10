@@ -21,15 +21,13 @@
  */
 package org.parallelj.internal.conf;
 
-public interface ConfigurationManager extends Comparable<ConfigurationManager> {
+public interface ConfigurationManager {
 
 	public Class<?> getConfigurationObjectClass();
 	
 	public String getConfigurationFile();
 	
 	public Object getConfiguration();
-	
-	public int getPriority();
 	
 	public void reloadConfiguration();
 

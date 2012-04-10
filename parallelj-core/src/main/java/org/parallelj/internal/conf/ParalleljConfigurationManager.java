@@ -33,11 +33,6 @@ public class ParalleljConfigurationManager extends AbstractConfigurationManager 
 	}
 
 	@Override
-	public int getPriority() {
-		return 0;
-	}
-
-	@Override
 	public Class<?> getConfigurationObjectClass() {
 		return ParalleljConfiguration.class;
 	}
