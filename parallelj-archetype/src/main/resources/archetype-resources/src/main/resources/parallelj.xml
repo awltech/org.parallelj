@@ -27,11 +27,6 @@
         <telnet port="10000" host="localhost"/>
         <jmx port="9000" host="localhost"/>
         <ssh port="22"/>
-        <!-- 
-        <beans>
-            <bean class=""/>
-        </beans>
-         -->
     </servers>
 </parallelj>
 
