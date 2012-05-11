@@ -42,5 +42,7 @@
 -->        
     </aspects>
     <weaver options="-verbose">
+         <!-- Do not weave types within the "org.parallelj.launching.internal" pakage -->
+         <exclude within="org.parallelj.launching.internal.*"/>
     </weaver>
 </aspectj>
