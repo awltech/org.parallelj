@@ -33,14 +33,16 @@
 		</layout>
 	</appender>
 
-	<logger name="org.parallelj.internal" additivity="true">
-		<level value="WARN" />
+	<category name="org.parallelj.internal" additivity="true">
+		<level value="INFO" />
 		<appender-ref ref="sysout" />
-	</logger>
+		<appender-ref ref="stdout" />
+	</category>
 
-	<logger name="org.parallelj.events" additivity="true">
+	<category name="org.parallelj.events" additivity="true">
 		<level value="WARN" />
 		<appender-ref ref="sysout" />
-	</logger>
+		<appender-ref ref="stdout" />
+	</category>
 
 </log4j:configuration>
