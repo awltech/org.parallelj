@@ -124,6 +124,8 @@ extends IoHandlerAdapter {
 		// If the command returned a result, write it for the user
 		if (result != null) {
 			session.write(result);
+		} else {
+			session.write("");
 		}
 		session.write(ENDLINE);
 		session.write(ENDLINE);

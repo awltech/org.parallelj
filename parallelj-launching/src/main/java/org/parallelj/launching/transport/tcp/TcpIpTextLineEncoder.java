@@ -156,8 +156,10 @@ public class TcpIpTextLineEncoder extends ProtocolEncoderAdapter {
 
         // The next line has been removed for ParalleJ
         //buf.putString(delimiter.getValue(), encoder);
-        buf.flip();
-        out.write(buf);
+        if (buf.capacity()>0) {
+	        buf.flip();
+	        out.write(buf);
+        }
     }
 
     public void dispose() throws Exception {
