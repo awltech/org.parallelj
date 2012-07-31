@@ -21,16 +21,20 @@
  */
 package org.parallelj.launching.quartz;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
-import org.parallelj.internal.kernel.KCall;
+import org.parallelj.internal.kernel.KProcess;
+import org.parallelj.internal.kernel.KProcessor;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.internal.reflect.ProgramAdapter;
+import org.parallelj.internal.kernel.procedure.CallableProcedure;
+import org.parallelj.internal.kernel.procedure.RunnableProcedure;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ReturnCodes;
@@ -45,22 +49,42 @@ import org.quartz.JobExecutionException;
  * 
  * 
  */
-privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+.execute(..) throws JobExecutionException)) {
-
-	/**
-	 * The JobExecutionContext where get Program's arguments ant where to put
-	 * the Result.
-	 */
-	public JobExecutionContext context;
+privileged public aspect ProgramJobsAdapter {
 
 	/*
 	 * The Aspect JobsAdapter must be passed before this.
 	 */
 	declare precedence :
+		org.parallelj.internal.kernel.Identifiers,
 		org.parallelj.internal.reflect.ProgramAdapter,
+		org.parallelj.internal.util.sm.impl.KStateMachines,
+		org.parallelj.internal.util.sm.impl.KStateMachines.PerMachine,
+		org.parallelj.Executables$PerExecutable,
+		org.parallelj.internal.reflect.ProgramAdapter.PerProgram,
+		org.parallelj.internal.log.Logs,
 		org.parallelj.launching.quartz.JobsAdapter;
 
-	private Adapter adpater;
+	/*
+	 * Add the interface IProceduresInError to the KProcessor
+	*/
+	private interface IProceduresInError {
+		public void addProcedureInError(String name, Exception exception);
+	}
+	public Map<String, Set<String>> IProceduresInError.proceduresInError=new HashMap<String, Set<String>>();
+	
+	public synchronized void IProceduresInError.addProcedureInError(String name, Exception exception) {
+		Set<String> exceptions = ((IProceduresInError)this).proceduresInError.get(name);
+		if (exceptions==null) {
+			// This is the first "name" Procedure in error
+			exceptions = new HashSet<String>();
+		}
+		if (!exceptions.contains(exception.getClass().getCanonicalName())) {
+			exceptions.add(exception.getClass().getCanonicalName());
+		}
+		((IProceduresInError)this).proceduresInError.put(name, exceptions);
+	}
+	
+	declare parents: org.parallelj.internal.kernel.KProcessor implements IProceduresInError;
 
 	/**
 	 * Launch a Program and initialize the Result as a JobDataMap.
@@ -74,70 +98,129 @@ privileged public aspect ProgramJobsAdapter percflow (execution(public void Job+
 		execution( public void  Job+.execute(..) throws JobExecutionException) 
 			&& (within(@org.parallelj.Program *) || within(JobsAdapter)) 
 				&& args(context) && this(self) {
-		this.adpater = (Adapter) self;
-		this.context = context;
 		JobDataMap jobDataMap = new JobDataMap();
 		context.setResult(jobDataMap);
 		jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.SUCCESS);
-		try {
-			proceed(self, context);
 
-			try {
-				// Initialize an ExecutorService with the Capacity of the Program
-				ProcessHelper<?> processHelper = Programs.as((Adapter) self);
-				if (processHelper == null) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.NOTSTARTED);
-					throw new JobExecutionException(LaunchingMessageKind.ELAUNCH0003.getFormatedMessage(self));
-				}
-				ProgramType programType = processHelper.getProcess().getProgram();
-				ExecutorService service = null;
-				// If an executorService was specified, we use it
-				if (context.getJobDetail().getJobDataMap().get(Launch.DEFAULT_EXECUTOR_KEY) != null) {
-					service = (ExecutorService)context.getJobDetail().getJobDataMap().get(Launch.DEFAULT_EXECUTOR_KEY);
-				} else 
-				if (programType instanceof KProgram) {
-					short programCapacity = ((KProgram) programType)
-							.getCapacity();
-					service = (programCapacity == Short.MAX_VALUE) ? Executors
-							.newCachedThreadPool() : Executors
-							.newFixedThreadPool(programCapacity);
-				} else {
-					service = Executors
-							.newCachedThreadPool();
-				}
-				// Launch the program with the initialized ExecutorService
-				processHelper.execute(service).join();
-				service.shutdown();
-				ProgramFieldsBinder.getProgramOutputFields(this, context);
-			} catch (IllegalAccessException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
-			} catch (NoSuchFieldException e) {
+		proceed(self, context);
+
+		try {
+			// Initialize an ExecutorService with the Capacity of the Program
+			ProcessHelper<?> processHelper = Programs.as((Adapter) self);
+			if (processHelper == null) {
+				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.NOTSTARTED);
+				throw new JobExecutionException(LaunchingMessageKind.ELAUNCH0003.getFormatedMessage(self));
+			}
+			ProgramType programType = processHelper.getProcess().getProgram();
+			ExecutorService service = null;
+			// If an executorService was specified, we use it
+
+			if (context.getJobDetail().getJobDataMap().get(Launch.DEFAULT_EXECUTOR_KEY) != null) {
+				service = (ExecutorService)context.getJobDetail().getJobDataMap().get(Launch.DEFAULT_EXECUTOR_KEY);
+			} else 
+			if (programType instanceof KProgram) {
+				short programCapacity = ((KProgram) programType)
+						.getCapacity();
+				service = (programCapacity == Short.MAX_VALUE) ? Executors
+						.newCachedThreadPool() : Executors
+						.newFixedThreadPool(programCapacity);
+			} else {
+				service = Executors
+						.newCachedThreadPool();
+			}
+
+			// Launch the program with the initialized ExecutorService
+			processHelper.execute(service).join();
+			
+			KProcessor rootProcessor = ((KProcessor)processHelper.getProcess().getProcessor());
+			IProceduresInError procedures = (IProceduresInError)rootProcessor;
+			if(procedures.proceduresInError.size()>0) {
 				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
 			}
-		} catch (InvocationTargetException e) {
+		
+			ProgramFieldsBinder.getProgramOutputFields(this, context);
+			service.shutdown();
+			
+			if (procedures.proceduresInError.size()>0){
+				jobDataMap.put(QuartzUtils.PROCEDURES_IN_ERROR, procedures.proceduresInError);
+				throw new JobExecutionException();
+			}
+		} catch (IllegalAccessException e) {
 			jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+			throw new JobExecutionException(e);
+		} catch (NoSuchFieldException e) {
+			jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+			throw new JobExecutionException(e);
 		}
 	}
-
-	/**
-	 * Intercept Exception thrown in RunnableProcedure/CallableProcedure for
-	 * tracing. If an Exception is thrown, the return code of a Launch becomes
-	 * FAILURE.
-	 * 
-	 * @param self
+	
+	/*
+	 * Add the interface IExceptionTracking to all Runnable and Callable
 	 */
-	pointcut enter(KCall _kCall): call(* org.parallelj.internal.kernel.callback.Entry+.enter(KCall)) && args(_kCall);
+    public interface IExceptionTracking {};
+  	private Object IExceptionTracking.context = null;
+	
+    declare parents:           
+    	(java.lang.Runnable+ ) implements IExceptionTracking;
+    declare parents:           
+    	(java.util.concurrent.Callable+ ) implements IExceptionTracking;    
+  	
+	// Interception around Runnable execution      
+  	after(Object self) returning (Runnable ret): 
+  		execution(* org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall.toRunnable())
+      && this(self)  {
+   	  ((IExceptionTracking)ret).context = ((org.parallelj.internal.kernel.KCall)self);
+    }
 
-	pointcut invoke(): call(public Object Method.invoke(Object, ..)) && !within(ProgramJobsAdapter);
+	// Interception around Callable execution      
+  	after(Object self) returning (Runnable ret): 
+  		execution(* org.parallelj.internal.kernel.procedure.CallableProcedure.CallableCall.toRunnable())
+      && this(self)  {
+   	  ((IExceptionTracking)ret).context = ((org.parallelj.internal.kernel.KCall)self);
+    }
 
-	after(Object oo, KCall _kCall) throwing (InvocationTargetException ite) : 
-    	invoke() && args(oo, ..) && cflow(enter(_kCall)) {
+	// Interception around Runnable execution      
+	 void around(Object self): call(void complete())
+	&& within(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall)  
+		&& this(self)  {
+	 
+			RunnableProcedure.RunnableCall runnable = (RunnableProcedure.RunnableCall)((IExceptionTracking)self).context;
+			RunnableProcedure procedure = (RunnableProcedure)runnable.getProcedure();
+			if (runnable.getException() != null) {
+				KProcess process = ((RunnableProcedure.RunnableCall)((IExceptionTracking)self).context).getProcess();
+				KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
+				((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), runnable.getException());
+			}
+		proceed(self);
+	}
 
-		LaunchingMessageKind.ELAUNCH0002.format(this.adpater, ite);
-		if (this.context != null && this.context.getResult() != null
-				&& this.context.getResult() instanceof JobDataMap) {
-			((JobDataMap) this.context.getResult()).put(
-					QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
-		}
+	// Interception around Callable execution      
+	 void around(Object self): call(void complete())
+		 && within(org.parallelj.internal.kernel.procedure.CallableProcedure.CallableCall)  
+		&& this(self)  {
+	 
+			CallableProcedure.CallableCall callable = (CallableProcedure.CallableCall)((IExceptionTracking)self).context;
+			CallableProcedure procedure = (CallableProcedure)callable.getProcedure(); 
+			
+			if (
+					procedure.getHandler() == null
+					&& callable.getException() != null
+					) {
+				// There is an error !!!
+				KProcess process = ((CallableProcedure.CallableCall)((IExceptionTracking)self).context).getProcess();
+				KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
+				((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), callable.getException());
+			}
+		proceed(self);
+	}
+	 
+	/*
+	 * Allow to get the procedures in error of a Process (the root Process !!!)
+	 */
+	public static synchronized Map<String, Set<String>> getProceduresInErrors(
+			org.parallelj.mirror.Process process) {
+		KProcessor rootProcessor = ((KProcessor) process.getProcessor());
+		IProceduresInError procedures = (IProceduresInError) rootProcessor;
+		return procedures.proceduresInError;
 	}
 }
