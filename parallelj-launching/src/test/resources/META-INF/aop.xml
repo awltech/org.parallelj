@@ -26,18 +26,6 @@
 		<!-- declare two existing aspects to the weaver -->
 		<aspect name="org.parallelj.launching.quartz.JobsAdapter"/>
 		<aspect name="org.parallelj.launching.quartz.ProgramJobsAdapter"/>
-
-		<!-- Of the set of aspects declared to the weaver
-             declare witch ones must be used for weaving. -->
-        <include within="org.parallelj.internal.kernel.Identifiers"/>
-		<include within="org.parallelj.internal.reflect.ProgramAdapter"/>
-		<include within="org.parallelj.internal.util.sm.impl.KStateMachines"/>
-		<include within="org.parallelj.internal.util.sm.impl.KStateMachines$PerMachine"/>
-		<include within="org.parallelj.Executables$PerExecutable"/>
-		<include within="org.parallelj.internal.reflect.ProgramAdapter$PerProgram"/>
-		<include within="org.parallelj.internal.log.Logs"/>
-        <include within="org.parallelj.launching.quartz.JobsAdapter"/>
-        <include within="org.parallelj.launching.quartz.ProgramJobsAdapter"/>
     </aspects>
     <weaver options="-verbose">
     </weaver>
