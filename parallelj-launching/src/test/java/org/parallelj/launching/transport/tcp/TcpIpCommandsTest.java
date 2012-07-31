@@ -22,8 +22,18 @@
 package org.parallelj.launching.transport.tcp;
 
 import java.util.Map;
+import java.util.Set;
+
 import org.junit.*;
 import static org.junit.Assert.*;
+
+import org.parallelj.launching.transport.tcp.command.AlAsyncLaunch;
+import org.parallelj.launching.transport.tcp.command.AlHelp;
+import org.parallelj.launching.transport.tcp.command.AlList;
+import org.parallelj.launching.transport.tcp.command.AlQuit;
+import org.parallelj.launching.transport.tcp.command.AlSyncLaunch;
+import org.parallelj.launching.transport.tcp.command.RemoteCommand;
+import org.parallelj.launching.transport.tcp.command.SyncLaunch;
 import org.parallelj.launching.transport.tcp.command.TcpCommand;
 import org.parallelj.launching.transport.tcp.command.TcpIpCommands;
 
@@ -48,16 +58,24 @@ public class TcpIpCommandsTest {
 
 		Map<String, TcpCommand> result = TcpIpCommands.getCommands();
 
-		// add additional test code here
-		// An unexpected exception was thrown in user code while executing this test:
-		//    java.util.ServiceConfigurationError: org.parallelj.launching.transport.tcp.command.TcpCommand: Provider org.parallelj.launching.transport.tcp.command.Help could not be instantiated: java.lang.ClassCastException
-		//       at java.util.ServiceLoader.fail(ServiceLoader.java:207)
-		//       at java.util.ServiceLoader.access$100(ServiceLoader.java:164)
-		//       at java.util.ServiceLoader$LazyIterator.next(ServiceLoader.java:353)
-		//       at java.util.ServiceLoader$1.next(ServiceLoader.java:421)
-		//       at org.parallelj.launching.transport.tcp.TcpIpCommands.<init>(TcpIpCommands.java:53)
-		//       at org.parallelj.launching.transport.tcp.TcpIpCommands.<clinit>(TcpIpCommands.java:45)
 		assertNotNull(result);
+		assertEquals(result.size(), 10);
+		Set<String> keys = result.keySet();
+		
+		assertEquals(keys.contains(RemoteCommand.synclaunch.name()), true);
+		assertEquals(keys.contains(new AlSyncLaunch().getType()), true);
+
+		assertEquals(keys.contains(RemoteCommand.asynclaunch.name()), true);
+		assertEquals(keys.contains(new AlAsyncLaunch().getType()), true);
+
+		assertEquals(keys.contains(RemoteCommand.help.name()), true);
+		assertEquals(keys.contains(new AlHelp().getType()), true);
+		
+		assertEquals(keys.contains(RemoteCommand.list.name()), true);
+		assertEquals(keys.contains(new AlList().getType()), true);
+		
+		assertEquals(keys.contains(RemoteCommand.quit.name()), true);
+		assertEquals(keys.contains(new AlQuit().getType()), true);
 	}
 
 	/**
@@ -88,14 +106,4 @@ public class TcpIpCommandsTest {
 		// Add additional tear down code here
 	}
 
-	/**
-	 * Launch the test.
-	 *
-	 * @param args the command line arguments
-	 *
-	 * @generatedBy CodePro at 09/12/11 17:14
-	 */
-	public static void main(String[] args) {
-		new org.junit.runner.JUnitCore().run(TcpIpCommandsTest.class);
-	}
 }

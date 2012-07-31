@@ -21,8 +21,6 @@
  */
 package org.parallelj.launching.transport.tcp.command;
 
-import org.apache.mina.core.session.DummySession;
-import org.apache.mina.core.session.IoSession;
 import org.junit.*;
 import static org.junit.Assert.*;
 
@@ -129,14 +127,4 @@ public class HelpTest {
 		// Add additional tear down code here
 	}
 
-	/**
-	 * Launch the test.
-	 *
-	 * @param args the command line arguments
-	 *
-	 * @generatedBy CodePro at 09/12/11 17:15
-	 */
-	public static void main(String[] args) {
-		new org.junit.runner.JUnitCore().run(HelpTest.class);
-	}
 }

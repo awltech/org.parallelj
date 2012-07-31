@@ -80,14 +80,4 @@ public class NopParserTest {
 		// Add additional tear down code here
 	}
 
-	/**
-	 * Launch the test.
-	 *
-	 * @param args the command line arguments
-	 *
-	 * @generatedBy CodePro at 09/12/11 17:15
-	 */
-	public static void main(String[] args) {
-		new org.junit.runner.JUnitCore().run(NopParserTest.class);
-	}
 }

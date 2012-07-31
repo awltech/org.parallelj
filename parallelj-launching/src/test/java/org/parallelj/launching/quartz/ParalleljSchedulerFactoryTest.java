@@ -70,24 +70,6 @@ public class ParalleljSchedulerFactoryTest {
 	}
 
 	/**
-	 * Run the ParalleljSchedulerFactory(String) constructor test.
-	 *
-	 * @throws Exception
-	 *
-	 * @generatedBy CodePro at 09/12/11 17:15
-	 */
-	@Test
-	public void testParalleljSchedulerFactory_3()
-		throws Exception {
-		String fileName = "";
-
-		ParalleljSchedulerFactory result = new ParalleljSchedulerFactory(fileName);
-
-		// add additional test code here
-		assertNotNull(result);
-	}
-
-	/**
 	 * Run the Collection<Scheduler> getAllSchedulers() method test.
 	 *
 	 * @throws Exception
@@ -174,14 +156,4 @@ public class ParalleljSchedulerFactoryTest {
 		// Add additional tear down code here
 	}
 
-	/**
-	 * Launch the test.
-	 *
-	 * @param args the command line arguments
-	 *
-	 * @generatedBy CodePro at 09/12/11 17:15
-	 */
-	public static void main(String[] args) {
-		new org.junit.runner.JUnitCore().run(ParalleljSchedulerFactoryTest.class);
-	}
 }
