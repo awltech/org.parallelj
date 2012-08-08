@@ -51,12 +51,13 @@ public class JmxServerMBeanTest {
 	 * 
 	 * @generatedBy CodePro at 09/12/11 17:15
 	 */
+/*
 	@Test
 	public void testRegisterMBean_1() throws Exception {
 		assertEquals(this.fixture.registerMBean(SampleRemote.class
 				.getCanonicalName()), true);
 	}
-
+*/
 	/**
 	 * Run the void registerMBean(String) method test.
 	 * 
@@ -64,6 +65,7 @@ public class JmxServerMBeanTest {
 	 * 
 	 * @generatedBy CodePro at 09/12/11 17:15
 	 */
+/*
 	@Test
 	public void testRegisterMBean_2() {
 		assertEquals(this.fixture.registerMBean(BeginProgram.class
@@ -84,7 +86,7 @@ public class JmxServerMBeanTest {
 		this.fixture.start();
 
 	}
-
+*/
 	/**
 	 * Perform post-test clean-up.
 	 * 
@@ -93,10 +95,11 @@ public class JmxServerMBeanTest {
 	 * 
 	 * @generatedBy CodePro at 09/12/11 17:15
 	 */
+/*
 	@After
 	public void tearDown() throws Exception {
 		this.fixture.stop();
 
 	}
-
+*/
 }
