@@ -9,7 +9,7 @@
 
 	<groupId>org.parallelj</groupId>
 	<artifactId>parallelj</artifactId>
-	<version>1.2.2</version>
+	<version>1.2.3-SNAPSHOT</version>
 	<name>ParallelJ</name>
 	<packaging>pom</packaging>
 
