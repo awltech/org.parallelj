@@ -186,7 +186,9 @@ privileged public aspect ProgramJobsAdapter {
 	 
 			RunnableProcedure.RunnableCall runnable = (RunnableProcedure.RunnableCall)((IExceptionTracking)self).context;
 			RunnableProcedure procedure = (RunnableProcedure)runnable.getProcedure();
-			if (runnable.getException() != null) {
+			if (procedure.getHandler() == null
+					&& runnable.getException() != null) {
+				// There is an error !!!
 				KProcess process = ((RunnableProcedure.RunnableCall)((IExceptionTracking)self).context).getProcess();
 				KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
 				((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), runnable.getException());
