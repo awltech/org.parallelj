@@ -40,30 +40,40 @@ public class CallableProcedure extends KProcedure {
 
 	class CallableCall extends KCall {
 
+		class CallableCallRunnable implements Runnable {
+			private CallableCall callableCall;
+			
+			public CallableCallRunnable(CallableCall callableCall) {
+				this.callableCall = callableCall;
+			}
+
+			public CallableCall getCallableCall() {
+				return callableCall;
+			}
+
+			@Override
+			public void run() {
+				CallableCall.this.start();
+				try {
+					CallableProcedure.this.result.set(CallableCall.this,
+							((Callable<?>) CallableCall.this.getContext())
+									.call());
+				} catch (Exception e) {
+					MessageKind.W0003.format(e);
+					CallableCall.this.setException(e);
+				} finally {
+					CallableCall.this.complete();
+				}
+			}
+		}
+		
 		protected CallableCall(KProcess process) {
 			super(CallableProcedure.this, process);
 		}
 
 		@Override
 		public Runnable toRunnable() {
-
-			return new Runnable() {
-
-				@Override
-				public void run() {
-					CallableCall.this.start();
-					try {
-						CallableProcedure.this.result.set(CallableCall.this,
-								((Callable<?>) CallableCall.this.getContext())
-										.call());
-					} catch (Exception e) {
-						MessageKind.W0003.format(e);
-						CallableCall.this.setException(e);
-					} finally {
-						CallableCall.this.complete();
-					}
-				}
-			};
+			return new CallableCallRunnable(this);
 		}
 
 	}

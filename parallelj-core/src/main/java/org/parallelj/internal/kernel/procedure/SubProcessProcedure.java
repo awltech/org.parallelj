@@ -49,7 +49,14 @@ public class SubProcessProcedure extends KProcedure {
 		class SubProcessRunnable implements
 				StateListener<KProcess, ProcessState>, Runnable {
 
-			protected SubProcessRunnable() {
+			private SubProcessCall subProcessCall;
+			
+			protected SubProcessRunnable(SubProcessCall call) {
+				this.subProcessCall = call;
+			}
+			
+			public SubProcessCall getSubProcessCall() {
+				return this.subProcessCall;
 			}
 
 			@Override
@@ -80,7 +87,7 @@ public class SubProcessProcedure extends KProcedure {
 
 		@Override
 		public Runnable toRunnable() {
-			return new SubProcessRunnable();
+			return new SubProcessRunnable(this);
 		}
 
 	}

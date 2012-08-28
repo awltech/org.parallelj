@@ -198,6 +198,27 @@ public class KProcessor extends KMachine<ProcessorState> implements Processor {
 	}
 */
 	
+	class KProcessorRunnable implements Runnable {
+		private Runnable runnable;
+		
+		public KProcessorRunnable(Runnable runnable) {
+			this.runnable = runnable;
+		}
+
+		@Override
+		public void run() {
+			try {
+				// install this processor in the thread local
+				KProcessor.current.set(KProcessor.this);
+				runnable.run();
+			} finally {
+				// uninstall this processor in the thread local
+				KProcessor.current.set(null);
+			}
+		}
+		
+	}
+	
 	/**
 	 * Submit a runnable to be executed by the executor
 	 * 
@@ -205,20 +226,7 @@ public class KProcessor extends KMachine<ProcessorState> implements Processor {
 	 *            the runnable to execute
 	 */
 	public void submit(final Runnable runnable) {
-		this.executor.execute(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					// install this processor in the thread local
-					KProcessor.current.set(KProcessor.this);
-					runnable.run();
-				} finally {
-					// uninstall this processor in the thread local
-					KProcessor.current.set(null);
-				}
-			}
-		});
+		this.executor.execute(new KProcessorRunnable(runnable));
 	}
 
 	@Entry({ "RUNNING", "PENDING", "SUSPENDED" })

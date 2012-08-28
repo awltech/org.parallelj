@@ -46,27 +46,39 @@ public class RunnableProcedure extends KProcedure {
 	 */
 	class RunnableCall extends KCall {
 
+		class RunnableCallRunnable implements Runnable {
+			private RunnableCall runnableCall;
+			
+			public RunnableCallRunnable(RunnableCall runnableCall) {
+				this.runnableCall = runnableCall;
+			}
+			
+			public RunnableCall getRunnableCall() {
+				return runnableCall;
+			}
+
+			@Override
+			public void run() {
+				RunnableCall.this.start();
+				try {
+					((Runnable) RunnableCall.this.getContext()).run();
+				} catch (Exception e) {
+					MessageKind.W0003.format(e);
+					RunnableCall.this.setException(e);
+				} finally {
+					RunnableCall.this.complete();
+				}
+			}
+			
+		}
+		
 		protected RunnableCall(KProcess process) {
 			super(RunnableProcedure.this, process);
 		}
 
 		@Override
 		public Runnable toRunnable() {
-			return new Runnable() {
-
-				@Override
-				public void run() {
-					RunnableCall.this.start();
-					try {
-						((Runnable) RunnableCall.this.getContext()).run();
-					} catch (Exception e) {
-						MessageKind.W0003.format(e);
-						RunnableCall.this.setException(e);
-					} finally {
-						RunnableCall.this.complete();
-					}
-				}
-			};
+			return new RunnableCallRunnable(this);
 		}
 	}
 
