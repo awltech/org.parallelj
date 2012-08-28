@@ -8,10 +8,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Set;
 
 import org.parallelj.Programs;
+import org.parallelj.internal.reflect.ProcessHelperImpl;
+import org.parallelj.internal.reflect.ProgramAdapter;
 import org.parallelj.launching.In;
 import org.parallelj.launching.parser.Parser;
+import org.parallelj.launching.quartz.ProgramJobsAdapter;
 
 public class DefaultLauncher {
 
@@ -119,7 +124,11 @@ public class DefaultLauncher {
 
 		if (programInstance != null) {
 			// Run the Program
-			Programs.as(programInstance).execute().join();
+			ProcessHelperImpl<?> processhelper = (ProcessHelperImpl<?>)Programs.as(programInstance).execute().join();
+			Map<String, Set<String>> errors = ProgramJobsAdapter.getProceduresInErrors(processhelper.getProcess());
+			if (errors != null && errors.size()>0) {
+				System.err.println("Program terminated with errors: "+errors);
+			}
 		}
 
 	}
