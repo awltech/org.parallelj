@@ -34,6 +34,7 @@ import org.parallelj.internal.kernel.KInputLink;
 import org.parallelj.internal.kernel.KOutputLink;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProgram;
+import org.parallelj.mirror.ExceptionHandlingPolicy;
 
 /**
  * Build a program based on introspection.
@@ -106,6 +107,9 @@ public class ProgramBuilder {
 		if (capacity != null && capacity.value() > 0) {
 			this.program.setCapacity(capacity.value());
 		}
+		
+		// Check Exception Handling Policy
+		this.program.setExceptionHandlingPolicy(p.exceptionHandlingPolicy());
 
 		this.builder.build();
 		return this;
