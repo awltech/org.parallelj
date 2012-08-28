@@ -154,65 +154,40 @@ privileged public aspect ProgramJobsAdapter {
 		}
 	}
 	
-	/*
-	 * Add the interface IExceptionTracking to all Runnable and Callable
-	 */
-    public interface IExceptionTracking {};
-  	private Object IExceptionTracking.context = null;
-	
-    declare parents:           
-    	(java.lang.Runnable+ ) implements IExceptionTracking;
-    declare parents:           
-    	(java.util.concurrent.Callable+ ) implements IExceptionTracking;    
-  	
 	// Interception around Runnable execution      
-  	after(Object self) returning (Runnable ret): 
-  		execution(* org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall.toRunnable())
-      && this(self)  {
-   	  ((IExceptionTracking)ret).context = ((org.parallelj.internal.kernel.KCall)self);
-    }
-
-	// Interception around Callable execution      
-  	after(Object self) returning (Runnable ret): 
-  		execution(* org.parallelj.internal.kernel.procedure.CallableProcedure.CallableCall.toRunnable())
-      && this(self)  {
-   	  ((IExceptionTracking)ret).context = ((org.parallelj.internal.kernel.KCall)self);
-    }
-
-	// Interception around Runnable execution      
-	 void around(Object self): call(void complete())
-	&& within(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall)  
+	void around(Object self): call(void complete())
+		&& target(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall)
 		&& this(self)  {
-	 
-			RunnableProcedure.RunnableCall runnable = (RunnableProcedure.RunnableCall)((IExceptionTracking)self).context;
-			RunnableProcedure procedure = (RunnableProcedure)runnable.getProcedure();
-			if (procedure.getHandler() == null
-					&& runnable.getException() != null) {
-				// There is an error !!!
-				KProcess process = ((RunnableProcedure.RunnableCall)((IExceptionTracking)self).context).getProcess();
-				KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
-				((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), runnable.getException());
-			}
+		 
+		RunnableProcedure.RunnableCall runnable = (RunnableProcedure.RunnableCall)thisJoinPoint.getTarget();
+		RunnableProcedure procedure = (RunnableProcedure)runnable.getProcedure();
+		if (procedure.getHandler() == null
+				&& runnable.getException() != null) {
+			// There is an error !!!
+			KProcess process = runnable.getProcess();
+			KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
+			((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), runnable.getException());
+		}
 		proceed(self);
 	}
 
 	// Interception around Callable execution      
-	 void around(Object self): call(void complete())
-		 && within(org.parallelj.internal.kernel.procedure.CallableProcedure.CallableCall)  
+	void around(Object self): call(void complete())
+		&& target(org.parallelj.internal.kernel.procedure.CallableProcedure.CallableCall)
 		&& this(self)  {
-	 
-			CallableProcedure.CallableCall callable = (CallableProcedure.CallableCall)((IExceptionTracking)self).context;
-			CallableProcedure procedure = (CallableProcedure)callable.getProcedure(); 
+
+		CallableProcedure.CallableCall callable = (CallableProcedure.CallableCall)thisJoinPoint.getTarget();
+		CallableProcedure procedure = (CallableProcedure)callable.getProcedure(); 
 			
-			if (
-					procedure.getHandler() == null
-					&& callable.getException() != null
-					) {
-				// There is an error !!!
-				KProcess process = ((CallableProcedure.CallableCall)((IExceptionTracking)self).context).getProcess();
-				KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
-				((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), callable.getException());
-			}
+		if (
+				procedure.getHandler() == null
+				&& callable.getException() != null
+				) {
+			// There is an error !!!
+			KProcess process = callable.getProcess();
+			KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
+			((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), callable.getException());
+		}
 		proceed(self);
 	}
 	 
