@@ -29,7 +29,6 @@ import org.parallelj.Executables;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.mirror.Procedure;
 
 /**
@@ -45,17 +44,30 @@ public privileged aspect Logs {
 	/**
 	 * Flag indicating if a program has already been logged.
 	 */
-	boolean KProgram.dumped = false;
+//	boolean KProgram.dumped = false;
+	
+	interface IDumped{};
 
+	declare parents: KProgram implements IDumped;
+	
+	boolean IDumped.dumped = false;
+	
+	interface ILogEntry{};
+	
+	declare parents: KProcess implements ILogEntry;
+	declare parents: KCall implements ILogEntry;
+
+	LogEntry ILogEntry.logEntry = new LogEntry();
+	
 	/**
 	 * The {@link LogEntry} of a process.
 	 */
-	LogEntry KProcess.logEntry = new LogEntry();
+//	LogEntry KProcess.logEntry = new LogEntry();
 
 	/**
 	 * The {@link LogEntry} of a procedure {@link KCall call}.
 	 */
-	LogEntry KCall.logEntry = new LogEntry();
+//	LogEntry KCall.logEntry = new LogEntry();
 
 	Logs() {
 		// log the prolog
@@ -69,7 +81,7 @@ public privileged aspect Logs {
 	 * 
 	 * @param self
 	 */
-	before(KProgram self): execution(* KProgram.newProcess(..)) && this(self) && if(!self.dumped) {
+	before(KProgram self): execution(* KProgram.newProcess(..)) && this(self) && if(!((IDumped)self).dumped) {
 		LogEntry programEntry = new LogEntry();
 		programEntry.start("0.0.0.0/" + self.getId());
 		programEntry.end(self.getName());
@@ -81,7 +93,7 @@ public privileged aspect Logs {
 			procedureEntry.end(procedure.getName() + ":" + procedure.getType());
 			logger.info(procedureEntry);
 		}
-		self.dumped = true;
+		((IDumped)self).dumped = true;
 	}
 
 	/**
@@ -91,13 +103,13 @@ public privileged aspect Logs {
 	 *            the process
 	 */
 	after(KProcess self) : execution(* KProcess.doStart()) && this(self) {
-		self.logEntry.start(self.getParentId() + "/" + self.getId());
+		((ILogEntry)self).logEntry.start(self.getParentId() + "/" + self.getId());
 	}
 
 	after(KProcess self) : execution(* KProcess.done()) && this(self) {
-		self.logEntry.end(self.getState().toString(),
+		((ILogEntry)self).logEntry.end(self.getState().toString(),
 				this.attributes(self.getContext()));
-		logger.info(self.logEntry);
+		logger.info(((ILogEntry)self).logEntry);
 	}
 
 	/**
@@ -107,20 +119,20 @@ public privileged aspect Logs {
 	 *            the procedure call
 	 */
 	after(KCall self) : execution(* KCall.onRunning()) && this(self) {
-			self.logEntry.start(self.process.getId() + "/" + self.getId());
+		((ILogEntry)self).logEntry.start(self.process.getId() + "/" + self.getId());
 	}
 	
 	after(KCall self) : execution( * KCall.onComplete()) && this(self) {
-		self.logEntry.end(self.getState().toString(),
+		((ILogEntry)self).logEntry.end(self.getState().toString(),
 				this.attributes(self.getContext()));
-		logger.info(self.logEntry);
+		logger.info(((ILogEntry)self).logEntry);
 		
 	}
 		after(KCall self) : execution(* KCall.onCanceled()) && this(self) {
-			self.logEntry.start(self.process.getId() + "/" + self.getId());
-			self.logEntry.end(self.getState().toString(),
+			((ILogEntry)self).logEntry.start(self.process.getId() + "/" + self.getId());
+			((ILogEntry)self).logEntry.end(self.getState().toString(),
 					this.attributes(self.getContext()));
-			logger.info(self.logEntry);
+			logger.info(((ILogEntry)self).logEntry);
 		}
 
 	@SuppressWarnings("deprecation")
