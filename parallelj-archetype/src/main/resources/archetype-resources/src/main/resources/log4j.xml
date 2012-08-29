@@ -24,12 +24,21 @@
 		</layout>
 	</appender>
 
-	<appender name="stdout" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="logs/stdout.log" />
-		<param name="maxBackupIndex" value="10" />
+	<appender name="stdout" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="file" value="logs/stdout"/>
+		<param name="DatePattern" value="'-'MMddHHmmssSSS'.log'"/>
+		<param name="Threshold" value="INFO"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-5p %d{dd-MM HH:mm:ss,SSS} (%F:%M:%L) -%m%n"/>
+		</layout>
+	</appender>
+
+	<!-- appender for aspectj weaving -->
+	<appender name="weaving" class="org.apache.log4j.FileAppender">
+		<param name="file" value="logs/aspecjweaving.log" />
 		<param name="Threshold" value="INFO" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%-5p %d{dd-MM HH:mm:ss,SSS} (%F:%M:%L)  -%m%n" />
+			<param name="ConversionPattern" value="%m%n" />
 		</layout>
 	</appender>
 
@@ -40,9 +49,14 @@
 	</category>
 
 	<category name="org.parallelj.events" additivity="true">
-		<level value="WARN" />
+		<level value="INFO" />
 		<appender-ref ref="sysout" />
 		<appender-ref ref="stdout" />
+	</category>
+
+	<category name="org.parallelj.weaving" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="weaving" />
 	</category>
 
 </log4j:configuration>
