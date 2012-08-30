@@ -24,8 +24,8 @@ package org.parallelj.tracknrestart.aspects;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+//import java.util.concurrent.ExecutorService;
+//import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.parallelj.Programs;
@@ -38,6 +38,9 @@ import org.parallelj.tracknrestart.annotations.TrackNRestart;
 import org.parallelj.tracknrestart.databinding.ProgramFieldsBinder;
 import org.parallelj.tracknrestart.listeners.ForEachListener;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
+import org.parallelj.internal.kernel.procedure.RunnableProcedure;
+import org.parallelj.internal.kernel.procedure.CallableProcedure;
+
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -175,7 +178,7 @@ privileged public aspect QuartzContextAdapter percflow(execution(public void Job
   	
 	//---------------------------------------------------------------------------------------------------
 	
-    // 1) Transfert from RunnableCall to Runnable. 
+    // 1.1) Transfert from RunnableCall to Runnable. 
   	after(Object self) returning (Runnable ret): 
     	 execution(* org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall.toRunnable())
       && this(self)  {
@@ -185,43 +188,104 @@ privileged public aspect QuartzContextAdapter percflow(execution(public void Job
    	 ((Y)ret).context = ((org.parallelj.internal.kernel.KCall)self).context;
     }
     
-     // 2) Interception around call of run.      
-     void around(Object self): call(* run(..))
-     && within(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall)
-     && within(Runnable+)  && this(self)  {
-    	 
-    	 String restartedFireInstanceId = ((X)self).restartedFireInstanceId;
-    	 ForEachListener forEachListener = ((X)self).forEachListener;	
-    	 Object program =  ((Y)self).context;
-    	 
-    	 if (isToProcess(restartedFireInstanceId,forEachListener,program)) {
-    		try { 
-    			proceed(self);
-     			if (isTrackNRestartAnnoted(program)) {
-     				String oid = getOID(program);
-   					track(forEachListener, oid, true);
-     			}
-    		} catch (Exception e) {
- 				if (isTrackNRestartAnnoted(program)){
- 					String oid = getOID(program);
- 					if (isTrackNRestartExceptionPermitted(program, e)) {
- 						this.result = ReturnCodes.FAILURE.name();
+    // 2.1) Transfert from CallableCall to Runnable. 
+  	after(Object self) returning (Runnable ret): 
+    	 execution(* org.parallelj.internal.kernel.procedure.CallableProcedure.CallableCall.toRunnable())
+      && this(self)  {
+    	
+   	 ((X)ret).forEachListener = ((X)self).forEachListener;
+   	 ((X)ret).restartedFireInstanceId = ((X)self).restartedFireInstanceId;
+   	 ((Y)ret).context = ((org.parallelj.internal.kernel.KCall)self).context;
+    }
+  	
+	public void skip(org.parallelj.internal.kernel.KCall kCall) {
+		kCall.start();
+		kCall.complete();
+	}
+
+    
+    // 1.2) Interception around call of run (from RunnableCall).      
+	void around(org.parallelj.internal.kernel.KProcessor.KProcessorRunnable self):
+		call(public void run())
+		&& target(org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall.RunnableCallRunnable)
+		&& this(self) {
+   	 
+   	 Runnable runnable = ((org.parallelj.internal.kernel.KProcessor.KProcessorRunnable)self).getRunnable();
+	 String restartedFireInstanceId = ((X)runnable).restartedFireInstanceId;
+	 ForEachListener forEachListener = ((X)runnable).forEachListener;
+   	 Object program =  ((Y)runnable).context;
+   	 if (isToProcess(restartedFireInstanceId,forEachListener,program)) {
+   			proceed(self);
+   			Exception exec = ((RunnableProcedure.RunnableCall)((RunnableProcedure.RunnableCall.RunnableCallRunnable)thisJoinPoint.getTarget()).getRunnableCall()).getException();
+   			if (exec == null) {
+       			if (isTrackNRestartAnnoted(program)) {
+    				String oid = getOID(program);
+  					track(forEachListener, oid, true);
+    			}
+   			} else {
+				if (isTrackNRestartAnnoted(program)){
+					String oid = getOID(program);
+					if (isTrackNRestartExceptionPermitted(program, exec)) {
+						this.result = ReturnCodes.FAILURE.name();
 	 					track(forEachListener, oid, false);
 					} else {
-						abortAbruptly(new TrackNRestartException("Exception thrown ("+e.getClass().getName()+") is not in list of permitted exceptions "+filteredExceptionsAsString(getTrackNRestartAnnotedException(program))));
+						abortAbruptly(new TrackNRestartException("Exception thrown ("+exec.getClass().getName()+") is not in list of permitted exceptions "+filteredExceptionsAsString(getTrackNRestartAnnotedException(program))));
 					}
- 				}
-    		}
-     	} else {
-     		if (isTrackNRestartAnnoted(program)) {
- 				String oid = getOID(program);
- 				track(forEachListener, oid, true);
+				}
+   			}
+    	} else {
+    		if (isTrackNRestartAnnoted(program)) {
+				String oid = getOID(program);
+				track(forEachListener, oid, true);
 			} else {
 				abortAbruptly(new TrackNRestartException("Unable to get iteration OID while 'tracking' context."));
- 			}
-     	}
-     }
-     
+			}
+    		// Inform the engine that this Runnable has been called
+    		skip(((RunnableProcedure.RunnableCall)((RunnableProcedure.RunnableCall.RunnableCallRunnable)thisJoinPoint.getTarget()).getRunnableCall()));
+    	}
+    }
+    
+    // 2.2) Interception around call of run (from CallableCall).      
+	void around(org.parallelj.internal.kernel.KProcessor.KProcessorRunnable self):
+		call(public void run())
+		&& target(org.parallelj.internal.kernel.procedure.CallableProcedure.CallableCall.CallableCallRunnable)
+		&& this(self) {
+   	 
+   	 Runnable runnable = ((org.parallelj.internal.kernel.KProcessor.KProcessorRunnable)self).getRunnable();
+	 String restartedFireInstanceId = ((X)runnable).restartedFireInstanceId;
+	 ForEachListener forEachListener = ((X)runnable).forEachListener;
+   	 Object program =  ((Y)runnable).context;
+   	 if (isToProcess(restartedFireInstanceId,forEachListener,program)) {
+   			proceed(self);
+   			Exception exec = ((CallableProcedure.CallableCall)((CallableProcedure.CallableCall.CallableCallRunnable)thisJoinPoint.getTarget()).getCallableCall()).getException();
+   			if (exec == null) {
+       			if (isTrackNRestartAnnoted(program)) {
+    				String oid = getOID(program);
+  					track(forEachListener, oid, true);
+    			}
+   			} else {
+				if (isTrackNRestartAnnoted(program)){
+					String oid = getOID(program);
+					if (isTrackNRestartExceptionPermitted(program, exec)) {
+						this.result = ReturnCodes.FAILURE.name();
+	 					track(forEachListener, oid, false);
+					} else {
+						abortAbruptly(new TrackNRestartException("Exception thrown ("+exec.getClass().getName()+") is not in list of permitted exceptions "+filteredExceptionsAsString(getTrackNRestartAnnotedException(program))));
+					}
+				}
+   			}
+	 	} else {
+			if (isTrackNRestartAnnoted(program)) {
+				String oid = getOID(program);
+				track(forEachListener, oid, true);
+			} else {
+				abortAbruptly(new TrackNRestartException("Unable to get iteration OID while 'tracking' context."));
+			}
+    		// Inform the engine that this Runnable has been called
+			skip(((CallableProcedure.CallableCall)((CallableProcedure.CallableCall.CallableCallRunnable)thisJoinPoint.getTarget()).getCallableCall()));
+		}
+    }
+    
  	//---------------------------------------------------------------------------------------------------
  	
      /**

@@ -217,6 +217,9 @@ public class KProcessor extends KMachine<ProcessorState> implements Processor {
 			}
 		}
 		
+		public Runnable getRunnable() {
+			return runnable;
+		}
 	}
 	
 	/**
