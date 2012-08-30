@@ -102,10 +102,10 @@
 	</modules>
 
 	<properties>
-		<aspectjweaver.version>1.6.12</aspectjweaver.version>
+		<aspectjweaver.version>1.7.0</aspectjweaver.version>
 		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjweaver.version}/aspectjweaver-${aspectjweaver.version}.jar</aspectj.javaagent.location>
-		<ajdtVersion>1.6.12</ajdtVersion>
-		<org.aspectj.aspectjrt>1.6.12</org.aspectj.aspectjrt>
+		<ajdtVersion>1.7.0</ajdtVersion>
+		<org.aspectj.aspectjrt>1.7.0</org.aspectj.aspectjrt>
 		<aspectj.maven.plugin.version>1.2</aspectj.maven.plugin.version>
 		<maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
 		<maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>

@@ -24,26 +24,12 @@
 <aspectj>
 	<aspects>
 		<!-- declare two existing aspects to the weaver -->
-        <aspect name="org.parallelj.internal.kernel.Identifiers"/>
-		<aspect name="org.parallelj.internal.reflect.ProgramAdapter"/>
-		<aspect name="org.parallelj.internal.util.sm.impl.KStateMachines"/>
-		<aspect name="org.parallelj.internal.util.sm.impl.KStateMachines$PerMachine"/>
-		<aspect name="org.parallelj.Executables$PerExecutable"/>
-		<aspect name="org.parallelj.internal.reflect.ProgramAdapter$PerProgram"/>
-		<aspect name="org.parallelj.internal.log.Logs"/>
-		
-		<!-- Of the set of aspects declared to the weaver
-             declare witch ones must be used for weaving. -->
-<!-- 
-        <include within="org.parallelj.internal.kernel.Identifiers"/>
-		<include within="org.parallelj.internal.reflect.ProgramAdapter"/>
-		<include within="org.parallelj.internal.util.sm.impl.KStateMachines"/>
-		<include within="org.parallelj.internal.util.sm.impl.KStateMachines$PerMachine"/>
-		<include within="org.parallelj.Executables$PerExecutable"/>
-		<include within="org.parallelj.internal.reflect.ProgramAdapter$PerProgram"/>
-		<include within="org.parallelj.internal.log.Logs"/>
--->
-    </aspects>
-    <weaver options="-verbose">
-    </weaver>
+		<aspect name="org.parallelj.internal.kernel.Identifiers" />
+		<aspect name="org.parallelj.internal.log.Logs" />
+		<aspect name="org.parallelj.internal.reflect.ProgramAdapter" />
+		<aspect name="org.parallelj.internal.reflect.ProgramAdapter$PerProgram" />
+		<aspect name="org.parallelj.internal.util.sm.impl.KStateMachines" />
+		<aspect name="org.parallelj.internal.util.sm.impl.KStateMachines$PerMachine" />
+		<aspect name="org.parallelj.Executables$PerExecutable" />
+	</aspects>
 </aspectj>
