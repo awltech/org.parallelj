@@ -83,7 +83,8 @@ public class Executables {
 		 * Build the {@link KExecutable} corresponding to the class annotated
 		 * with {@link Executable}.
 		 * 
-		 * @param joinPoint the AspectJ {@link JoinPoint}
+		 * @param joinPoint
+		 *            the AspectJ {@link JoinPoint}
 		 */
 		@SuppressWarnings("rawtypes")
 		@After("staticinitialization(@org.parallelj.Executable *)")
@@ -125,7 +126,12 @@ public class Executables {
 		}
 		PerExecutable perExecutable = Aspects.aspectOf(PerExecutable.class,
 				executable.getClass());
-		return perExecutable.executable.values(executable);
+
+		if (perExecutable.executable != null) {
+			return perExecutable.executable.values(executable);
+		} else {
+			return empty;
+		}
 	}
 
 }

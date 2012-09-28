@@ -71,5 +71,26 @@ public class FieldIterable implements Iterable {
 	public void close(KProcess process) {
 		ProgramAdapter.getIterators(process.getContext()).remove(this.name);
 	}
-
+	
+	/**
+	 * This will return Iterable to Calling method as parameter. 
+	 * @param process
+	 * @return
+	 */
+	public java.lang.Iterable<?> getIterable(KProcess process) {
+			// try new one
+			java.lang.Iterable<?> iterable = null;
+			try {
+				iterable = (java.lang.Iterable<?>) this.field.get(process
+						.getContext());
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		return iterable;
+	}
 }

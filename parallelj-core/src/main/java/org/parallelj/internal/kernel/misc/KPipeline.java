@@ -21,13 +21,17 @@
  */
 package org.parallelj.internal.kernel.misc;
 
+import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.KCondition;
 import org.parallelj.internal.kernel.KElement;
-import org.parallelj.internal.kernel.KProcedure;
+import org.parallelj.internal.kernel.KInputParameter;
 import org.parallelj.internal.kernel.KJoin;
+import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
+import org.parallelj.internal.kernel.join.KAndJoin;
+import org.parallelj.internal.kernel.join.KXorJoin;
 
 /**
  * A KPipeline allows pipelining between {@link KProcedure procedures} of a
@@ -50,6 +54,8 @@ public class KPipeline extends KElement {
 	 */
 	KCondition condition;
 
+	private final KInputParameter element = new KInputParameter();
+
 	/**
 	 * Create a new pipeline.
 	 * 
@@ -59,13 +65,29 @@ public class KPipeline extends KElement {
 	 *            the first procedure of the pipeline
 	 * @param last
 	 *            the last procedure of the pipeline
+	 * 
+	 * @param isLastPipeline
+	 *            is this pipeline is last
+	 * 
 	 */
-	public KPipeline(KProgram program, KProcedure first, KProcedure last) {
+	public KPipeline(KProgram program, KProcedure first, KProcedure last,
+			Boolean isLastPipeline) {
 		super(program);
-		// TODO check null values
 		this.condition = new KCondition(program, (short) 1);
 		first.setJoin(this.newFirstJoin(first.getJoin()));
+		first.addInputParameter(element);
 		last.setJoin(this.newLastJoin(last.getJoin()));
+
+		if (isLastPipeline) {
+			last.addInputParameter(element);
+		}
+	}
+
+	protected void iterating(KCall call) {
+		element.set(
+				call,
+				this.getProgram().getPipelineIteratorsMap()
+						.get(call.getProcess().getContext()).getNext(call));
 	}
 
 	KJoin newFirstJoin(final KJoin join) {
@@ -80,6 +102,11 @@ public class KPipeline extends KElement {
 			@Override
 			public void join(KCall call) {
 				join.join(call);
+
+				if (join instanceof KXorJoin) {
+					KPipeline.this.iterating(call);
+				}
+
 				KPipeline.this.condition.consume(call.getProcess());
 			}
 		};
@@ -96,6 +123,11 @@ public class KPipeline extends KElement {
 			@Override
 			public void join(KCall call) {
 				join.join(call);
+
+				if (join instanceof KAndJoin) {
+					KPipeline.this.iterating(call);
+				}
+
 				KPipeline.this.condition.produce(call.getProcess());
 			}
 		};
@@ -111,13 +143,21 @@ public class KPipeline extends KElement {
 	 */
 	public static void pipeline(KProgram program, KProcedure... procedures) {
 		if (procedures.length < 2) {
-			// TODO add message kind
-			throw new IllegalArgumentException("TODO: not enough procedures"); 
+			throw new IllegalArgumentException(MessageKind.E0003.format());
 		}
+
+		KProcedure kLastProcedure = procedures[procedures.length - 1];
+
 		KProcedure previous = null;
+		boolean isLastPipeline = false;
 		for (KProcedure procedure : procedures) {
+
+			if (procedure.equals(kLastProcedure)) {
+				isLastPipeline = true;
+			}
+
 			if (previous != null) {
-				new KPipeline(program, previous, procedure);
+				new KPipeline(program, previous, procedure, isLastPipeline);
 			}
 			previous = procedure;
 		}

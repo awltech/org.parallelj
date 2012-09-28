@@ -44,6 +44,12 @@ public enum MessageKind {
 	@Format("Can't find configuration file for [%s]. Make sure [%s] is in the classpath!!")
 	E0002,
 	
+	/**Error: Can't find configuration file.
+	 * 
+	 */
+	@Format("not enough procedures")
+	E0003,
+	
 	/**
 	 * Info: building a program
 	 */
@@ -72,7 +78,13 @@ public enum MessageKind {
 	 * Warning: operation interrupted
 	 */
 	@Format("Operation interrupted [%s]")
-	W0004;
+	W0004,
+	
+	/**
+	 * Info: building a program
+	 */
+	@Format("building pipeline[%s]")
+	I0002;
 	
 	
 	/**

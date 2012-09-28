@@ -21,13 +21,18 @@
  */
 package org.parallelj.internal.reflect;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 
+import org.parallelj.Pipeline;
+import org.parallelj.PipelineData;
 import org.parallelj.Program;
-import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.internal.kernel.KProcedure;
+import org.parallelj.internal.kernel.KProgram;
+import org.parallelj.internal.kernel.misc.KPipeline;
 import org.parallelj.internal.kernel.procedure.CallableProcedure;
 import org.parallelj.internal.kernel.procedure.RunnableProcedure;
 import org.parallelj.internal.kernel.procedure.SubProcessProcedure;
@@ -80,17 +85,64 @@ public abstract class ProcedureFactory {
 
 		@Override
 		public boolean accept(Method method) {
-			return method.getReturnType().getAnnotation(Program.class) != null;
+			if (method.getReturnType().getAnnotation(Program.class) != null
+					|| method.getReturnType().getAnnotation(Pipeline.class) != null) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 		@Override
 		public KProcedure newProcedure(Method method, KProgram program) {
-			SubProcessProcedure procedure = new SubProcessProcedure(program);
-			procedure.setSubProgram(ProgramFactory.getProgram(method
-					.getReturnType()));
-			return procedure;
-		}
 
+			if (method.getReturnType().getAnnotation(Program.class) != null) {
+				SubProcessProcedure procedure = new SubProcessProcedure(program);
+				KProgram subProgram = ProgramFactory.getProgram(method
+						.getReturnType());
+				procedure.setSubProgram(subProgram);
+				return procedure;
+			} else if (method.getReturnType().getAnnotation(Pipeline.class) != null) {
+
+				// taking pipeline inner class
+				Class<?> type = method.getReturnType();
+
+				SubProcessProcedure procedure = new SubProcessProcedure(program);
+				KProgram pipeline = PipelineFactory.getPipeline(method
+						.getReturnType());
+
+				Field pipelineData = null;
+
+				// finding filed with annotation PipelineData
+				while (type != null) {
+					for (Field field : type.getDeclaredFields()) {
+						Annotation[] annotations = field.getAnnotations();
+
+						if (annotations.length == 0) {
+							continue;
+						}
+
+						for (Annotation annotation : annotations) {
+							if (annotation.annotationType().equals(
+									PipelineData.class)) {
+								pipelineData = field;
+
+							}
+						}
+					}
+					type = type.getSuperclass();
+				}
+
+				KPipeline.pipeline(pipeline,
+						pipeline.getKProcedures().toArray(new KProcedure[0]));
+				procedure.setPipelineDataName(pipelineData.getName());
+				procedure.setSubProgram(pipeline);
+				procedure.setPipeline(true);
+				return procedure;
+			} else {
+				return null;
+			}
+		}
 	}
 
 	private static ProcedureFactory[] builtin = {

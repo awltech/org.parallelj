@@ -21,11 +21,21 @@
  */
 package org.parallelj.internal.kernel.procedure;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProcessor;
 import org.parallelj.internal.kernel.KProgram;
+import org.parallelj.internal.reflect.callback.PipelineIterator;
 import org.parallelj.internal.util.sm.StateEvent;
 import org.parallelj.internal.util.sm.StateListener;
 import org.parallelj.internal.util.sm.StateMachines;
@@ -44,17 +54,21 @@ public class SubProcessProcedure extends KProcedure {
 	 */
 	KProgram subProgram;
 
+	boolean isPipeline;
+
+	String pipelineDataName;
+
 	class SubProcessCall extends KCall {
 
 		class SubProcessRunnable implements
 				StateListener<KProcess, ProcessState>, Runnable {
 
 			private SubProcessCall subProcessCall;
-			
+
 			protected SubProcessRunnable(SubProcessCall call) {
 				this.subProcessCall = call;
 			}
-			
+
 			public SubProcessCall getSubProcessCall() {
 				return this.subProcessCall;
 			}
@@ -64,10 +78,76 @@ public class SubProcessProcedure extends KProcedure {
 				SubProcessCall.this.start();
 				KProcess sub = SubProcessProcedure.this.subProgram
 						.newProcess(SubProcessCall.this.getContext());
+
+				if (isPipeline) {
+
+					//getting count of list data and initializing the same 
+					int dataCount = this.initializePipelineData();
+
+					for (int count = 0; count < dataCount; count++) {
+						subProgram.getInputCondition().produce(sub);
+					}
+				}
+
 				sub.setParentId(SubProcessCall.this.getId());
 				StateMachines.addStateListener(sub, this);
 				if (KProcessor.currentProcessor() != null)
 					KProcessor.currentProcessor().execute(sub);
+			}
+
+			/**
+			 *  This will initialize data, and return count of the same
+			 * @return
+			 */
+			private int initializePipelineData() {
+
+				Object context = SubProcessCall.this.getContext();
+
+				// getting actual value of list
+				Method readMethod = null;
+				try {
+					readMethod = new PropertyDescriptor(pipelineDataName,
+							context.getClass()).getReadMethod();
+				} catch (IntrospectionException e) {
+					MessageKind.W0003.format(e);
+				}
+				Object invoke = null;
+				try {
+					invoke = readMethod.invoke(context);
+				} catch (IllegalArgumentException e) {
+					MessageKind.W0003.format(e);
+				} catch (IllegalAccessException e) {
+					MessageKind.W0003.format(e);
+				} catch (InvocationTargetException e) {
+					MessageKind.W0003.format(e);
+				}
+
+				List list = null;
+
+				//putting values into list
+				if (invoke instanceof Iterable<?>) {
+					Iterator iterator = ((Iterable) invoke).iterator();
+					list = new ArrayList();
+					while (iterator.hasNext()) {
+						list.add(iterator.next());
+					}
+				}
+
+				// assign list into iterator 
+				if (list != null) {
+					PipelineIterator pipelineIterator = subProgram
+							.getPipelineIteratorsMap().get(context);
+					if (pipelineIterator == null) {
+						pipelineIterator = new PipelineIterator();
+					}
+					pipelineIterator.setList(list);
+					subProgram.getPipelineIteratorsMap().put(context,
+							pipelineIterator);
+					return list.size() - 1;
+
+				} else {
+					return 0;
+				}
 			}
 
 			@Override
@@ -124,4 +204,19 @@ public class SubProcessProcedure extends KProcedure {
 		this.subProgram = program;
 	}
 
+	public boolean isPipeline() {
+		return isPipeline;
+	}
+
+	public void setPipeline(boolean isPipeline) {
+		this.isPipeline = isPipeline;
+	}
+
+	public String getPipelineDataName() {
+		return pipelineDataName;
+	}
+
+	public void setPipelineDataName(String pipelineDataName) {
+		this.pipelineDataName = pipelineDataName;
+	}
 }

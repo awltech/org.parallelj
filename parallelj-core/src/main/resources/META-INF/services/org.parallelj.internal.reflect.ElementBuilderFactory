@@ -4,4 +4,5 @@ org.parallelj.internal.reflect.SplitFactory
 org.parallelj.internal.reflect.ForEachFactory
 org.parallelj.internal.reflect.CapacityFactory
 org.parallelj.internal.reflect.WhileFactory
+org.parallelj.internal.reflect.PipelineForEachFactory
 

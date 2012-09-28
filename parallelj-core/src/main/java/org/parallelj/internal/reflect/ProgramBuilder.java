@@ -34,7 +34,6 @@ import org.parallelj.internal.kernel.KInputLink;
 import org.parallelj.internal.kernel.KOutputLink;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.mirror.ExceptionHandlingPolicy;
 
 /**
  * Build a program based on introspection.
@@ -174,9 +173,12 @@ public class ProgramBuilder {
 	public Class<?> getType() {
 		return type;
 	}
-
+	
 	public KProgram getProgram() {
 		return program;
 	}
-
+	
+	public ElementBuilder getBuilder() {
+		return builder;
+	}
 }

@@ -24,6 +24,7 @@ package org.parallelj.internal.kernel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.parallelj.internal.reflect.callback.PipelineIteratorsMap;
 import org.parallelj.mirror.ExceptionHandlingPolicy;
 import org.parallelj.mirror.Procedure;
 import org.parallelj.mirror.ProgramType;
@@ -79,6 +80,11 @@ public class KProgram implements ProgramType {
 	 * The name of the program.
 	 */
 	private String name = "<undef>";
+	
+	/**
+	 * The Iterator map.
+	 */
+	private PipelineIteratorsMap pipelineIteratorsMap = new PipelineIteratorsMap();
 
 	/**
 	 * Create a new program.
@@ -194,6 +200,10 @@ public class KProgram implements ProgramType {
 	public List<Procedure> getProcedures() {
 		return new ArrayList<Procedure>(this.procedures);
 	}
+	
+	public List<KProcedure> getKProcedures() {
+		return this.procedures;
+	}
 
 	public String getId() {
 		return id;
@@ -226,5 +236,12 @@ public class KProgram implements ProgramType {
 	public void setExceptionHandlingPolicy(ExceptionHandlingPolicy policy) {
 		this.exceptionHandlingPolicy = policy;
 	}
+	
+	public PipelineIteratorsMap getPipelineIteratorsMap() {
+		return pipelineIteratorsMap;
+	}
 
+	public void setPipelineIteratorsMap(PipelineIteratorsMap pipelineIteratorsMap) {
+		this.pipelineIteratorsMap = pipelineIteratorsMap;
+	}
 }
