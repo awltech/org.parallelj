@@ -25,9 +25,8 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KCall;
@@ -100,6 +99,8 @@ public class SubProcessProcedure extends KProcedure {
 			 * @return
 			 */
 			private int initializePipelineData() {
+				
+				int dataCount = 0;
 
 				Object context = SubProcessCall.this.getContext();
 
@@ -122,31 +123,34 @@ public class SubProcessProcedure extends KProcedure {
 					MessageKind.W0003.format(e);
 				}
 
-				List list = null;
-
 				//putting values into list
 				if (invoke instanceof Iterable<?>) {
-					Iterator iterator = ((Iterable) invoke).iterator();
-					list = new ArrayList();
-					while (iterator.hasNext()) {
-						list.add(iterator.next());
+					
+					if(Collection.class.isAssignableFrom(((Iterable) invoke).getClass())){
+						dataCount = ((Collection<?>)invoke).size();
+					}else{
+						Iterator iterator = ((Iterable) invoke).iterator();
+						while (iterator.hasNext()) {
+							iterator.next();
+							dataCount++;
+						}
 					}
 				}
 
 				// assign list into iterator 
-				if (list != null) {
+				if (invoke != null) {
 					PipelineIterator pipelineIterator = subProgram
 							.getPipelineIteratorsMap().get(context);
 					if (pipelineIterator == null) {
 						pipelineIterator = new PipelineIterator();
 					}
-					pipelineIterator.setList(list);
+					pipelineIterator.setPipelineDataName(pipelineDataName);
 					subProgram.getPipelineIteratorsMap().put(context,
 							pipelineIterator);
-					return list.size() - 1;
-
+					
+					return dataCount - 1;
 				} else {
-					return 0;
+					return dataCount;
 				}
 			}
 

@@ -84,10 +84,16 @@ public class KPipeline extends KElement {
 	}
 
 	protected void iterating(KCall call) {
-		element.set(
-				call,
-				this.getProgram().getPipelineIteratorsMap()
-						.get(call.getProcess().getContext()).getNext(call));
+
+		if (this.getProgram().getPipelineIteratorsMap() != null
+				&& call.getProcess().getContext() != null
+				&& this.getProgram().getPipelineIteratorsMap()
+						.get(call.getProcess().getContext()) != null) {
+			element.set(
+					call,
+					this.getProgram().getPipelineIteratorsMap()
+							.get(call.getProcess().getContext()).getNext(call));
+		}
 	}
 
 	KJoin newFirstJoin(final KJoin join) {

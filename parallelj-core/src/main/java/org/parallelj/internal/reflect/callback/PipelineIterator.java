@@ -21,10 +21,15 @@
  */
 package org.parallelj.internal.reflect.callback;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KCall;
 
 /**
@@ -37,23 +42,23 @@ import org.parallelj.internal.kernel.KCall;
  */
 public class PipelineIterator {
 
-	private List list;
+	private String pipelineDataName;
 
 	/**
 	 * Map for keeping track on procedure data index.
 	 */
-	private Map<String, Integer> map;
+	private Map<String, Iterator> map;
 
 	public PipelineIterator() {
-		map = new HashMap<String, Integer>();
+		map = new HashMap<String, Iterator>();
 	}
 
 	public boolean contains(String id) {
 		return map.containsKey(id);
 	}
 
-	public void add(String id) {
-		map.put(id, 0);
+	public void add(String id, Iterator iterator) {
+		map.put(id, iterator);
 	}
 
 	/**
@@ -63,24 +68,45 @@ public class PipelineIterator {
 	 * @return
 	 */
 	public Object getNext(KCall call) {
-		if (list != null && !list.isEmpty()) {
-			if (map.get(call.getProcedure().getId()) == null) {
-				this.add(call.getProcedure().getId());
+
+		if (map.get(call.getProcedure().getId()) == null) {
+
+			Object context = call.getProcess().getContext();
+
+			// getting data by reflection
+			Method readMethod = null;
+			try {
+				readMethod = new PropertyDescriptor(pipelineDataName,
+						context.getClass()).getReadMethod();
+			} catch (IntrospectionException e) {
+				MessageKind.W0003.format(e);
 			}
-			Integer integer = map.get(call.getProcedure().getId());
-			Object object = list.get(integer);
-			map.put(call.getProcedure().getId(), ++integer);
-			return object;
-		} else {
-			return null;
+			Object invoke = null;
+			try {
+				invoke = readMethod.invoke(context);
+			} catch (IllegalArgumentException e) {
+				MessageKind.W0003.format(e);
+			} catch (IllegalAccessException e) {
+				MessageKind.W0003.format(e);
+			} catch (InvocationTargetException e) {
+				MessageKind.W0003.format(e);
+			}
+
+			// putting new Iterator into map
+			if (invoke instanceof Iterable<?>) {
+				Iterator newIterator = ((Iterable) invoke).iterator();
+				this.add(call.getProcedure().getId(), newIterator);
+			}
 		}
+		Iterator iterator = map.get(call.getProcedure().getId());
+		return iterator.next();
+	}
+	
+	public String getPipelineDataName() {
+		return pipelineDataName;
 	}
 
-	public List getList() {
-		return list;
-	}
-
-	public void setList(List list) {
-		this.list = list;
+	public void setPipelineDataName(String pipelineDataName) {
+		this.pipelineDataName = pipelineDataName;
 	}
 }
