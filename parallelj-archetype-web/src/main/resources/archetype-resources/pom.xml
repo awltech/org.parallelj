@@ -10,7 +10,7 @@
 	<packaging>war</packaging>
 
 	<properties>
-		<parallelj-version>1.2.3-SNAPSHOT</parallelj-version>
+		<parallelj-version>1.2.3</parallelj-version>
 		<aspectjweaver.version>1.7.0</aspectjweaver.version>
 		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjweaver.version}/aspectjweaver-${aspectjweaver.version}.jar</aspectj.javaagent.location>
 	</properties>
