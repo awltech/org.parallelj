@@ -138,7 +138,7 @@ privileged public aspect ProgramJobsAdapter {
 				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
 			}
 		
-			ProgramFieldsBinder.getProgramOutputFields(this, context);
+			ProgramFieldsBinder.getProgramOutputFields(self, context);
 			service.shutdown();
 			
 			if (procedures.proceduresInError.size()>0){
