@@ -35,7 +35,7 @@ public class PipelineTutorialTest {
 		
 		// initialize the program
 		MyPipelineTest tutorial = new MyPipelineTest();
-		tutorial.setList(Arrays.asList("a", "b", "c"/*, "d", "e", "f", "g", "h",
+		tutorial.setList(Arrays.asList("a", "b", "c", "d", "e"/*, "f", "g", "h",
 				"i", "j"*//*, "k", "l"*/));
 
 		// run the program with a cached thread pool

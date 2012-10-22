@@ -27,6 +27,7 @@ import org.parallelj.AndJoin;
 import org.parallelj.AndSplit;
 import org.parallelj.Begin;
 import org.parallelj.Capacity;
+import org.parallelj.ForEach;
 import org.parallelj.Pipeline;
 import org.parallelj.PipelineData;
 import org.parallelj.PipelineParameter;
@@ -41,7 +42,9 @@ public class MyPipelineTest {
 	 * list field Description :
 	 **/
 	List<String> list;
-
+	long start;
+	long end;
+	
 	public List<String> getList() {
 		return list;
 	}
@@ -52,16 +55,48 @@ public class MyPipelineTest {
 
 	@Begin
 	@Capacity(1)
-	public MyTestTwo forEachProcedure(
+	public MyTestTwo myPipeline(
 			@PipelineParameter("list") List<String> list) {
 		// TODO : to be implemented
+		System.out.println("start pipeline");
+		start = System.currentTimeMillis();
 		return new MyTestTwo(list);
 	}
 
-	@AndSplit({ "end" })
-	public void forEachProcedure(MyTestTwo executable) {
+	@AndSplit({ "nop" })
+	public void myPipeline(MyTestTwo executable) {
+		// TODO : to be implemented
+		System.out.println("end pipeline");
+		end = System.currentTimeMillis();
+		System.out.println("Execution time for pipeline was "+(end-start)+" ms.");
+	}
+	
+	@AndJoin
+	@AndSplit({ "forEachProcedure" })
+	public void nop() {
+		System.out.println("start sequential procedures");
+		start = System.currentTimeMillis();
+	}
+	
+	@AndJoin
+	@Capacity(1)
+	public MyInnerProgram forEachProcedure(@ForEach("list") Object val) {
+		return new MyInnerProgram(val.toString());
+	}
+
+	@AndSplit({ "noptwo" })
+	public void forEachProcedure(MyInnerProgram executable) {
 		// TODO : to be implemented
 	}
+	
+	@AndJoin
+	@AndSplit({ "end" })
+	public void noptwo() {
+		System.out.println("end sequential procedures");
+		end = System.currentTimeMillis();
+		System.out.println("Execution time for sequential procedures was "+(end-start)+" ms.");
+	}
+	
 
 	@Pipeline
 	public class MyTestTwo {
