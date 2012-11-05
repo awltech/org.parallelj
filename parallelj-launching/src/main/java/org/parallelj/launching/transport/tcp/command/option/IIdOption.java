@@ -21,8 +21,8 @@
  */
 package org.parallelj.launching.transport.tcp.command.option;
 
-import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
+import org.parallelj.launching.remote.RemoteProgram;
 
 public interface IIdOption extends IOption {
-	public TcpIpProgram getProgram() throws OptionException;
+	public RemoteProgram getProgram() throws OptionException;
 }

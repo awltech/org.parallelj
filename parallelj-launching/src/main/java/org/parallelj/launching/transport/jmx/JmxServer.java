@@ -46,8 +46,8 @@ import javax.management.remote.JMXServiceURL;
 import org.parallelj.internal.reflect.ProgramAdapter;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
-import org.parallelj.launching.transport.AdaptersArguments;
-import org.parallelj.launching.transport.tcp.program.ArgEntry;
+import org.parallelj.launching.remote.RemoteProgram;
+import org.parallelj.launching.remote.RemotePrograms;
 
 /**
  * Class representing a Parallelj JMX Server for remote launching 
@@ -174,60 +174,57 @@ public class JmxServer {
 	 * @param beanClass the class name of the Program 
 	 */
 	public final boolean registerProgramAsMBean(final String beanClass) {
-		if (this.mbs != null && beanClass != null) {
-			try {
-				@SuppressWarnings("unchecked")
-				final Class<? extends Adapter> clazz = (Class<? extends Adapter>) Class
-						.forName(beanClass);
-				final String fqnName = clazz.getCanonicalName();
-				final String domain = fqnName.substring(0, fqnName.lastIndexOf('.'));
-				final String type = fqnName.substring(fqnName.lastIndexOf('.') + 1);
+		RemoteProgram remoteProgram = RemotePrograms.getRemoteProgram(beanClass);
+		if (remoteProgram==null) {
+			LaunchingMessageKind.EJMX0003.format(beanClass);
+			return false;
+		}
+		if (this.mbs == null) {
+			LaunchingMessageKind.EJMX0002.format();
+			return false;
+		}
+		try {
+			@SuppressWarnings("unchecked")
+			final Class<? extends Adapter> clazz = (Class<? extends Adapter>) Class
+					.forName(beanClass);
+			final String fqnName = remoteProgram.getAdapterClass().getCanonicalName();
+			final String domain = fqnName.substring(0, fqnName.lastIndexOf('.'));
+			final String type = fqnName.substring(fqnName.lastIndexOf('.') + 1);
 
-				/*
-				 * List of types annotated with @In and its Parser class:
-				 * adapterArgs[0] : the attribute name adapterArgs[1] : the
-				 * canonical name of the corresponding parser class
-				 */
-				final List<ArgEntry> adapterArgs = AdaptersArguments.getAdapterArguments(clazz);
+			if (Arrays.asList(clazz.getInterfaces()).contains(
+					ProgramAdapter.Adapter.class)) {
+				final DynamicLegacyProgram dprogram = new DynamicLegacyProgram(
+						remoteProgram);
+				final ObjectName objectName = new ObjectName(String.format(
+						beanNameFormat, domain, type));
+				this.beanNames.add(objectName);
 
-				if (Arrays.asList(clazz.getInterfaces()).contains(
-						ProgramAdapter.Adapter.class)) {
-					final DynamicLegacyProgram dprogram = new DynamicLegacyProgram(
-							clazz, adapterArgs);
-					final ObjectName objectName = new ObjectName(String.format(
-							beanNameFormat, domain, type));
-					this.beanNames.add(objectName);
-
-					if (!mbs.isRegistered(objectName)) {
-						LaunchingMessageKind.IJMX0004.format(objectName);
-						mbs.registerMBean(dprogram, objectName);
-						LaunchingMessageKind.IJMX0005.format(objectName);
-					}
-				} else {
-					LaunchingMessageKind.EJMX0003.format(clazz);
-					return false;
+				if (!mbs.isRegistered(objectName)) {
+					LaunchingMessageKind.IJMX0004.format(objectName);
+					mbs.registerMBean(dprogram, objectName);
+					LaunchingMessageKind.IJMX0005.format(objectName);
 				}
-			} catch (ClassNotFoundException e) {
-				LaunchingMessageKind.EJMX0004.format(beanClass, e);
-				return false;
-			} catch (MalformedObjectNameException e) {
-				LaunchingMessageKind.EJMX0004.format(beanClass, e);
-				return false;
-			} catch (NullPointerException e) {
-				LaunchingMessageKind.EJMX0004.format(beanClass, e);
-				return false;
-			} catch (InstanceAlreadyExistsException e) {
-				LaunchingMessageKind.EJMX0004.format(beanClass, e);
-				return false;
-			} catch (MBeanRegistrationException e) {
-				LaunchingMessageKind.EJMX0004.format(beanClass, e);
-				return false;
-			} catch (NotCompliantMBeanException e) {
-				LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			} else {
+				LaunchingMessageKind.EJMX0003.format(clazz);
 				return false;
 			}
-		} else {
-			LaunchingMessageKind.EJMX0002.format();
+		} catch (ClassNotFoundException e) {
+			LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			return false;
+		} catch (MalformedObjectNameException e) {
+			LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			return false;
+		} catch (NullPointerException e) {
+			LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			return false;
+		} catch (InstanceAlreadyExistsException e) {
+			LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			return false;
+		} catch (MBeanRegistrationException e) {
+			LaunchingMessageKind.EJMX0004.format(beanClass, e);
+			return false;
+		} catch (NotCompliantMBeanException e) {
+			LaunchingMessageKind.EJMX0004.format(beanClass, e);
 			return false;
 		}
 		return true;

@@ -33,7 +33,9 @@ import javax.management.MBeanInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.parallelj.launching.transport.tcp.program.ArgEntry;
+import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
+import org.parallelj.launching.inout.Argument;
+import org.parallelj.launching.remote.RemoteProgram;
 
 /**
  * The class <code>DynamicLegacyProgramTest</code> contains tests for the class <code>{@link DynamicLegacyProgram}</code>.
@@ -54,9 +56,8 @@ public class DynamicLegacyProgramTest {
 	public void testDynamicLegacyProgram_1()
 		throws Exception {
 		Class<? extends org.parallelj.internal.reflect.ProgramAdapter.Adapter> adapterClass = org.parallelj.internal.reflect.ProgramAdapter.Adapter.class;
-		List<ArgEntry> adapterArgs = new LinkedList();
 
-		DynamicLegacyProgram result = new DynamicLegacyProgram(adapterClass, adapterArgs);
+		DynamicLegacyProgram result = new DynamicLegacyProgram(new RemoteProgram(adapterClass));
 
 		// add additional test code here
 		assertNotNull(result);
@@ -72,7 +73,7 @@ public class DynamicLegacyProgramTest {
 	@Test
 	public void testGetAttribute_1()
 		throws Exception {
-		DynamicLegacyProgram fixture = new DynamicLegacyProgram(org.parallelj.internal.reflect.ProgramAdapter.Adapter.class, new LinkedList());
+		DynamicLegacyProgram fixture = new DynamicLegacyProgram(new RemoteProgram(Adapter.class));
 		String attribute = "";
 
 		Object result = fixture.getAttribute(attribute);
@@ -91,7 +92,7 @@ public class DynamicLegacyProgramTest {
 	@Test
 	public void testGetAttributes_1()
 		throws Exception {
-		DynamicLegacyProgram fixture = new DynamicLegacyProgram(org.parallelj.internal.reflect.ProgramAdapter.Adapter.class, new LinkedList());
+		DynamicLegacyProgram fixture = new DynamicLegacyProgram(new RemoteProgram(Adapter.class));
 		String[] attributes = new String[] {};
 
 		AttributeList result = fixture.getAttributes(attributes);
@@ -110,7 +111,7 @@ public class DynamicLegacyProgramTest {
 	@Test
 	public void testGetMBeanInfo_1()
 		throws Exception {
-		DynamicLegacyProgram fixture = new DynamicLegacyProgram(org.parallelj.internal.reflect.ProgramAdapter.Adapter.class, new LinkedList());
+		DynamicLegacyProgram fixture = new DynamicLegacyProgram(new RemoteProgram(Adapter.class));
 
 		MBeanInfo result = fixture.getMBeanInfo();
 
@@ -128,7 +129,7 @@ public class DynamicLegacyProgramTest {
 	@Test //(expected = java.lang.IllegalArgumentException.class)
 	public void testGetMBeanInfo_2()
 		throws Exception {
-		DynamicLegacyProgram fixture = new DynamicLegacyProgram(org.parallelj.internal.reflect.ProgramAdapter.Adapter.class, new LinkedList());
+		DynamicLegacyProgram fixture = new DynamicLegacyProgram(new RemoteProgram(Adapter.class));
 
 		MBeanInfo result = fixture.getMBeanInfo();
 
@@ -146,7 +147,7 @@ public class DynamicLegacyProgramTest {
 	@Test
 	public void testSetAttribute_1()
 		throws Exception {
-		DynamicLegacyProgram fixture = new DynamicLegacyProgram(org.parallelj.internal.reflect.ProgramAdapter.Adapter.class, new LinkedList());
+		DynamicLegacyProgram fixture = new DynamicLegacyProgram(new RemoteProgram(Adapter.class));
 		Attribute attribute = new Attribute("", new Object());
 
 		fixture.setAttribute(attribute);
@@ -164,7 +165,7 @@ public class DynamicLegacyProgramTest {
 	@Test
 	public void testSetAttributes_1()
 		throws Exception {
-		DynamicLegacyProgram fixture = new DynamicLegacyProgram(org.parallelj.internal.reflect.ProgramAdapter.Adapter.class, new LinkedList());
+		DynamicLegacyProgram fixture = new DynamicLegacyProgram(new RemoteProgram(Adapter.class));
 		AttributeList attributes = new AttributeList();
 
 		AttributeList result = fixture.setAttributes(attributes);

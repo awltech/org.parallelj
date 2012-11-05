@@ -28,14 +28,13 @@ import org.parallelj.launching.ReturnCodes;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
-import org.parallelj.launching.quartz.LaunchResult;
 import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.quartz.QuartzUtils;
+import org.parallelj.launching.remote.RemoteProgram;
 import org.parallelj.launching.transport.jmx.JmxCommand;
 import org.parallelj.launching.transport.tcp.command.option.IOption;
 import org.parallelj.launching.transport.tcp.command.option.ISyncLaunchOption;
 import org.parallelj.launching.transport.tcp.command.option.OptionException;
-import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 
@@ -60,17 +59,17 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 	@Override
 	public final String process(final IoSession session, final String... args) {
 		final JobDataMap jobDataMap = new JobDataMap();
-		TcpIpProgram tcpIpProgram = null;
-		// Get the corresponding TcpIpProgram
+		RemoteProgram remoteProgram = null;
+		// Get the corresponding remoteProgram
 		try {
-			tcpIpProgram = parseCommandLine(args);
+			remoteProgram = parseCommandLine(args);
 
 			for (IOption ioption : this.getOptions()) {
-				ioption.process(jobDataMap, tcpIpProgram);
+				ioption.process(jobDataMap, remoteProgram);
 			}
 
 			@SuppressWarnings("unchecked")
-			final Class<? extends Job> jobClass = (Class<? extends Job>) tcpIpProgram
+			final Class<? extends Job> jobClass = (Class<? extends Job>) remoteProgram
 					.getAdapterClass();
 			final Launcher launcher = Launcher.getLauncher();
 
@@ -95,7 +94,7 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 			return e.getFormatedMessage();
 		} catch (LaunchException e) {
 			return LaunchingMessageKind.EQUARTZ0003
-					.format(tcpIpProgram != null ? tcpIpProgram
+					.format(remoteProgram != null ? remoteProgram
 							.getAdapterClass() : "unknown");
 		}
 	}

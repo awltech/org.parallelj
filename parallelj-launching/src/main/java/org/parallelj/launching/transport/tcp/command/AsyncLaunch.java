@@ -28,11 +28,11 @@ import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
+import org.parallelj.launching.remote.RemoteProgram;
 import org.parallelj.launching.transport.jmx.JmxCommand;
 import org.parallelj.launching.transport.tcp.command.option.IAsyncLaunchOption;
 import org.parallelj.launching.transport.tcp.command.option.IOption;
 import org.parallelj.launching.transport.tcp.command.option.OptionException;
-import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 
@@ -42,10 +42,7 @@ import org.quartz.JobDataMap;
  */
 public class AsyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 
-	// private final static String DONE = "Done.";
-
 	private static final int PRIORITY = 70;
-	//private static final String USAGE = " asynclaunch -id x -rid y params : Launches a new Program instance with ID x, and returns (asynchronous launch).";
 	private static final String USAGE = "asynclaunch : Launches a new Program instance, and returns (asynchronous launch).";
 
 	/*
@@ -58,17 +55,17 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand 
 	@Override
 	public final String process(final IoSession session, final String... args) {
 		final JobDataMap jobDataMap = new JobDataMap();
-		TcpIpProgram tcpIpProgram=null;
-		// Get the corresponding TcpIpProgram
+		RemoteProgram remoteProgram=null;
+		// Get the corresponding RemoteProgram
 		try {
-			tcpIpProgram = parseCommandLine(args);
+			remoteProgram = parseCommandLine(args);
 			
 			for (IOption ioption:this.getOptions()) {
-				ioption.process(jobDataMap, tcpIpProgram);
+				ioption.process(jobDataMap, remoteProgram);
 			}
 			
 			@SuppressWarnings("unchecked")
-			final Class<? extends Job> jobClass = (Class<? extends Job>) tcpIpProgram.getAdapterClass();
+			final Class<? extends Job> jobClass = (Class<? extends Job>) remoteProgram.getAdapterClass();
 			final Launcher launcher = Launcher.getLauncher();
 
 			final Launch launch = launcher.newLaunch(jobClass)
@@ -84,7 +81,7 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand 
 		} catch (OptionException e) {
 			return e.getFormatedMessage();
 		} catch (LaunchException e) {
-			return  LaunchingMessageKind.EQUARTZ0003.format(tcpIpProgram!=null?tcpIpProgram.getAdapterClass():"unknown");
+			return  LaunchingMessageKind.EQUARTZ0003.format(remoteProgram!=null?remoteProgram.getAdapterClass():"unknown");
 		}
 	}
 

@@ -54,6 +54,18 @@ public enum LaunchingMessageKind {
 	@Format("An Error occurred when launching the Program %s!")
 	ELAUNCH0003,
 	
+	/**
+	 * An Error occurred when launching the Program %s: field '%s' is annotated with @In but no setter method is defined for this field!!! This field won't appear on remote client!!!
+	 */
+	@Format("An Error occurred when launching the Program %s: field '%s' is annotated with @In but no setter method is defined for this field!!! This field won't appear on remote client!!!")
+	ELAUNCH0004,
+	
+	/**
+	 * An Error occurred when launching the Program %s: field '%s' is annotated with @Out but no getter method is defined for this field!!! This field won't appear on remote client!!!
+	 */
+	@Format("An Error occurred when launching the Program %s: field '%s' is annotated with @Out but no getter method is defined for this field!!! This field won't appear on remote client!!!")
+	ELAUNCH0005,
+	
 	/*
 	 * Information messages for TcpIp
 	 */
@@ -257,10 +269,16 @@ public enum LaunchingMessageKind {
 	EREMOTE0008,
 	
 	/**
-	 * Invalid option value
+	 * An error occurred
 	 */
 	@Format("An error occurred.")
 	EREMOTE0009,
+	
+	/**
+	 * Invalid arguments %s for Program %s. Parser error!
+	 */
+	@Format("Invalid arguments %s for Program %s. Parser error!")
+	EREMOTE0010,
 	
 	
 	/*

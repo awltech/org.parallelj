@@ -24,6 +24,8 @@ package org.parallelj.launching.quartz;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -47,6 +49,8 @@ public class Launch {
 
 	private static final String DEFAULT_GROUP_NAME = "DEFAULT";
 	protected static final String DEFAULT_EXECUTOR_KEY = "EXECUTOR";
+	protected static final String PARAMETERS = "parameters";
+	protected static final String OUTPUTS = "outputs";
 
 	/**
 	 * The scheduler used to launch Programs.
@@ -74,6 +78,8 @@ public class Launch {
 	private JobDetail job;
 
 	private Job adapter;
+	
+	private Map<String, Object> parameters = new HashMap<String, Object>();
 	
 	/**
 	 * The Executor service to use when launching the program 
@@ -145,6 +151,8 @@ public class Launch {
 	 */
 	public Launch synchLaunch() throws LaunchException {
 		try {
+			this.job.getJobDataMap().put(PARAMETERS, parameters);
+
 			// Define a listener to get the jobId and to wait until the Job is
 			// completed
 			final AdapterJobListener listener = new AdapterJobListener(
@@ -174,6 +182,8 @@ public class Launch {
 			this.adapter = listener.getAdapter();
 			this.launchResult = new LaunchResult(listener.getJobId(),
 					listener.getResult());
+			this.launchResult.getResult().putAll(this.job.getJobDataMap());
+
 			// Object obj = this.launchResult.getResult();
 			// System.out.println(obj);
 		} catch (SchedulerException e) {
@@ -191,6 +201,8 @@ public class Launch {
 	 */
 	public Launch aSynchLaunch() throws LaunchException {
 		try {
+			this.job.getJobDataMap().put(PARAMETERS, parameters);
+
 			// Define a listener to get the jobId
 			final AdapterJobListener listener = new AdapterJobListener(
 					this.jobClass.getCanonicalName(), this.scheduler);
@@ -215,6 +227,7 @@ public class Launch {
 
 			this.launchResult = new LaunchResult(listener.getJobId(),
 					listener.getResult());
+			this.launchResult.getResult().putAll(this.job.getJobDataMap());
 			// this.scheduler.getListenerManager().removeJobListener(listener.getName());
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
@@ -293,4 +306,13 @@ public class Launch {
 		return adapter;
 	}
 
+	public void addParameter(String name, Object value) {
+		this.parameters.put(name, value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> getOuputs() {
+		return (Map<String, Object>)this.launchResult.getResult().get(OUTPUTS);
+	}
+	
 }

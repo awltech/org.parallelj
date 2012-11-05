@@ -24,59 +24,85 @@ package org.parallelj.launching.transport.tcp.command;
 import java.util.List;
 
 import org.apache.mina.core.session.IoSession;
+import org.parallelj.launching.inout.Argument;
+import org.parallelj.launching.remote.RemoteProgram;
+import org.parallelj.launching.remote.RemotePrograms;
 import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 import org.parallelj.launching.transport.tcp.command.option.IOption;
-import org.parallelj.launching.transport.tcp.program.ArgEntry;
-import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
-import org.parallelj.launching.transport.tcp.program.TcpIpPrograms;
 
 /**
  * ListProgram TcpCommand
- *
+ * 
  */
 public class ListPrograms extends AbstractTcpCommand {
 
-	private static final int PRIORITY=90;
+	private static final int PRIORITY = 90;
 	private static final String USAGE = "list : Lists available programs and their associated IDs.";
 
-	/* (non-Javadoc)
-	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process(org.apache.mina.core.session.IoSession, java.lang.String[])
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#process
+	 * (org.apache.mina.core.session.IoSession, java.lang.String[])
 	 */
 	@Override
 	public final String process(final IoSession session, final String... args) {
-		final List<TcpIpProgram> programs = TcpIpPrograms.getTcpIpPrograms();
+		final List<RemoteProgram> programs = RemotePrograms.getRemotePrograms();
 		final StringBuffer stb = new StringBuffer(20);
 		for (int index = 0; index < programs.size(); index++) {
-			stb.append("id:").append(index).append(' ').append(programs.get(index).getAdapterClass().getCanonicalName())
-					.append(" args:[");
-			for (ArgEntry argEntry : programs.get(index).getArgEntries()) {
-				stb.append(argEntry.getName()).append(':')
-						.append(argEntry.getType().getCanonicalName())
-						.append(' ');
+			stb.append("id:")
+					.append(index)
+					.append(' ')
+					.append(programs.get(index).getAdapterClass()
+							.getCanonicalName()).append(" args:[");
+			// Instanciate a Program for arguments to be accessible...
+			try {
+				RemoteProgram prog = programs.get(index);
+				List<Argument> programArguments = prog.getArguments();
+
+				 for (Argument argument : programArguments) {
+					 stb.append(argument.getName()).append(':')
+					 .append(argument.getType().getCanonicalName())
+					 .append(' ');
+				 }
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 			stb.append("]\n\r");
 		}
-		//session.write(stb.toString());
+		// session.write(stb.toString());
 		return stb.toString();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getType()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getType
+	 * ()
 	 */
 	public String getType() {
 		return RemoteCommand.list.name();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getUsage
+	 * ()
 	 */
 	@Override
 	public String getUsage() {
 		return USAGE;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#getPriorityUsage()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.parallelj.launching.transport.tcp.command.AbstractTcpCommand#
+	 * getPriorityUsage()
 	 */
 	@Override
 	public int getPriorityUsage() {
@@ -95,7 +121,7 @@ public class ListPrograms extends AbstractTcpCommand {
 
 	@Override
 	public String getHelp() {
-		return this.getUsage()+TcpIpHandlerAdapter.ENDLINE;
+		return this.getUsage() + TcpIpHandlerAdapter.ENDLINE;
 	}
 
 }

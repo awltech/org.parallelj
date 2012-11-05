@@ -19,29 +19,45 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.launching;
+package org.parallelj.launching.inout;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import org.parallelj.launching.parser.NopParser;
-import org.parallelj.launching.parser.Parser;
+import java.lang.reflect.Method;
 
 /**
- * Specifies that a attribute of a class annotated with @Program
- * id an arguments of the Program for remote launching.
- * 
- * As remote launching only accept simple java type for arguments,
- * the parser attribute allows to specify a class of a {@link Parser} to
- * convert String to complex java type.
+ * Represents a Program output for a launching. 
  *
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface In {
-	public Class<? extends Parser> parser() default NopParser.class;
+public class Output extends InOut {
+	private Method readMethod;
+	
+	/**
+	 * Default constructor
+	 * 
+	 * @param name
+	 * @param type
+	 * @param readMethod
+	 */
+	public Output(final String name, final Class<?> type, final Method readMethod) {
+		this.name = name;
+		this.type = type;
+		this.readMethod = readMethod;
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public final String toString() {
+		return "Output=>name["+this.name+"]_type["+this.type+"]_value:["+this.value+"]";
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+	
+	public Method getReadMethod() {
+		return this.readMethod;
+	}
+
 }
+

@@ -41,11 +41,11 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.mina.core.session.IoSession;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.parser.ParserException;
+import org.parallelj.launching.remote.RemoteProgram;
 import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 import org.parallelj.launching.transport.tcp.command.option.IIdOption;
 import org.parallelj.launching.transport.tcp.command.option.IOption;
 import org.parallelj.launching.transport.tcp.command.option.OptionException;
-import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
 
 /**
  * Define a Program launch Command available in a TcpIpServer
@@ -82,7 +82,7 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 	 */
 	public abstract String getType();
 
-	public TcpIpProgram parseCommandLine(final String... args) throws ParseException,
+	public RemoteProgram parseCommandLine(final String... args) throws ParseException,
 			OptionException {
 		// Get sorted options
 		final List<IOption> ioptions = getOptions();
@@ -117,14 +117,14 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 				break;
 			}
 		}
-		final TcpIpProgram tcpIpProgram = idOption.getProgram();
+		final RemoteProgram remoteProgram = idOption.getProgram();
 		
 		// Check all defined Options with the selected Program
 		try {
 			for (IOption ioption : ioptions) {
-				ioption.ckeckOption(tcpIpProgram);
+				ioption.ckeckOption(remoteProgram);
 			}
-			return tcpIpProgram;
+			return remoteProgram;
 		} catch (ParserException e) {
 			throw new OptionException(
 					e.getFormatedMessage());

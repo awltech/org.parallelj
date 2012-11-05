@@ -23,7 +23,7 @@ package org.parallelj.launching.transport.tcp.command.option;
 
 import org.apache.commons.cli.Option;
 import org.parallelj.launching.parser.ParserException;
-import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
+import org.parallelj.launching.remote.RemoteProgram;
 import org.quartz.JobDataMap;
 
 /**
@@ -46,11 +46,11 @@ public interface IOption {
 	 * The arguments passed to this Option (if defined)
 	 * </p>
 	 * 
-	 * @param tcpIpProgram
+	 * @param remoteProgram
 	 * @throws OptionException
 	 * @throws ParserException
 	 */
-	public void ckeckOption(TcpIpProgram tcpIpProgram) throws OptionException,
+	public void ckeckOption(RemoteProgram remoteProgram) throws OptionException,
 			ParserException;
 
 	/**

@@ -24,7 +24,7 @@ package org.parallelj.launching.transport.tcp.command.option;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.parallelj.launching.parser.ParserException;
-import org.parallelj.launching.transport.tcp.program.TcpIpProgram;
+import org.parallelj.launching.remote.RemoteProgram;
 import org.quartz.JobDataMap;
 
 public class AsyncLaunchArgsOption implements IAsyncLaunchOption {
@@ -60,8 +60,8 @@ public class AsyncLaunchArgsOption implements IAsyncLaunchOption {
 	}
 
 	@Override
-	public void ckeckOption(final TcpIpProgram tcpIpProgram) throws OptionException,
+	public void ckeckOption(final RemoteProgram remoteProgram) throws OptionException,
 			ParserException {
-		OptionsUtils.checkArgs(this, tcpIpProgram);
+		OptionsUtils.checkArgs(this, remoteProgram);
 	}
 }

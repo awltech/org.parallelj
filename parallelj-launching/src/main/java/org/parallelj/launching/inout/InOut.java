@@ -19,53 +19,31 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.launching.transport.tcp.program;
+package org.parallelj.launching.inout;
 
-import org.parallelj.launching.parser.Parser;
 
 /**
- * Represents a Program argument for a remote launching. 
+ * Represents a Program argument or output field for launching. 
  *
  */
-public class ArgEntry {
+public abstract class InOut {
 	/**
 	 * The name of the field declared in the Program class
 	 */
-	private String name;
+	protected String name;
 	
 	/**
 	 * The type of the field declared in the Program class 
 	 */
-	private Class<?> type;
+	protected Class<?> type;
 	
 	/**
-	 * The parser type for the field declared in the Program class 
+	 * The value set for this field
 	 */
-	private Class<? extends Parser> parser;
-
+	protected Object value;
+	
 	/**
-	 * Default constructor
-	 * 
-	 * @param name
-	 * @param type
-	 * @param parserClass
-	 */
-	public ArgEntry(final String name, final Class<?> type, final Class<? extends Parser> parserClass) {
-		this.name = name;
-		this.type = type;
-		this.parser = parserClass;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public final String toString() {
-		return "ArgEntry=>name["+this.name+"]_type["+this.type+"]_parser:["+this.parser+"]";
-	}
-
-	/**
-	 * Get the name of the Program field corresponding to this ArgEntry 
+	 * Get the name of the Program field corresponding to this InOut 
 	 * 
 	 * @return the name of the declared field in the Program class
 	 */
@@ -74,7 +52,7 @@ public class ArgEntry {
 	}
 
 	/**
-	 * Get the Type of the program field corresponding to this ArgEntry
+	 * Get the Type of the program field corresponding to this InOut
 	 * 
 	 * @return the type of the declared field in the Program class
 	 */
@@ -82,14 +60,13 @@ public class ArgEntry {
 		return type;
 	}
 
-	/**
-	 * Get the Type of the Parser to use to convert a String to a complex Type.
-	 * The String value comes from a remote launching. 
-	 * 
-	 * @return the type of the parser defined for the declared field in the Program class
-	 */
-	public final Class<? extends Parser> getParser() {
-		return parser;
+	public Object getValue() {
+		return value;
 	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+
 }
 

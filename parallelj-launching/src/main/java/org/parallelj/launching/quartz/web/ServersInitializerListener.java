@@ -33,7 +33,6 @@ import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
-import org.parallelj.launching.transport.AdaptersArguments;
 import org.parallelj.launching.transport.jmx.JmxServer;
 import org.parallelj.launching.transport.ssh.SshServer;
 import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
@@ -139,10 +138,6 @@ public class ServersInitializerListener implements ServletContextListener {
 					&& configuration.getServers().getBeans().getBean() != null) {
 				for (CBean bean : configuration.getServers().getBeans()
 						.getBean()) {
-					// Initialize the Arguments of the Programs in
-					// AdaptersArguments
-					AdaptersArguments.addAdapter(bean.getClazz());
-
 					// Register the Program as MBean
 					if (this.jmxServer != null) {
 						this.jmxServer.registerProgramAsMBean(bean.getClazz());

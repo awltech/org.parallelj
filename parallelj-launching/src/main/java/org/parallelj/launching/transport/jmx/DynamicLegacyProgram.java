@@ -37,14 +37,14 @@ import javax.management.MBeanParameterInfo;
 import javax.management.ReflectionException;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.launching.inout.Argument;
 import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
 import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.quartz.QuartzUtils;
-import org.parallelj.launching.transport.tcp.program.ArgEntry;
+import org.parallelj.launching.remote.RemoteProgram;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 
@@ -56,12 +56,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	/**
 	 * The adapter class
 	 */
-	private Class<? extends Adapter> adapterClass;
-
-	/**
-	 * 
-	 */
-	private List<ArgEntry> adapterArgs;
+	private RemoteProgram remoteProgram;
 
 	private JmxCommand[] cmds;
 	private MBeanOperationInfo[] operations;
@@ -73,10 +68,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 *            the Program's adapter type
 	 * @param adapterArgs
 	 */
-	public DynamicLegacyProgram(final Class<? extends Adapter> adapterClass,
-			final List<ArgEntry> adapterArgs) {
-		this.adapterClass = adapterClass;
-		this.adapterArgs = adapterArgs;
+	public DynamicLegacyProgram(RemoteProgram remoteProgram) {
+		this.remoteProgram = remoteProgram;
 
 		// Get all available Commands
 		this.cmds = JmxCommands.getCommands().values()
@@ -127,20 +120,10 @@ public class DynamicLegacyProgram implements DynamicMBean {
 				option.process(jobDataMap, String.valueOf(params[ind++]));
 			}
 
-			for (ArgEntry arg : this.adapterArgs) {
-				// Do we have to use a Parser?
-				Object obj = null;
-				if (!arg.getParser().equals(NopParser.class)) {
-					obj = arg.getParser().newInstance()
-							.parse(String.valueOf(params[ind++]));
-				} else {
-					obj = params[ind++];
-				}
-				jobDataMap.put(arg.getName(), obj);
+			for (Argument arg : this.remoteProgram.getArguments()) {
+				arg.setValueUsingParser(String.valueOf(params[ind++]));
 			}
-		} catch (InstantiationException e) {
-			throw new MBeanException(e);
-		} catch (IllegalAccessException e) {
+		} catch (Exception e) {
 			throw new MBeanException(e);
 		}
 		return jobDataMap;
@@ -167,27 +150,28 @@ public class DynamicLegacyProgram implements DynamicMBean {
 
 		final boolean isSync = actionName.startsWith("sync");
 		try {
-			// initialize arguments for Quartz
+			// initialize arguments for lunching (using Quartz)
 			final JobDataMap jobDataMap = buildJobDataMap(curCmd, params);
 
 			@SuppressWarnings("unchecked")
 			final Launch launch = Launcher.getLauncher()
-					.newLaunch((Class<Job>) adapterClass).addDatas(jobDataMap);
+					.newLaunch((Class<Job>) remoteProgram.getAdapterClass()).addDatas(jobDataMap);
 			if (isSync) {
 				// Launch and wait until terminated
 				launch.synchLaunch();
 				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
-						adapterClass.getCanonicalName(), launch.getLaunchId(),
+						remoteProgram.getAdapterClass().getCanonicalName(), launch.getLaunchId(),
 						launch.getLaunchResult().get(QuartzUtils.RETURN_CODE));
 			} else {
 				// Launch and continue
 				launch.aSynchLaunch();
 				return LaunchingMessageKind.IQUARTZ0002.getFormatedMessage(
-						adapterClass.getCanonicalName(), launch.getLaunchId());
+						remoteProgram.getAdapterClass().getCanonicalName(), launch.getLaunchId());
 			}
 		} catch (LaunchException e) {
 			LaunchingMessageKind.EQUARTZ0003.format(actionName, e);
 		}
+		
 		return null;
 	}
 
@@ -209,8 +193,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	@Override
 	public final MBeanInfo getMBeanInfo() {
 		final MBeanOperationInfo[] opers = createMBeanOperationInfo();
-		String className = "ProgramAdapter.Adapter";
-		return new MBeanInfo(className, null, null, null, opers, null);
+		return new MBeanInfo(remoteProgram.getAdapterClass().getCanonicalName(), null, null, null, opers, null);
 	}
 
 	/**
@@ -219,15 +202,21 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @return an array of MBeanParameterInfo
 	 */
 	private MBeanParameterInfo[] createMBeanParameterInfos() {
-		final int lenght = this.adapterArgs != null ? this.adapterArgs.size()
+		final int lenght =this.remoteProgram.getArguments() != null ? this.remoteProgram.getArguments().size()
 				: 0;
 		int cpt = 0;
 		MBeanParameterInfo[] result = new MBeanParameterInfo[lenght];
-		if (this.adapterArgs != null) {
-			for (ArgEntry arg : adapterArgs) {
-				// Only simple Type are authorized
-				// System.out.println(arg);
+		if (this.remoteProgram.getArguments() != null) {
+			for (Argument arg : this.remoteProgram.getArguments()) {
+				// Only simple Type are authorized for JMX
 				String type = null;
+				
+				String descriptionWithParserFormat = "Parser  '%s' will be used to set this parameter as it is defined in @In annotation for this field.";
+				String descriptionWithoutParserFormat = "No parser will be used for this field as it is a primitive one.";
+				String descriptionValueValue = descriptionWithoutParserFormat;
+				if (!arg.getParser().getCanonicalName().equals(NopParser.class.getCanonicalName())) {
+					descriptionValueValue = String.format(descriptionWithParserFormat, arg.getParser().getCanonicalName());
+				}
 				if (!arg.getType().equals(String.class)
 						&& !arg.getType().equals(int.class)
 						&& !arg.getType().equals(long.class)
@@ -236,7 +225,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 				} else {
 					type = arg.getType().getCanonicalName();
 				}
-				result[cpt++] = new MBeanParameterInfo(arg.getName(), type, "");
+				
+				result[cpt++] = new MBeanParameterInfo(arg.getName(), type, descriptionValueValue);
 			}
 		}
 		return result;

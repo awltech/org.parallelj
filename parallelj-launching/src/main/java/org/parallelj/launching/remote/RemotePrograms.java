@@ -19,7 +19,7 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.launching.transport.tcp.program;
+package org.parallelj.launching.remote;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,18 +31,18 @@ import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 
 
-public final class TcpIpPrograms {
-	private List<TcpIpProgram> tcpIpPrograms = new ArrayList<TcpIpProgram>();
+public final class RemotePrograms {
+	private List<RemoteProgram> remotePrograms = new ArrayList<RemoteProgram>();
 	
 	/**
-	 * The instance of TcpIpCommands
+	 * The instance of RemoteProgram
 	 */
-	private static TcpIpPrograms instance = new TcpIpPrograms();
+	private static RemotePrograms instance = new RemotePrograms();
 
 	/**
 	 * Default constructor
 	 */
-	private TcpIpPrograms() {
+	private RemotePrograms() {
 		// Search for all available Program and print it's name and parameters
 		// Available Programs are defined in parallej.xml as MBeans
 		ParalleljConfiguration configuration = (ParalleljConfiguration) ConfigurationService
@@ -51,19 +51,17 @@ public final class TcpIpPrograms {
 		if (configuration.getServers().getBeans() != null
 				&& configuration.getServers().getBeans().getBean() != null) {
 			for (CBean bean : configuration.getServers().getBeans().getBean()) {
-				//
 				/*
 				 * List of types annotated with @In and its Parser class:
 				 * adapterArgs[0] : the attribute name adapterArgs[1] : the
 				 * canonical name of the corresponding parser class
 				 */
-				//List<ArgEntry> adapterArgs = new ArrayList<ArgEntry>();
 				try {
 					@SuppressWarnings("unchecked")
 					Class<? extends Adapter> clazz = (Class<? extends Adapter>) Class
 							.forName(bean.getClazz());
 					//
-					this.tcpIpPrograms.add(new TcpIpProgram(
+					this.remotePrograms.add(new RemoteProgram(
 							clazz));
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -73,14 +71,14 @@ public final class TcpIpPrograms {
 		}
 	}
 
-	public static synchronized List<TcpIpProgram> getTcpIpPrograms() {
-		return instance.tcpIpPrograms;
+	public static synchronized List<RemoteProgram> getRemotePrograms() {
+		return instance.remotePrograms;
 	}
 	
-	public static synchronized TcpIpProgram getTcpIpProgram(String type) {
-		for (TcpIpProgram tcpIpProgam: instance.tcpIpPrograms) {
-			if (tcpIpProgam.getAdapterClass().getCanonicalName().equals(type)) {
-				return tcpIpProgam;
+	public static synchronized RemoteProgram getRemoteProgram(String type) {
+		for (RemoteProgram remoteProgam: instance.remotePrograms) {
+			if (remoteProgam.getAdapterClass().getCanonicalName().equals(type)) {
+				return remoteProgam;
 			}
 		}
 		return null;

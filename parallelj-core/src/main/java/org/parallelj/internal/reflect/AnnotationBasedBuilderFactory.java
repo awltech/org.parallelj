@@ -36,7 +36,7 @@ import org.parallelj.internal.util.Classes;
 
 public class AnnotationBasedBuilderFactory extends ElementBuilderFactory {
 
-	static class AnnotationBasedBuilder<A extends Annotation, M extends Member>
+	public static class AnnotationBasedBuilder<A extends Annotation, M extends Member>
 			extends ElementBuilder {
 
 		private M member;
