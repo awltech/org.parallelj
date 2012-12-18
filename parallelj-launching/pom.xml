@@ -162,6 +162,7 @@
 					<argLine>
 						"-javaagent:${aspectj.javaagent.location}"
 					</argLine>
+<!-- 					<skipTests>true</skipTests> -->
 				</configuration>
 			</plugin>
 			<plugin>

@@ -26,7 +26,26 @@
     <servers>
         <telnet port="10000" host="localhost"/>
         <jmx port="9000" host="localhost"/>
-        <ssh port="22"/>
+        
+        <!-- Uncomment this to enable the remote access using the embedded SSH server.
+        	WARNING:  
+			/home/user/.ssh/id_rsa :
+				Must be replaced with the ssh server private key.
+				Note: It must be the dsa/rsa OpenSSH private key file of the system.
+			/home/user/.ssh/authorized_keys:
+				Must be replaced with the ssh server authorized public keys file.
+				Note: It must be the OpenSsh authorized public keys file of the system.
+		-->
+		<!-- 
+	    <ssh port="22">
+	    	<auths>
+				<auth type="org.parallelj.ssh.publickey.ParalleljSshPublicKey">
+					<property name="server-private-key">/home/user/.ssh/id_rsa</property>
+					<property name="server-authorized-keys">/home/user/.ssh/authorized_keys</property>
+				</auth>
+			</auths>
+		</ssh>
+		 -->
     </servers>
 </parallelj>
 

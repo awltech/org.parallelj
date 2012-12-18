@@ -23,44 +23,47 @@ package org.parallelj.launching.transport.ssh;
 
 import java.io.IOException;
 
-import org.apache.sshd.server.PasswordAuthenticator;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.apache.sshd.server.session.ServerSession;
 import org.parallelj.launching.LaunchingMessageKind;
 
 public class SshServer {
 
 	private org.apache.sshd.SshServer sshd;
 	private int port;
+	private boolean started = false;
 
 	public SshServer(int port) {
-
 		this.port = port;
 		sshd = org.apache.sshd.SshServer.setUpDefaultServer();
 		sshd.setPort(port);
-		sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(
-				"hostkey.ser"));
 
 		sshd.setShellFactory(new SshShellFactory());
-
-		sshd.setPasswordAuthenticator(new PasswordAuthenticator() {
-
-			@Override
-			public boolean authenticate(String username, String password,
-					ServerSession session) {
-				return username != null && username.equals(password);
-			}
-		});
+		initialize(this.sshd);
 	}
 
+	private void initialize(org.apache.sshd.SshServer sshd) {
+		// Do nothing...
+	}
+	
 	public void start() throws IOException {
 		LaunchingMessageKind.ISSH0001.format(this.port);
-		sshd.start();
-		LaunchingMessageKind.ISSH0002.format(this.port);
+		try {
+			sshd.start();
+			this.started=true;
+			LaunchingMessageKind.ISSH0002.format(this.port);
+		} catch (Exception e) {
+			// Do nothing
+			LaunchingMessageKind.ESSH0001.format(e);
+		}
 	}
 
 	public void stop() throws InterruptedException {
-		LaunchingMessageKind.ISSH0003.format();
-		sshd.stop();
+		if (this.started) {
+			LaunchingMessageKind.ISSH0003.format();
+			sshd.stop();
+		}
+	}
+
+	public boolean isStarted() {
+		return started;
 	}
 }

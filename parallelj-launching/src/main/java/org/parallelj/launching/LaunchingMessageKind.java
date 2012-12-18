@@ -317,7 +317,28 @@ public enum LaunchingMessageKind {
 	 * SshServer failed to shutdown cleanly
 	 */
 	@Format("SshServer failed to shutdown cleanly")
-	ESSH0002;
+	ESSH0002,
+	
+	/*
+	 * Other Error messages
+	 */
+	/**
+	 * @Info Loading [%s].
+	 */
+	@Format("Loading [%s].")
+	IEXT001,
+	
+	/**
+	 * @Error Unable to initialize [%s].
+	 */
+	@Format("Unable to load [%s].")
+	EEXT002,
+	
+	/**
+	 * @Error Error processing [%s].
+	 */
+	@Format("Error processing [%s].")
+	EEXT003;
 	
 
 	/**
