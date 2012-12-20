@@ -37,7 +37,12 @@ public class ParalleljSshPublicKey extends AbstractExtension implements SshExten
 	protected URL getServerPrivateKey(Map<String, String> props) {
 		String propServerPrivateKey = props.get("server-private-key");
 		// Try to load the defined one in the SSH configuration
-		URL urlServerPrivateKey = getUrlFromFile(propServerPrivateKey);
+		URL urlServerPrivateKey = null;
+		try {
+			urlServerPrivateKey = getUrlFromFile(propServerPrivateKey);
+		} catch (Exception e) {
+			// Do nothing: urlServerPrivateKey is null
+		}
 		// If 
 		if (urlServerPrivateKey==null) {
 			ExtensionSshMessageKind.WSH0001.format();
@@ -81,9 +86,13 @@ public class ParalleljSshPublicKey extends AbstractExtension implements SshExten
 			}
 		}
 		
-		this.privateServerKey = getServerPrivateKey(this.props);
-		this.authorizedServerKey = getServerAuthorizedKey(this.props);
+		try {
+			this.authorizedServerKey = getServerAuthorizedKey(this.props);
+		} catch (Exception e) {
+			throw new ExtensionException();
+		}
 		
+		this.privateServerKey = getServerPrivateKey(this.props);
 		if(this.authorizedServerKey == null) {
 			throw new ExtensionException();
 		}

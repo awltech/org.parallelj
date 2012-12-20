@@ -2,6 +2,9 @@ package org.parallelj.ssh;
 	
 import java.util.List;
 
+import org.parallelj.internal.conf.ConfigurationService;
+import org.parallelj.internal.conf.ParalleljConfigurationManager;
+import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.internal.ext.Extension;
 import org.parallelj.launching.internal.ext.ExtensionException;
@@ -22,14 +25,28 @@ public privileged aspect ExtendedSshServer {
 		&& this(context) 
 		&& args(sshd){
 		
-		// Get all defined Exts
-		List<Extension> extensions = ExtensionService.getExtensionService().getExtentionsByType(SSH_TYPE);
-		for (Extension ext : extensions) {
-			if ( ((SshExtension)ext).isInitialized() ) {
-				try {
-					((SshExtension)ext).process(sshd);
-				} catch (ExtensionException e) {
-					LaunchingMessageKind.EEXT003.format(ext.getClass().getCanonicalName(), e);
+		// This extension must be activated only if ssh is configured (remote launching)
+		ParalleljConfiguration conf = (ParalleljConfiguration)ConfigurationService
+										.getConfigurationService()
+										.getConfigurationManager()
+										.get(ParalleljConfigurationManager.class)
+										.getConfiguration();
+		
+		if (conf.getServers() != null 
+				&& conf.getServers().getSsh()!=null
+				&& conf.getServers().getSsh().getAuths()!=null
+				&& conf.getServers().getSsh().getAuths().getAuth()!=null
+				&& conf.getServers().getSsh().getAuths().getAuth().size()>0
+				) {
+			// Get all defined Exts
+			List<Extension> extensions = ExtensionService.getExtensionService().getExtentionsByType(SSH_TYPE);
+			for (Extension ext : extensions) {
+				if ( ((SshExtension)ext).isInitialized() ) {
+					try {
+						((SshExtension)ext).process(sshd);
+					} catch (ExtensionException e) {
+						LaunchingMessageKind.EEXT003.format(ext.getClass().getCanonicalName(), e);
+					}
 				}
 			}
 		}
