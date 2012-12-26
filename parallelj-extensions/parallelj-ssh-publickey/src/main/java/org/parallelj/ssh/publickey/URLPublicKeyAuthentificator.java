@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.DSAPublicKeySpec;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
 import org.apache.sshd.server.PublickeyAuthenticator;
@@ -54,7 +56,7 @@ public class URLPublicKeyAuthentificator implements PublickeyAuthenticator {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			ExtensionSshMessageKind.ISH0002.format(e);
 			isOk = false;
 		}
 		return isOk;
@@ -67,7 +69,7 @@ public class URLPublicKeyAuthentificator implements PublickeyAuthenticator {
 		return type;
 	}
 
-	public PublicKey decodePublicKey(String keyLine) throws Exception {
+	public PublicKey decodePublicKey(String keyLine) throws IllegalArgumentException, InvalidKeySpecException, NoSuchAlgorithmException {
 		bytes = null;
 		pos = 0;
 
