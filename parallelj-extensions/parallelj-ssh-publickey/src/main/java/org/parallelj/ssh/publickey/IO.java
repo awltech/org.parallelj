@@ -7,6 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class IO {
+	
+	private IO() {
+	}
 
 	public static byte[] readAsBytes(InputStream in) throws IOException {
 		return read(in).toByteArray();
