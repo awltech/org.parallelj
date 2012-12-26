@@ -45,7 +45,6 @@ public class URLKeyPairProvider extends AbstractKeyPairProvider {
 				}
 			} catch (Exception e) {
 				ExtensionSshMessageKind.ISH0001.format(key, e);
-			} finally {
 			}
 		}
 		return keys.toArray(new KeyPair[keys.size()]);
