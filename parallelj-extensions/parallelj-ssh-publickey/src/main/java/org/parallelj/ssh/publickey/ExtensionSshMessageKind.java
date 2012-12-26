@@ -12,6 +12,12 @@ public enum ExtensionSshMessageKind {
 	ISH0001,
 	
 	/**
+	 * @Info Access denied.
+	 */
+	@Format("Access denied.")
+	ISH0002,
+	
+	/**
 	 * @Warning No private key file found for the SSH server. The embedded one will be use..
 	 */
 	@Format("Warning No private key file found for the SSH server. The embedded one will be use..")
@@ -47,7 +53,7 @@ public enum ExtensionSshMessageKind {
 		return formatter.print(this, args);
 	}
 	
-	static Formatter<ExtensionSshMessageKind> formatter = new Formatter<ExtensionSshMessageKind>(ExtensionSshMessageKind.class);
+	private static Formatter<ExtensionSshMessageKind> formatter = new Formatter<ExtensionSshMessageKind>(ExtensionSshMessageKind.class);
 
 
 }
