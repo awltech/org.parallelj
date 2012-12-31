@@ -15,6 +15,7 @@ import org.parallelj.Programs;
 import org.parallelj.internal.reflect.ProcessHelperImpl;
 import org.parallelj.internal.reflect.ProgramAdapter;
 import org.parallelj.launching.In;
+import org.parallelj.launching.ProceduresOnError;
 import org.parallelj.launching.parser.Parser;
 import org.parallelj.launching.quartz.ProgramJobsAdapter;
 
@@ -125,9 +126,9 @@ public class DefaultLauncher {
 		if (programInstance != null) {
 			// Run the Program
 			ProcessHelperImpl<?> processhelper = (ProcessHelperImpl<?>)Programs.as(programInstance).execute().join();
-			Map<String, Set<String>> errors = ProgramJobsAdapter.getProceduresInErrors(processhelper.getProcess());
-			if (errors != null && errors.size()>0) {
-				System.err.println("Program terminated with errors: "+errors);
+			ProceduresOnError procOnError = ProgramJobsAdapter.getProceduresInErrors(processhelper.getProcess());
+			if (procOnError != null && procOnError. getNumberOfProceduresInError()>0) {
+				System.err.println("Program terminated with errors: "+procOnError);
 			}
 		}
 

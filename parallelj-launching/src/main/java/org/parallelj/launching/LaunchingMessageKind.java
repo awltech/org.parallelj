@@ -55,16 +55,22 @@ public enum LaunchingMessageKind {
 	ELAUNCH0003,
 	
 	/**
-	 * An Error occurred when launching the Program %s: field '%s' is annotated with @In but no setter method is defined for this field!!! This field won't appear on remote client!!!
+	 * An Error occurred when launching the Program %s: field '%s' is annotated with @In but no setter method is defined for this field!!! This program won't appear on remote client!!!
 	 */
-	@Format("An Error occurred when launching the Program %s: field '%s' is annotated with @In but no setter method is defined for this field!!! This field won't appear on remote client!!!")
+	@Format("An Error occurred when launching the Program %s: field '%s' is annotated with @In but no setter method is defined for this field!!! This program won't appear on remote client!!!")
 	ELAUNCH0004,
 	
 	/**
-	 * An Error occurred when launching the Program %s: field '%s' is annotated with @Out but no getter method is defined for this field!!! This field won't appear on remote client!!!
+	 * An Error occurred when launching the Program %s: field '%s' is annotated with @Out but no getter method is defined for this field!!! This program won't appear on remote client!!!
 	 */
-	@Format("An Error occurred when launching the Program %s: field '%s' is annotated with @Out but no getter method is defined for this field!!! This field won't appear on remote client!!!")
+	@Format("An Error occurred when launching the Program %s: field '%s' is annotated with @Out but no getter method is defined for this field!!! This program won't appear on remote client!!!")
 	ELAUNCH0005,
+	
+	/**
+	 * An Error occurred when launching the Program %s: field '%s' is annotated with @OnError but no setter method is defined for this field!!! Program not launched!!!
+	 */
+	@Format("An Error occurred when launching the Program %s: field '%s' is annotated with @OnError but no setter method is defined for this field!!! Program not launched!!!")
+	ELAUNCH0006,
 	
 	/*
 	 * Information messages for TcpIp

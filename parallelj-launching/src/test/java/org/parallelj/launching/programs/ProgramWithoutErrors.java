@@ -29,6 +29,8 @@ import org.parallelj.Begin;
 import org.parallelj.Handler;
 import org.parallelj.Program;
 import org.parallelj.XorJoin;
+import org.parallelj.launching.OnError;
+import org.parallelj.launching.ProceduresOnError;
 
 @Program
 public class ProgramWithoutErrors {
@@ -81,5 +83,12 @@ public class ProgramWithoutErrors {
 	@AndSplit(value = "processing3")
 	public void handler(Exception e) {
 		return;
+	}
+	
+	@OnError
+	private ProceduresOnError onMynErrors;
+
+	public ProceduresOnError getOnMynErrors() {
+		return this.onMynErrors;
 	}
 }

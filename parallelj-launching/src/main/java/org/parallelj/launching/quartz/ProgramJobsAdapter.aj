@@ -21,14 +21,13 @@
  */
 package org.parallelj.launching.quartz;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -42,6 +41,8 @@ import org.parallelj.internal.kernel.procedure.RunnableProcedure;
 import org.parallelj.internal.reflect.ProcessHelperImpl;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.launching.OnError;
+import org.parallelj.launching.ProceduresOnError;
 import org.parallelj.launching.ReturnCodes;
 import org.parallelj.launching.inout.Argument;
 import org.parallelj.launching.inout.Output;
@@ -125,25 +126,75 @@ privileged public aspect ProgramJobsAdapter {
 	/*
 	 * Add the interface IProceduresInError to the KProcessor
 	*/
-	private interface IProceduresInError {
-		public void addProcedureInError(String name, Exception exception);
+	public interface IProceduresInError {
+		public void addProcedureInError(KProgram kprogram, Object program, Object proc, Exception exception);
+		public ProceduresOnError getAllProceduresInError(Object program);
+		public Method getGetterMethod();
+		public void setGetterMethod(Method getterFieldMethod);
+		public void setFieldName(String fieldName);
+		public String getFieldName();
 	}
-	public Map<String, Set<String>> IProceduresInError.proceduresInError=new HashMap<String, Set<String>>();
+	public Method IProceduresInError.getterMethod;
+	public String IProceduresInError.fieldName;
+	public boolean IProceduresInError.isErrors=false;
 	
-	public synchronized void IProceduresInError.addProcedureInError(String name, Exception exception) {
-		Set<String> exceptions = ((IProceduresInError)this).proceduresInError.get(name);
-		if (exceptions==null) {
-			// This is the first "name" Procedure in error
-			exceptions = new HashSet<String>();
-		}
-		if (!exceptions.contains(exception.getClass().getCanonicalName())) {
-			exceptions.add(exception.getClass().getCanonicalName());
-		}
-		((IProceduresInError)this).proceduresInError.put(name, exceptions);
+	public void IProceduresInError.setGetterMethod(Method getterFieldMethod) {
+		this.getterMethod = getterFieldMethod;
 	}
-	
-	declare parents: org.parallelj.internal.kernel.KProcessor implements IProceduresInError;
 
+	public void IProceduresInError.setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+
+	public String IProceduresInError.getFieldName() {
+		return this.fieldName;
+	}
+	
+	public Method IProceduresInError.getGetterMethod() {
+		return this.getterMethod;
+	}
+	
+	public synchronized void IProceduresInError.addProcedureInError(KProgram kprogram, Object program, Object procedure, Exception exception) {
+		ProceduresOnError obj;
+		
+		this.isErrors=true;
+		Method method = ((IProceduresInError)kprogram).getGetterMethod();
+		if (method != null) {
+			try {
+				obj = (ProceduresOnError)method.invoke(program, new Object[]{});
+				if (obj==null) {
+					obj = new ProceduresOnError();
+					Field field = program.getClass().getDeclaredField(((IProceduresInError)kprogram).getFieldName());
+					field.setAccessible(true);
+					field.set(program, obj);
+				}
+				obj.addProcedureInError(procedure, exception);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public synchronized ProceduresOnError IProceduresInError.getAllProceduresInError(Object program) {
+		ProceduresOnError obj=null;
+		if (this.getGetterMethod()!=null) {
+			try {
+				obj = (ProceduresOnError)this.getGetterMethod().invoke(program, new Object[]{});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return obj; 
+	}
+	
+	declare parents: org.parallelj.internal.kernel.KProgram implements IProceduresInError;
+
+    pointcut procsOnError(Object a): get(@OnError ProceduresOnError *.*) && this(a);
+    
+    before(Object procOnErrorField): procsOnError(procOnErrorField) {
+    }
+    
 	/**
 	 * Launch a Program and initialize the Result as a JobDataMap.
 	 * 
@@ -269,16 +320,18 @@ privileged public aspect ProgramJobsAdapter {
 			
 			jobDataMap.put(Launch.OUTPUTS, outputs);
 			
-			KProcessor rootProcessor = ((KProcessor)processHelper.getProcess().getProcessor());
-			IProceduresInError procedures = (IProceduresInError)rootProcessor;
-			if(procedures.proceduresInError.size()>0) {
+			KProgram program = (((KProcess)processHelper.getProcess()).getProgram());
+			IProceduresInError procedures = (IProceduresInError)program;
+			
+			if((procedures.getAllProceduresInError(self)!=null
+					&& procedures.getAllProceduresInError(self).getNumberOfProceduresInError()>0) || procedures.isErrors) {
 				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
 			}
-		
+
 			service.shutdown();
-			
-			if (procedures.proceduresInError.size()>0){
-				jobDataMap.put(QuartzUtils.PROCEDURES_IN_ERROR, procedures.proceduresInError);
+			if (procedures.getAllProceduresInError(self)!=null
+					&& procedures.getAllProceduresInError(self).getNumberOfProceduresInError()>0){
+				jobDataMap.put(QuartzUtils.PROCEDURES_IN_ERROR, procedures.getAllProceduresInError(self));
 				throw new JobExecutionException();
 			}
 		} catch (Exception e) {
@@ -298,8 +351,7 @@ privileged public aspect ProgramJobsAdapter {
 				&& runnable.getException() != null) {
 			// There is an error !!!
 			KProcess process = runnable.getProcess();
-			KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
-			((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), runnable.getException());
+			((IProceduresInError)process.getProgram()).addProcedureInError(process.getProgram(), process.getContext(), runnable.getContext(), runnable.getException());
 		}
 		proceed(self);
 	}
@@ -318,19 +370,16 @@ privileged public aspect ProgramJobsAdapter {
 				) {
 			// There is an error !!!
 			KProcess process = callable.getProcess();
-			KProcessor rootProcessor = process.getProcessor();//.getRootProcessor();
-			((IProceduresInError)rootProcessor).addProcedureInError(procedure.getType(), callable.getException());
+			((IProceduresInError)process.getProgram()).addProcedureInError(process.getProgram(), process.getContext(), callable.getContext(), callable.getException());
 		}
 		proceed(self);
 	}
 	 
 	/*
-	 * Allow to get the procedures in error of a Process (the root Process !!!)
+	 * Allow to get the procedures in error of a Process
 	 */
-	public static synchronized Map<String, Set<String>> getProceduresInErrors(
+	public static synchronized ProceduresOnError getProceduresInErrors(
 			org.parallelj.mirror.Process process) {
-		KProcessor rootProcessor = ((KProcessor) process.getProcessor());
-		IProceduresInError procedures = (IProceduresInError) rootProcessor;
-		return procedures.proceduresInError;
+		return ((IProceduresInError)process.getProgram()).getAllProceduresInError(process.getContext());
 	}
 }

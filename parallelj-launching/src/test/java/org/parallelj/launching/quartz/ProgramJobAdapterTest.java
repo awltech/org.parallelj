@@ -23,6 +23,8 @@ package org.parallelj.launching.quartz;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +34,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.Test;
 import org.parallelj.Programs;
-import org.parallelj.Programs.ProcessHelper;
+import org.parallelj.launching.ProceduresOnError;
 import org.parallelj.launching.programs.ProgramWithErrors;
 import org.parallelj.launching.programs.ProgramWithoutErrors;
 
@@ -42,29 +44,25 @@ public class ProgramJobAdapterTest {
 	public void testLaunchWithoutErrors() {
 		ProgramWithoutErrors prg = new ProgramWithoutErrors();
 		ExecutorService service = Executors.newCachedThreadPool();
-		ProcessHelper<ProgramWithoutErrors> p = Programs.as(prg).execute(service).join();
-		Map<String, Set<String>> res=ProgramJobsAdapter.getProceduresInErrors(p.getProcess());
-		assertNotNull(res);
-		assertEquals(res.size(), 0);
+		Programs.as(prg).execute(service).join();
+		ProceduresOnError errors = prg.getOnMynErrors();
+		assertNull(errors);
 	}
 	
 	@Test
 	public void testLaunchWithErrors() {
 		ProgramWithErrors prg = new ProgramWithErrors();
 		ExecutorService service = Executors.newCachedThreadPool();
-		ProcessHelper<ProgramWithErrors> p = Programs.as(prg).execute(service).join();
-		Map<String, Set<String>> res=ProgramJobsAdapter.getProceduresInErrors(p.getProcess());
-		assertNotNull(res);
-		assertEquals(res.size(), 2);
-		assertEquals(res.keySet().contains(Runnable.class.getCanonicalName()), true);
-		assertNotNull(res.get(Runnable.class.getCanonicalName()));
-		assertEquals(res.get(Runnable.class.getCanonicalName()).size(), 1);
-		assertEquals(res.get(Runnable.class.getCanonicalName()).contains(RuntimeException.class.getCanonicalName()), true);
-		
-		assertEquals(res.keySet().contains(Callable.class.getCanonicalName()), true);
-		assertNotNull(res.get(Callable.class.getCanonicalName()));
-		assertEquals(res.get(Callable.class.getCanonicalName()).size(), 1);
-		assertEquals(res.get(Callable.class.getCanonicalName()).contains(Exception.class.getCanonicalName()), true);
+		Programs.as(prg).execute(service).join();
+		ProceduresOnError errors = prg.getOnMynErrors();
+		assertNotNull(errors);
+		assertEquals(errors.getNumberOfProceduresInError(), 2);
+		//assertTrue(errors.isErrorForProcedureOfType(Runnable.class));
+		assertTrue(errors.isErrorOfType(RuntimeException.class));
+
+		//assertTrue(errors.isErrorForProcedureOfType(Callable.class));
+		assertTrue(errors.isErrorOfType(Exception.class));
+
 		service.shutdown();
 	}
 
