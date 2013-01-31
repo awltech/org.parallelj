@@ -19,7 +19,7 @@
 
 	<issueManagement>
 		<system>github</system>
-		<url>https://github.com/XA-Labs/org.parallelj/issues</url>
+		<url>https://github.com/awltech/org.parallelj/issues</url>
 	</issueManagement>
 
 	<licenses>
@@ -32,9 +32,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:https://github.com/XA-Labs/org.parallelj.git</connection>
-		<developerConnection>scm:git:https://github.com/XA-Labs/org.parallelj.git</developerConnection>
-		<url>https://github.com/XA-Labs/org.parallelj</url>
+		<connection>scm:git:https://github.com/awltech/org.parallelj.git</connection>
+		<developerConnection>scm:git:https://github.com/awltech/org.parallelj.git</developerConnection>
+		<url>https://github.com/awltech/org.parallelj</url>
 	</scm>
 
 	<organization>
