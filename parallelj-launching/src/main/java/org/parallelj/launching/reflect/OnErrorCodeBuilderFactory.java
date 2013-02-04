@@ -12,7 +12,6 @@ import org.parallelj.internal.reflect.AnnotationBasedBuilderFactory;
 import org.parallelj.internal.reflect.ElementBuilder;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.OnError;
-import org.parallelj.launching.ProceduresOnError;
 import org.parallelj.launching.quartz.ProgramJobsAdapter.IProceduresInError;
 
 public class OnErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
@@ -30,8 +29,6 @@ public class OnErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
 						.getPropertyDescriptors()) {
 					if (descriptor.getName().equals(fieldName)) {
 						getReadFieldMethod = descriptor.getReadMethod();
-						//this.getMember().setAccessible(true);
-						//this.getMember().set(this.getProgram(), new ProcsOnError());
 						 break;
 					}
 				}
