@@ -21,8 +21,6 @@
  */
 package org.parallelj.util;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -32,7 +30,6 @@ import org.junit.Test;
 import org.parallelj.util.BufferedIterable;
 import org.parallelj.util.BatchIterable;
 import org.parallelj.util.FlattenIterable;
-import org.parallelj.util.ReaderIterable;
 
 public class IterableTest {
 	
