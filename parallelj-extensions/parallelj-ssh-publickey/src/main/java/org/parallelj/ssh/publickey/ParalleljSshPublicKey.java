@@ -77,24 +77,30 @@ public class ParalleljSshPublicKey extends AbstractExtension implements SshExten
 		ParalleljConfiguration paralleljConf = (ParalleljConfiguration) ConfigurationService
 			.getConfigurationService().getConfigurationManager()
 			.get(ParalleljConfigurationManager.class).getConfiguration();
-		List<CAuth> auths = paralleljConf.getServers().getSsh().getAuths().getAuth();
-		for (CAuth cAuth : auths) {
-			if (cAuth.getType().equalsIgnoreCase(ParalleljSshPublicKey.class.getCanonicalName())) {
-				for(CProperty propety:cAuth.getProperty()) {
-					this.props.put(propety.getName(), propety.getValue());  
+		if(paralleljConf.getServers()!=null 
+				&& paralleljConf.getServers().getSsh()!=null
+				&& paralleljConf.getServers().getSsh().getAuths()!=null
+				&& paralleljConf.getServers().getSsh().getAuths().getAuth()!=null
+				) {
+			List<CAuth> auths = paralleljConf.getServers().getSsh().getAuths().getAuth();
+			for (CAuth cAuth : auths) {
+				if (cAuth.getType().equalsIgnoreCase(ParalleljSshPublicKey.class.getCanonicalName())) {
+					for(CProperty propety:cAuth.getProperty()) {
+						this.props.put(propety.getName(), propety.getValue());  
+					}
 				}
 			}
-		}
-		
-		try {
-			this.authorizedServerKey = getServerAuthorizedKey(this.props);
-		} catch (Exception e) {
-			throw new ExtensionException();
-		}
-		
-		this.privateServerKey = getServerPrivateKey(this.props);
-		if(this.authorizedServerKey == null) {
-			throw new ExtensionException();
+			
+			try {
+				this.authorizedServerKey = getServerAuthorizedKey(this.props);
+			} catch (Exception e) {
+				throw new ExtensionException();
+			}
+			
+			this.privateServerKey = getServerPrivateKey(this.props);
+			if(this.authorizedServerKey == null) {
+				throw new ExtensionException();
+			}
 		}
 		
 		this.isInitialized = true;
