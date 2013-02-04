@@ -33,10 +33,6 @@
 			<artifactId>quartz</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>provided</scope>
@@ -69,6 +65,21 @@
 			<artifactId>hsqldb</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+	    <!-- Logging dependencies -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
+			
 	</dependencies>
 
 	<build>
@@ -159,7 +170,7 @@
 					<argLine>
 						"-javaagent:${aspectj.javaagent.location}"
 					</argLine>
-					<!-- <skipTests>true</skipTests> -->
+<!-- 					<skipTests>true</skipTests> -->
 				</configuration>
 			</plugin>
 			<plugin>

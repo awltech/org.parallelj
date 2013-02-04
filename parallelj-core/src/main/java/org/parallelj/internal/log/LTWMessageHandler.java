@@ -21,22 +21,15 @@
  */
 package org.parallelj.internal.log;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Priority;
-import org.apache.log4j.Logger;
 import org.aspectj.bridge.AbortException;
 import org.aspectj.bridge.IMessage;
-import org.aspectj.bridge.IMessage.Kind;
 import org.aspectj.bridge.IMessageHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LTWMessageHandler implements IMessageHandler {
 
-	static Logger logger = Logger.getLogger("org.parallelj.weaving");
-
-	Map<Kind, Priority> levelMapping = new HashMap<Kind, Priority>();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.weaving");
 
 	boolean isVerbose = true;
 	boolean isDebug = true;
@@ -44,14 +37,6 @@ public class LTWMessageHandler implements IMessageHandler {
 	boolean showWarn = true;
 
 	public LTWMessageHandler() {
-		levelMapping.put(IMessage.ABORT, Level.TRACE);
-		levelMapping.put(IMessage.DEBUG, Level.DEBUG);
-		levelMapping.put(IMessage.ERROR, Level.ERROR);
-		levelMapping.put(IMessage.FAIL, Level.TRACE);
-		levelMapping.put(IMessage.INFO, Level.INFO);
-		levelMapping.put(IMessage.TASKTAG, Level.TRACE);
-		levelMapping.put(IMessage.WARNING, Level.WARN);
-		levelMapping.put(IMessage.WEAVEINFO, Level.INFO);
 	}
 
 	@Override
@@ -59,7 +44,17 @@ public class LTWMessageHandler implements IMessageHandler {
 		if (isIgnoring(message.getKind())) {
 			return false;
 		} else {
-			logger.log(levelMapping.get(message.getKind()), message.toString());
+			if (message.isDebug()) {
+				logger.debug(message.toString());
+			} else if (message.isInfo()) {
+				logger.info(message.toString());
+			} else if (message.isWarning()) {
+				logger.warn(message.toString());
+			} else if (message.isError()) {
+				logger.error(message.toString());
+			} else {
+				logger.trace(message.toString());
+			}
 		}
 		return true;
 	}

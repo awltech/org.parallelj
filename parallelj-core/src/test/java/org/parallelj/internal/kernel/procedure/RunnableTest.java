@@ -21,14 +21,15 @@
  */
 package org.parallelj.internal.kernel.procedure;
 
-import org.apache.log4j.Logger;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.callback.Entry;
 import org.parallelj.internal.kernel.callback.Exit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RunnableTest extends ProcedureTest<RunnableProcedure> {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 
 	@Override
 	public void setupProcedure() {

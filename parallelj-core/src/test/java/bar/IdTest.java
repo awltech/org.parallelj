@@ -24,12 +24,13 @@ package bar;
 import java.rmi.server.UID;
 import java.util.UUID;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IdTest {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 	
 	int count = 5000;
 	
@@ -42,7 +43,7 @@ public class IdTest {
 		}
 		logger.info(String.format("uuid: %d\n", System.currentTimeMillis() - t0));
 		Runtime.getRuntime().gc();
-		logger.info(UUID.randomUUID());
+		logger.info(UUID.randomUUID().toString());
 	}
 	@Test
 	public void uid() {
@@ -53,6 +54,6 @@ public class IdTest {
 		}
 		logger.info(String.format("uid: %d\n", System.currentTimeMillis() - t0));
 		Runtime.getRuntime().gc();
-		logger.info(new UID());
+		logger.info(new UID().toString());
 	}
 }

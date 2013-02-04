@@ -23,11 +23,12 @@ package foo;
 
 import java.util.Random;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MyRunnable implements Runnable {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 
 	static Random random = new Random();
 

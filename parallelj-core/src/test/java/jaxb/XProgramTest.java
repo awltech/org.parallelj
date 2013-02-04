@@ -25,16 +25,17 @@ import java.io.StringReader;
 
 import javax.xml.bind.JAXB;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class XProgramTest {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 	
 	@Test
 	public void simple() {

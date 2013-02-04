@@ -21,16 +21,17 @@
  */
 package foo;
 
-import org.apache.log4j.Logger;
 import org.parallelj.AndJoin;
 import org.parallelj.AndSplit;
 import org.parallelj.Program;
 import org.parallelj.XorJoin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Program
 public class NoopProgram {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 	
 	@AndJoin("begin")
 	@AndSplit({"b", "c"})

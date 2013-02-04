@@ -21,16 +21,17 @@
  */
 package org.parallelj.internal.kernel.procedure;
 
-import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.callback.Entry;
 import org.parallelj.internal.kernel.callback.Exit;
 import org.parallelj.internal.kernel.procedure.SubProcessProcedure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SubProgramTest extends ProcedureTest<SubProcessProcedure> {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 
 	RunnableTest test = new RunnableTest();
 

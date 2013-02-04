@@ -23,16 +23,17 @@ package org.parallelj.internal.kernel.procedure;
 
 import java.util.concurrent.Callable;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.callback.Entry;
 import org.parallelj.internal.kernel.callback.Exit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CallableTest extends ProcedureTest<CallableProcedure> {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 	
 	boolean called;
 	

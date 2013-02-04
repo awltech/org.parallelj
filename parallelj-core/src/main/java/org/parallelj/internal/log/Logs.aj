@@ -24,12 +24,13 @@ package org.parallelj.internal.log;
 import java.net.URLEncoder;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.parallelj.Executables;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.mirror.Procedure;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class manages the event logs of each major element of //J.
@@ -39,7 +40,7 @@ import org.parallelj.mirror.Procedure;
  */
 public privileged aspect Logs {
 
-	Logger logger = Logger.getLogger("org.parallelj.events");
+	Logger logger = LoggerFactory.getLogger("org.parallelj.events");
 
 	/**
 	 * Flag indicating if a program has already been logged.
@@ -71,7 +72,7 @@ public privileged aspect Logs {
 
 	Logs() {
 		// log the prolog
-		logger.info(LogEntry.prolog);
+		logger.info(LogEntry.prolog.toString());
 		// System.out.println(LogEntry.prolog);
 	}
 
@@ -85,13 +86,13 @@ public privileged aspect Logs {
 		LogEntry programEntry = new LogEntry();
 		programEntry.start("0.0.0.0/" + self.getId());
 		programEntry.end(self.getName());
-		logger.info(programEntry);
+		logger.info(programEntry.toString());
 
 		for (Procedure procedure : self.getProcedures()) {
 			LogEntry procedureEntry = new LogEntry();
 			procedureEntry.start(self.getId() + "/" + procedure.getId());
 			procedureEntry.end(procedure.getName() + ":" + procedure.getType());
-			logger.info(procedureEntry);
+			logger.info(procedureEntry.toString());
 		}
 		((IDumped)self).dumped = true;
 	}
@@ -109,7 +110,7 @@ public privileged aspect Logs {
 	after(KProcess self) : execution(* KProcess.done()) && this(self) {
 		((ILogEntry)self).logEntry.end(self.getState().toString(),
 				this.attributes(self.getContext()));
-		logger.info(((ILogEntry)self).logEntry);
+		logger.info(((ILogEntry)self).logEntry.toString());
 	}
 
 	/**
@@ -125,14 +126,14 @@ public privileged aspect Logs {
 	after(KCall self) : execution( * KCall.onComplete()) && this(self) {
 		((ILogEntry)self).logEntry.end(self.getState().toString(),
 				this.attributes(self.getContext()));
-		logger.info(((ILogEntry)self).logEntry);
+		logger.info(((ILogEntry)self).logEntry.toString());
 		
 	}
 		after(KCall self) : execution(* KCall.onCanceled()) && this(self) {
 			((ILogEntry)self).logEntry.start(self.process.getId() + "/" + self.getId());
 			((ILogEntry)self).logEntry.end(self.getState().toString(),
 					this.attributes(self.getContext()));
-			logger.info(((ILogEntry)self).logEntry);
+			logger.info(((ILogEntry)self).logEntry.toString());
 		}
 
 	@SuppressWarnings("deprecation")

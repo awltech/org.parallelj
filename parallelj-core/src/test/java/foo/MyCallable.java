@@ -23,15 +23,17 @@ package foo;
 
 import java.util.concurrent.Callable;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class MyCallable implements Callable<String> {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 
 	@Override
 	public String call() throws Exception {
-		logger.info(this);
+		logger.info(this.toString());
 		return this.toString();
 	}
 }

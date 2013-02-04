@@ -27,7 +27,8 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -39,8 +40,6 @@ public class ScriptRunner {
 	private static com.ibatis.common.jdbc.ScriptRunner scriptRunner= null;
 
 	private static InputStream databaseProperties= null;
-
-	private static final Logger log = Logger.getLogger(ScriptRunner.class);
 
 	private static com.ibatis.common.jdbc.ScriptRunner getScriptRunner() throws IOException {
 

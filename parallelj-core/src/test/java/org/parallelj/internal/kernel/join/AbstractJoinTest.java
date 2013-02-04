@@ -24,7 +24,6 @@ package org.parallelj.internal.kernel.join;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.parallelj.internal.kernel.KCall;
@@ -34,10 +33,12 @@ import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.internal.kernel.callback.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractJoinTest {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 
 	KProgram program;
 

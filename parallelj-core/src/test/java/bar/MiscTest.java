@@ -24,12 +24,13 @@ package bar;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MiscTest {
 
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 	
 	@Test
 	public void test() throws Exception {

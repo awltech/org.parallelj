@@ -21,17 +21,16 @@
  */
 package foo;
 
-import java.util.concurrent.Executors;
-
-import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProgramsTest {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 
 	@Test
 	public void instanceExists() {

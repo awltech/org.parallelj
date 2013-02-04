@@ -30,13 +30,13 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class used to format a log message
  * 
- * It will get a log4j logger based on the package name of the enumeration.
+ * It will get a slf4j logger based on the package name of the enumeration.
  * 
  * Default messages can be overridden by resource bundles. The qualified name of
  * the enumeration will be used to get the resource bundle.
@@ -87,7 +87,7 @@ public class Formatter<E extends Enum<E>> {
 		if (idx != -1) {
 			name = name.substring(0, idx);
 		}
-		this.logger = Logger.getLogger(name);
+		this.logger = LoggerFactory.getLogger(name);
 
 		try {
 			for (E constant : type.getEnumConstants()) {
@@ -137,28 +137,35 @@ public class Formatter<E extends Enum<E>> {
 	
 	public String print(E kind, Object... args) {
 		String message = this.format(kind, args);
-		Level level = null;
-		switch (kind.name().charAt(0)) {
-		case 'E':
-			level = Level.ERROR;
-			break;
-		case 'F':
-			level = Level.FATAL;
-			break;
-		case 'I':
-			level = Level.INFO;
-			break;
-		case 'W':
-			level = Level.WARN;
-			break;
-		}
-
 		// check if last arg is an exception
 		if (args != null && args.length > 0
 				&& args[args.length - 1] instanceof Throwable) {
-			this.logger.log(level, message, (Throwable) args[args.length - 1]);
+
+			switch (kind.name().charAt(0)) {
+			case 'E':
+			case 'F':
+				this.logger.error(message, (Throwable) args[args.length - 1]);
+				break;
+			case 'I':
+				this.logger.info(message, (Throwable) args[args.length - 1]);
+				break;
+			case 'W':
+				this.logger.warn(message, (Throwable) args[args.length - 1]);
+				break;
+			}
 		} else {
-			this.logger.log(level, message);
+			switch (kind.name().charAt(0)) {
+			case 'E':
+			case 'F':
+				this.logger.error(message);
+				break;
+			case 'I':
+				this.logger.info(message);
+				break;
+			case 'W':
+				this.logger.warn(message);
+				break;
+			}
 		}
 		return message;
 

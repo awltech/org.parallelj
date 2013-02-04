@@ -21,16 +21,17 @@
  */
 package foo;
 
-import org.apache.log4j.Logger;
 import org.parallelj.AndJoin;
 import org.parallelj.AndSplit;
 import org.parallelj.Handler;
 import org.parallelj.Program;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Program
 public class HandlerProgram {
 	
-	static Logger logger = Logger.getRootLogger();
+	static Logger logger = LoggerFactory.getLogger("org.parallelj.internal");
 
 	boolean enter, exit, handler, b = false;
 
