@@ -161,7 +161,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 				launch.synchLaunch();
 				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
 						remoteProgram.getAdapterClass().getCanonicalName(), launch.getLaunchId(),
-						launch.getLaunchResult().get(QuartzUtils.RETURN_CODE));
+						launch.getLaunchResult().get(QuartzUtils.RETURN_CODE),
+						launch.getLaunchResult().get(QuartzUtils.USER_RETURN_CODE));
 			} else {
 				// Launch and continue
 				launch.aSynchLaunch();

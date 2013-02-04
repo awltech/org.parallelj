@@ -185,7 +185,7 @@ public enum LaunchingMessageKind {
 	/**
 	 * Program %s with jobId %s is terminated!
 	 */
-	@Format("Program %s with jobId %s is terminated with status %s!")
+	@Format("Program %s with jobId %s is terminated with status %s! Return code: [%s]")
 	IQUARTZ0003,
 	
 	/*

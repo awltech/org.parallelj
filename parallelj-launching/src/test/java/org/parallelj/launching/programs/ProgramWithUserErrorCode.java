@@ -19,20 +19,46 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.launching.quartz;
+package org.parallelj.launching.programs;
 
-public final class QuartzUtils {
+import java.util.concurrent.Callable;
+
+import org.parallelj.AndSplit;
+import org.parallelj.Begin;
+import org.parallelj.Handler;
+import org.parallelj.Program;
+import org.parallelj.launching.ErrorCode;
+
+@Program
+public class ProgramWithUserErrorCode {
+
+	@ErrorCode
+	private String userErrorCode;
 	
-	public static final String RETURN_CODE = "RETURN_CODE";
-	public static final String USER_RETURN_CODE = "USER_RETURN_CODE";
-		private static final String JOB_ID_KEY = "_RESTARTED_FIRE_INSTANCE_ID_";
-	public static final String PROCEDURES_IN_ERROR = "PROCEDURES_IN_ERROR";
-	
-	private QuartzUtils() {
+	public String getUserErrorCode() {
+		return userErrorCode;
 	}
 
-	public static String getRestartedFireInstanceIdKey() {
-		return JOB_ID_KEY;
+	@Begin
+	public Callable<Void> processing2() {
+		return new Callable<Void>() {
+			@Override
+			public Void call() throws Exception {
+				throw new RuntimeException();
+			}
+		};
+	}
+	
+	@AndSplit(value = "end")
+	public void processing2(Callable<Void> callable, Void value) {
+		return;
+	}
+	
+	@Handler(value = "processing2")
+	@AndSplit(value = "end")
+	public void handler(Exception e) {
+		this.userErrorCode="USER_RETURN_CODE";
+		return;
 	}
 
 }

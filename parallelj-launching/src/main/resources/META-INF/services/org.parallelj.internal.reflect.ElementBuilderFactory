@@ -1,3 +1,4 @@
 org.parallelj.launching.reflect.InBuilderFactory
 org.parallelj.launching.reflect.OutBuilderFactory
 org.parallelj.launching.reflect.OnErrorCodeBuilderFactory
+org.parallelj.launching.reflect.ErrorCodeBuilderFactory

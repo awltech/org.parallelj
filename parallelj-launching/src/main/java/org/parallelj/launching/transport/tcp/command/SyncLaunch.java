@@ -78,14 +78,16 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 
 			final JobDataMap jdm = launch.getLaunchResult();
 			String status = null;
+			String userErrorCode = null;
 			if (jdm == null) {
 				status = ReturnCodes.NOTSTARTED.name();
 			} else {
 				status = String.valueOf(jdm.get(QuartzUtils.RETURN_CODE));
+				userErrorCode = String.valueOf(jdm.get(QuartzUtils.USER_RETURN_CODE));
 			}
 
 			return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
-					jobClass.getCanonicalName(), launch.getLaunchId(), status);
+					jobClass.getCanonicalName(), launch.getLaunchId(), status, userErrorCode);
 		} catch (ParseException e) {
 			return e.getMessage();
 		} catch (ParserException e) {

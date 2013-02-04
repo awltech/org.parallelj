@@ -19,20 +19,27 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.launching.quartz;
+package org.parallelj.launching;
 
-public final class QuartzUtils {
-	
-	public static final String RETURN_CODE = "RETURN_CODE";
-	public static final String USER_RETURN_CODE = "USER_RETURN_CODE";
-		private static final String JOB_ID_KEY = "_RESTARTED_FIRE_INSTANCE_ID_";
-	public static final String PROCEDURES_IN_ERROR = "PROCEDURES_IN_ERROR";
-	
-	private QuartzUtils() {
-	}
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	public static String getRestartedFireInstanceIdKey() {
-		return JOB_ID_KEY;
-	}
+/**
+ * Annotation representing a AND split.
+ * 
+ * @author Atos Worldline
+ * 
+ */
+@Documented
+@Target( { ElementType.FIELD })
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ErrorCode {
 
+	/**
+	 * User's Returned code of a Program in case of a Handler use....
+	 */
+	String[] value() default {""};
 }

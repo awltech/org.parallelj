@@ -34,7 +34,6 @@ import java.util.concurrent.Executors;
 import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KProcess;
-import org.parallelj.internal.kernel.KProcessor;
 import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.internal.kernel.procedure.CallableProcedure;
 import org.parallelj.internal.kernel.procedure.RunnableProcedure;
@@ -71,6 +70,35 @@ privileged public aspect ProgramJobsAdapter {
 		org.parallelj.internal.reflect.ProgramAdapter.PerProgram,
 		org.parallelj.internal.log.Logs,
 		org.parallelj.launching.quartz.JobsAdapter;
+
+	/*
+	 * Add the interface IErrorCode to the KProgram
+	*/
+	public interface IErrorCode {
+		public String getErrorCode();
+		public void setErrorCode(String errorCode);
+		public Method getErrorCodeGetterMethod();
+		public void setErrorCodeGetterMethod(Method getterFieldMethod);
+	}
+	
+	public String IErrorCode.errorCode = "";
+	public Method IErrorCode.getterMethod;
+	
+	public String IErrorCode.getErrorCode() {
+		return this.errorCode;
+	}
+	
+	public void IErrorCode.setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public void IErrorCode.setErrorCodeGetterMethod(Method getterFieldMethod) {
+		this.getterMethod = getterFieldMethod;
+	}
+
+	public Method IErrorCode.getErrorCodeGetterMethod() {
+		return this.getterMethod;
+	}
 
 	/*
 	 * Add the interface IProgramArguments to the KProgram
@@ -122,7 +150,8 @@ privileged public aspect ProgramJobsAdapter {
 	}
 	
 	declare parents: org.parallelj.internal.kernel.KProgram implements IProgramInputOutputs;
-	
+	declare parents: org.parallelj.internal.kernel.KProgram implements IErrorCode;
+
 	/*
 	 * Add the interface IProceduresInError to the KProcessor
 	*/
@@ -283,7 +312,7 @@ privileged public aspect ProgramJobsAdapter {
 
 			// Launch the program with the initialized ExecutorService
 			processHelper.execute(service).join();
-			
+
 			// Initialize the Output fields of the Program as an element of "outputs" in the JobDataMap
 			// We call the getter method of each field annotated with @Out to get its value and complete the JobDataMap 
 			Map<String, Object> outputs = new HashMap<String, Object>();
@@ -328,6 +357,41 @@ privileged public aspect ProgramJobsAdapter {
 				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
 			}
 
+			// Get the ErrorCode initialized by the user
+			IErrorCode errorCodeP = (IErrorCode)programType;
+			if (programType instanceof KProgram) {
+				Method getterErrorMethod = errorCodeP.getErrorCodeGetterMethod();
+				try {
+					Object userReturnCode="";
+					if(getterErrorMethod!=null) {
+						// Call the getter method
+						userReturnCode = getterErrorMethod.invoke(self);
+						// Complete the JobDataMap
+					}
+					jobDataMap.put(QuartzUtils.USER_RETURN_CODE, userReturnCode);
+				} catch (IllegalAccessException e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0009.format(e);
+					throw new JobExecutionException(e);
+				} catch (IllegalArgumentException e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0009.format(e);
+					throw new JobExecutionException(e);
+				} catch (InvocationTargetException e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0009.format(e);
+					throw new JobExecutionException(e);
+				} catch (NullPointerException e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0009.format(e);
+					throw new JobExecutionException(e);
+				} catch (ExceptionInInitializerError e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0009.format(e);
+					throw new JobExecutionException(e);
+				}
+			}
+			
 			service.shutdown();
 			if (procedures.getAllProceduresInError(self)!=null
 					&& procedures.getAllProceduresInError(self).getNumberOfProceduresInError()>0){
@@ -363,7 +427,6 @@ privileged public aspect ProgramJobsAdapter {
 
 		CallableProcedure.CallableCall callable = (CallableProcedure.CallableCall)thisJoinPoint.getTarget();
 		CallableProcedure procedure = (CallableProcedure)callable.getProcedure(); 
-			
 		if (
 				procedure.getHandler() == null
 				&& callable.getException() != null

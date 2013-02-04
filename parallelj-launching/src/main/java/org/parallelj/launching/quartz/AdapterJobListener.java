@@ -144,7 +144,8 @@ public class AdapterJobListener implements JobListener, SchedulerListener {
 		this.result = (JobDataMap) context.getResult();
 		if (this.result != null) {
 		LaunchingMessageKind.IQUARTZ0003.format(this.jobClass, this.jobId,
-				String.valueOf(this.result.get(QuartzUtils.RETURN_CODE)));
+				String.valueOf(this.result.get(QuartzUtils.RETURN_CODE)),
+				String.valueOf(this.result.get(QuartzUtils.USER_RETURN_CODE)));
 		}
 		try {
 			this.scheduler.getListenerManager().removeJobListener(

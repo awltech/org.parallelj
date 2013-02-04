@@ -26,9 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,6 +33,7 @@ import org.junit.Test;
 import org.parallelj.Programs;
 import org.parallelj.launching.ProceduresOnError;
 import org.parallelj.launching.programs.ProgramWithErrors;
+import org.parallelj.launching.programs.ProgramWithUserErrorCode;
 import org.parallelj.launching.programs.ProgramWithoutErrors;
 
 public class ProgramJobAdapterTest {
@@ -66,4 +64,14 @@ public class ProgramJobAdapterTest {
 		service.shutdown();
 	}
 
+	@Test
+	public void testLaunchWithUserReturnCode() {
+		ProgramWithUserErrorCode prg = new ProgramWithUserErrorCode();
+		ExecutorService service = Executors.newCachedThreadPool();
+		Programs.as(prg).execute(service).join();
+		assertNotNull(prg.getUserErrorCode());
+		assertEquals(prg.getUserErrorCode(),"USER_RETURN_CODE");
+		service.shutdown();
+	}
+	
 }
