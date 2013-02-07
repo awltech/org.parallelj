@@ -24,6 +24,7 @@ package org.parallelj.internal.reflect.callback;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.callback.Entry;
 import org.parallelj.internal.kernel.callback.Exit;
@@ -43,14 +44,11 @@ public class MethodCallback implements Entry, Exit {
 					call.getInputValues());
 			call.setContext(o);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageKind.E0004.format(this.method,call.getProcess().getContext().getClass().getCanonicalName(),e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageKind.E0004.format(this.method,call.getProcess().getContext().getClass().getCanonicalName(),e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageKind.E0004.format(this.method,call.getProcess().getContext().getClass().getCanonicalName(),e);
 		}
 	}
 
@@ -65,14 +63,11 @@ public class MethodCallback implements Entry, Exit {
 			}
 			this.method.invoke(call.getProcess().getContext(), args);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageKind.E0004.format(this.method,call.getProcess().getContext().getClass().getCanonicalName(),e);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageKind.E0004.format(this.method,call.getProcess().getContext().getClass().getCanonicalName(),e);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageKind.E0004.format(this.method,call.getProcess().getContext().getClass().getCanonicalName(),e);
 		}
 	}
 

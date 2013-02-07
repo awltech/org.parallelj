@@ -50,6 +50,12 @@ public enum MessageKind {
 	@Format("not enough procedures")
 	E0003,
 	
+	/**Error: can't call method [%s] on class [%s]
+	 * 
+	 */
+	@Format("can't call method [%s] on class [%s]")
+	E0004,
+	
 	/**
 	 * Info: building a program
 	 */
