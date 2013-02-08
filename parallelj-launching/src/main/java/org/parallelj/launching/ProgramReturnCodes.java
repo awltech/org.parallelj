@@ -27,7 +27,7 @@ package org.parallelj.launching;
  * @author Atos Worldline
  * @since 0.5.0
  */
-public enum ReturnCodes {
+public enum ProgramReturnCodes {
 
 	SUCCESS, FAILURE, ABORTED, NOTSTARTED;
 }

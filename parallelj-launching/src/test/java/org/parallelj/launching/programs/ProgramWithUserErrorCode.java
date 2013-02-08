@@ -27,12 +27,12 @@ import org.parallelj.AndSplit;
 import org.parallelj.Begin;
 import org.parallelj.Handler;
 import org.parallelj.Program;
-import org.parallelj.launching.ErrorCode;
+import org.parallelj.launching.ReturnCode;
 
 @Program
 public class ProgramWithUserErrorCode {
 
-	@ErrorCode
+	@ReturnCode
 	private String userErrorCode;
 	
 	public String getUserErrorCode() {

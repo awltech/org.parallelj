@@ -10,23 +10,17 @@ import java.util.List;
 
 import org.parallelj.internal.reflect.AnnotationBasedBuilderFactory;
 import org.parallelj.internal.reflect.ElementBuilder;
-import org.parallelj.launching.ErrorCode;
-import org.parallelj.launching.In;
+import org.parallelj.launching.ReturnCode;
 import org.parallelj.launching.LaunchingMessageKind;
-import org.parallelj.launching.inout.Argument;
-import org.parallelj.launching.parser.Parser;
 import org.parallelj.launching.quartz.ProgramJobsAdapter.IErrorCode;
-import org.parallelj.launching.quartz.ProgramJobsAdapter.IProgramInputOutputs;
 
 public class ErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
 
-	public static class ErrorCodeBuilder extends AnnotationBasedBuilder<ErrorCode, Field> {
+	public static class ErrorCodeBuilder extends AnnotationBasedBuilder<ReturnCode, Field> {
 		@Override
 		public ElementBuilder complete() {
 			// Get all the informations about the field annotated with @ErrorCode
 			String fieldName = this.getMember().getName();
-//			Class<?> fieldType = this.getMember().getType();
-			//Class<? extends Parser> parser = this.getMember().getAnnotation(ErrorCode.class).parser();
 			Method getReadFieldMethod = null;
 			// Get the setter method for the Field
 			Class<?> programType = this.getBuilder().getType();
@@ -45,7 +39,6 @@ public class ErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
 				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName));
 			}
 
-//			Argument argument = new Argument(fieldName, fieldType, parser, writeFieldMethod);
 			// Add the argument to the KProgram
 			((IErrorCode)this.getProgram()).setErrorCodeGetterMethod(getReadFieldMethod);
 			return super.complete();

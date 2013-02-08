@@ -42,7 +42,7 @@ import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.OnError;
 import org.parallelj.launching.ProceduresOnError;
-import org.parallelj.launching.ReturnCodes;
+import org.parallelj.launching.ProgramReturnCodes;
 import org.parallelj.launching.inout.Argument;
 import org.parallelj.launching.inout.Output;
 import org.parallelj.mirror.ProgramType;
@@ -238,7 +238,7 @@ privileged public aspect ProgramJobsAdapter {
 				&& args(context) && this(self) {
 		JobDataMap jobDataMap = new JobDataMap();
 		context.setResult(jobDataMap);
-		jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.SUCCESS);
+		jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.SUCCESS);
 
 		proceed(self, context);
 
@@ -246,7 +246,7 @@ privileged public aspect ProgramJobsAdapter {
 			// Initialize an ExecutorService with the Capacity of the Program
 			ProcessHelper<?> processHelper = Programs.as((Adapter) self);
 			if (processHelper == null) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.NOTSTARTED);
+				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.NOTSTARTED);
 				throw new JobExecutionException(LaunchingMessageKind.ELAUNCH0003.getFormatedMessage(self));
 			}
 			ProgramType programType = processHelper.getProcess().getProgram();
@@ -277,23 +277,23 @@ privileged public aspect ProgramJobsAdapter {
 						// Call the setter method
 						setter.invoke(self, argument.getValue());
 					} catch (IllegalAccessException e) {
-						jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+						jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 						LaunchingMessageKind.EREMOTE0010.format(argument.getName(),self.getClass().getCanonicalName(), e);
 						throw new JobExecutionException(e);
 					} catch (IllegalArgumentException e) {
-						jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+						jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 						LaunchingMessageKind.EREMOTE0010.format(argument.getName(),self.getClass().getCanonicalName(), e);
 						throw new JobExecutionException(e);
 					} catch (InvocationTargetException e) {
-						jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+						jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 						LaunchingMessageKind.EREMOTE0010.format(argument.getName(),self.getClass().getCanonicalName(), e);
 						throw new JobExecutionException(e);
 					} catch (NullPointerException e) {
-						jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+						jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 						LaunchingMessageKind.EREMOTE0010.format(argument.getName(),self.getClass().getCanonicalName(), e);
 						throw new JobExecutionException(e);
 					} catch (ExceptionInInitializerError e) {
-						jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+						jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 						LaunchingMessageKind.EREMOTE0010.format(argument.getName(),self.getClass().getCanonicalName(), e);
 						throw new JobExecutionException(e);
 					}
@@ -325,23 +325,23 @@ privileged public aspect ProgramJobsAdapter {
 					// Complete the JobDataMap
 					outputs.put(output.getName(), result);
 				} catch (IllegalAccessException e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				} catch (IllegalArgumentException e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				} catch (InvocationTargetException e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				} catch (NullPointerException e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				} catch (ExceptionInInitializerError e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				}
@@ -354,7 +354,7 @@ privileged public aspect ProgramJobsAdapter {
 			
 			if((procedures.getAllProceduresInError(self)!=null
 					&& procedures.getAllProceduresInError(self).getNumberOfProceduresInError()>0) || procedures.isErrors) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 			}
 
 			// Get the ErrorCode initialized by the user
@@ -370,23 +370,23 @@ privileged public aspect ProgramJobsAdapter {
 					}
 					jobDataMap.put(QuartzUtils.USER_RETURN_CODE, userReturnCode);
 				} catch (IllegalAccessException e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				} catch (IllegalArgumentException e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				} catch (InvocationTargetException e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				} catch (NullPointerException e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				} catch (ExceptionInInitializerError e) {
-					jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0009.format(e);
 					throw new JobExecutionException(e);
 				}
@@ -399,7 +399,7 @@ privileged public aspect ProgramJobsAdapter {
 				throw new JobExecutionException();
 			}
 		} catch (Exception e) {
-			jobDataMap.put(QuartzUtils.RETURN_CODE, ReturnCodes.FAILURE);
+			jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 			throw new JobExecutionException(e);
 		}
 	}

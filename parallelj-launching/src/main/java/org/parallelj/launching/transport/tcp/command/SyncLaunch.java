@@ -24,7 +24,7 @@ package org.parallelj.launching.transport.tcp.command;
 import org.apache.commons.cli.ParseException;
 import org.apache.mina.core.session.IoSession;
 import org.parallelj.launching.LaunchingMessageKind;
-import org.parallelj.launching.ReturnCodes;
+import org.parallelj.launching.ProgramReturnCodes;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.quartz.Launch;
 import org.parallelj.launching.quartz.LaunchException;
@@ -80,7 +80,7 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 			String status = null;
 			String userErrorCode = null;
 			if (jdm == null) {
-				status = ReturnCodes.NOTSTARTED.name();
+				status = ProgramReturnCodes.NOTSTARTED.name();
 			} else {
 				status = String.valueOf(jdm.get(QuartzUtils.RETURN_CODE));
 				userErrorCode = String.valueOf(jdm.get(QuartzUtils.USER_RETURN_CODE));

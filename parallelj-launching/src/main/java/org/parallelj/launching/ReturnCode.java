@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target( { ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ErrorCode {
+public @interface ReturnCode {
 
 	/**
 	 * User's Returned code of a Program in case of a Handler use....
