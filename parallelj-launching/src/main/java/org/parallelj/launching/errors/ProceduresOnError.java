@@ -1,4 +1,4 @@
-package org.parallelj.launching;
+package org.parallelj.launching.errors;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -32,9 +32,8 @@ import org.parallelj.internal.reflect.ProcessHelperImpl;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.inout.Argument;
+import org.parallelj.launching.inout.IProgramInputOutputs;
 import org.parallelj.launching.inout.Output;
-import org.parallelj.launching.quartz.ProgramJobsAdapter.IProgramInputOutputs;
-
 
 public class RemoteProgram {
 	private Class<? extends Adapter> adapterClass;

@@ -99,7 +99,6 @@ public class Argument extends InOut {
 			} catch (IllegalAccessException e) {
 				LaunchingMessageKind.EREMOTE0007.format(
 						this.parser.getCanonicalName(), e);
-				e.printStackTrace();
 			}
 		}
 	}

@@ -1,0 +1,3 @@
+org.parallelj.launching.inout.InOutLaunchingListener
+org.parallelj.launching.usercode.UserCodeLaunchingListener
+org.parallelj.launching.errors.ProceduresOnErrorLaunchingListener

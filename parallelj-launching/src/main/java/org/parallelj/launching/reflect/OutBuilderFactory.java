@@ -12,8 +12,8 @@ import org.parallelj.internal.reflect.AnnotationBasedBuilderFactory;
 import org.parallelj.internal.reflect.ElementBuilder;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.Out;
+import org.parallelj.launching.inout.IProgramInputOutputs;
 import org.parallelj.launching.inout.Output;
-import org.parallelj.launching.quartz.ProgramJobsAdapter.IProgramInputOutputs;
 
 public class OutBuilderFactory extends AnnotationBasedBuilderFactory {
 
@@ -34,10 +34,10 @@ public class OutBuilderFactory extends AnnotationBasedBuilderFactory {
 					}
 				}
 			} catch (IntrospectionException e) {
-				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0005.format(programType, fieldName, e));
+				LaunchingMessageKind.ELAUNCH0005.format(programType, fieldName, e);
 			}
 			if (readFieldMethod==null) {
-				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0005.format(programType, fieldName));
+				LaunchingMessageKind.ELAUNCH0005.format(programType, fieldName, new Exception());
 			}
 
 			Output output = new Output(fieldName, fieldType, readFieldMethod);

@@ -13,8 +13,8 @@ import org.parallelj.internal.reflect.ElementBuilder;
 import org.parallelj.launching.In;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.inout.Argument;
+import org.parallelj.launching.inout.IProgramInputOutputs;
 import org.parallelj.launching.parser.Parser;
-import org.parallelj.launching.quartz.ProgramJobsAdapter.IProgramInputOutputs;
 
 public class InBuilderFactory extends AnnotationBasedBuilderFactory {
 
@@ -36,10 +36,10 @@ public class InBuilderFactory extends AnnotationBasedBuilderFactory {
 					}
 				}
 			} catch (IntrospectionException e) {
-				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0004.format(programType, fieldName, e));
+				LaunchingMessageKind.ELAUNCH0004.format(programType, fieldName, e);
 			}
 			if (writeFieldMethod==null) {
-				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0004.format(programType, fieldName));
+				LaunchingMessageKind.ELAUNCH0004.format(programType, fieldName, new Exception());
 			}
 
 			Argument argument = new Argument(fieldName, fieldType, parser, writeFieldMethod);

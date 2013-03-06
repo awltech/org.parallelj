@@ -31,7 +31,7 @@ import java.util.concurrent.Executors;
 
 import org.junit.Test;
 import org.parallelj.Programs;
-import org.parallelj.launching.ProceduresOnError;
+import org.parallelj.launching.errors.ProceduresOnError;
 import org.parallelj.launching.programs.ProgramWithErrors;
 import org.parallelj.launching.programs.ProgramWithUserErrorCode;
 import org.parallelj.launching.programs.ProgramWithoutErrors;

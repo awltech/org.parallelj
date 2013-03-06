@@ -26,7 +26,8 @@ public final class QuartzUtils {
 	public static final String RETURN_CODE = "RETURN_CODE";
 	public static final String USER_RETURN_CODE = "USER_RETURN_CODE";
 		private static final String JOB_ID_KEY = "_RESTARTED_FIRE_INSTANCE_ID_";
-	public static final String PROCEDURES_IN_ERROR = "PROCEDURES_IN_ERROR";
+		public static final String PROCEDURES_IN_ERROR = "PROCEDURES_IN_ERROR";
+		public static final String CONTEXT = "CONTEXT";
 	
 	private QuartzUtils() {
 	}

@@ -48,9 +48,9 @@ import org.quartz.impl.matchers.EverythingMatcher;
 public class Launch {
 
 	private static final String DEFAULT_GROUP_NAME = "DEFAULT";
-	protected static final String DEFAULT_EXECUTOR_KEY = "EXECUTOR";
-	protected static final String PARAMETERS = "parameters";
-	protected static final String OUTPUTS = "outputs";
+	public static final String DEFAULT_EXECUTOR_KEY = "EXECUTOR";
+	public static final String PARAMETERS = "parameters";
+	public static final String OUTPUTS = "outputs";
 
 	/**
 	 * The scheduler used to launch Programs.
@@ -164,7 +164,11 @@ public class Launch {
 			final CountDownLatch latcher = createLatcher(listener);
 
 			// Launch the Job
-			this.scheduler.scheduleJob(this.job, this.trigger);
+			try {
+				this.scheduler.scheduleJob(this.job, this.trigger);
+			} catch (Exception e) {
+				LaunchingMessageKind.EREMOTE0009.format(e);
+			}
 			this.scheduler.start();
 
 			// Wait few seconds for the JobId to be available.

@@ -30,7 +30,7 @@ import org.parallelj.Handler;
 import org.parallelj.Program;
 import org.parallelj.XorJoin;
 import org.parallelj.launching.OnError;
-import org.parallelj.launching.ProceduresOnError;
+import org.parallelj.launching.errors.ProceduresOnError;
 
 @Program
 public class ProgramWithErrors {

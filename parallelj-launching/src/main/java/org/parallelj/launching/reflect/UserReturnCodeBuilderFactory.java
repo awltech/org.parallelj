@@ -12,11 +12,11 @@ import org.parallelj.internal.reflect.AnnotationBasedBuilderFactory;
 import org.parallelj.internal.reflect.ElementBuilder;
 import org.parallelj.launching.ReturnCode;
 import org.parallelj.launching.LaunchingMessageKind;
-import org.parallelj.launching.quartz.ProgramJobsAdapter.IErrorCode;
+import org.parallelj.launching.usercode.IUserReturnCode;
 
-public class ErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
+public class UserReturnCodeBuilderFactory extends AnnotationBasedBuilderFactory {
 
-	public static class ErrorCodeBuilder extends AnnotationBasedBuilder<ReturnCode, Field> {
+	public static class UserReturnCodeBuilder extends AnnotationBasedBuilder<ReturnCode, Field> {
 		@Override
 		public ElementBuilder complete() {
 			// Get all the informations about the field annotated with @ErrorCode
@@ -33,19 +33,19 @@ public class ErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
 					}
 				}
 			} catch (IntrospectionException e) {
-				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName, e));
+				LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName, e);
 			}
 			if (getReadFieldMethod==null) {
-				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName));
+				LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName, new Exception());
 			}
 
 			// Add the argument to the KProgram
-			((IErrorCode)this.getProgram()).setErrorCodeGetterMethod(getReadFieldMethod);
+			((IUserReturnCode)this.getProgram()).setUserReturnCodeGetterMethod(getReadFieldMethod);
 			return super.complete();
 		}
 	}
 
-	public ErrorCodeBuilderFactory(
+	public UserReturnCodeBuilderFactory(
 			List<Class<? extends AnnotationBasedBuilder<?, ?>>> types) {
 		super(types);
 	}
@@ -53,10 +53,10 @@ public class ErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
 	static final List<Class<? extends AnnotationBasedBuilder<?, ?>>> types = new ArrayList<Class<? extends AnnotationBasedBuilder<?, ?>>>();
 
 	static {
-		types.add(ErrorCodeBuilder.class);
+		types.add(UserReturnCodeBuilder.class);
 	}
 
-	public ErrorCodeBuilderFactory() {
+	public UserReturnCodeBuilderFactory() {
 		super(types);
 	}
 

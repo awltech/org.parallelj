@@ -12,7 +12,7 @@ import org.parallelj.internal.reflect.AnnotationBasedBuilderFactory;
 import org.parallelj.internal.reflect.ElementBuilder;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.OnError;
-import org.parallelj.launching.quartz.ProgramJobsAdapter.IProceduresInError;
+import org.parallelj.launching.errors.IProceduresOnError;
 
 public class OnErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
 
@@ -33,17 +33,17 @@ public class OnErrorCodeBuilderFactory extends AnnotationBasedBuilderFactory {
 					}
 				}
 			} catch (IntrospectionException e) {
-				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName, e));
+				LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName, e);
 			} catch (IllegalArgumentException e) {
 				// Do Nothing
 			}
 			if (getReadFieldMethod==null) {
-				throw new RuntimeException(LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName));
+				LaunchingMessageKind.ELAUNCH0006.format(programType, fieldName, new Exception());
 			}
 
 			// Add the argument to the KProgram
-			((IProceduresInError)this.getProgram()).setGetterMethod(getReadFieldMethod);
-			((IProceduresInError)this.getProgram()).setFieldName(fieldName);
+			((IProceduresOnError)this.getProgram()).setGetterMethod(getReadFieldMethod);
+			((IProceduresOnError)this.getProgram()).setFieldName(fieldName);
 			return super.complete();
 		}
 	}
