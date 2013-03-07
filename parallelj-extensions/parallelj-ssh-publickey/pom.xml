@@ -6,7 +6,6 @@
 		<version>1.2.5-SNAPSHOT</version>
 	</parent>
 	<artifactId>parallelj-ssh-publickey</artifactId>
-	<description>ParallelJ SSH extensions</description>
 
 	<dependencies>
 		<dependency>
@@ -29,4 +28,6 @@
 			<artifactId>bcprov-jdk15</artifactId>
 		</dependency>
 	</dependencies>
+	<name>Parallelj - SSH - PublicKey</name>
+	<description>Management of ParallelJ extensions for SSH using public key</description>
 </project>

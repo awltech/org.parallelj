@@ -131,4 +131,6 @@
 		</plugins>
 	</build>
 
+	<name>Parallelj - SSH</name>
+	<description>Management of ParallelJ extensions for SSH</description>
 </project>
