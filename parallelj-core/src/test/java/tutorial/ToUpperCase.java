@@ -46,7 +46,7 @@ public class ToUpperCase implements Callable<String> {
 	 */
 	@Override
 	public String call() throws Exception {
-		Thread.sleep(1000);
+		Thread.sleep(10);
 		System.out.println(this.source + ":" + Thread.currentThread());
 		return this.source.toUpperCase();
 	}
