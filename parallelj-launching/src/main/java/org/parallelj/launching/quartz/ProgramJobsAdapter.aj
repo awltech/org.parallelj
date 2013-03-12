@@ -112,10 +112,9 @@ privileged public aspect ProgramJobsAdapter {
 			 *  Launch the program with the initialized ExecutorService
 			 */
 			processHelper.execute(service).join();
-			jobDataMap.put(QuartzUtils.CONTEXT, self);
+			jobDataMap.put(QuartzUtils.CONTEXT, processHelper);
 			
 			observable.finalizeLaunching((Adapter) self, processHelper, context);
-
 			service.shutdown();
 			
 		} catch (Exception e) {
