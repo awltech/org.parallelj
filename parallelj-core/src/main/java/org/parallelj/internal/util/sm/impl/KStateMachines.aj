@@ -54,7 +54,7 @@ public privileged aspect KStateMachines {
 		after() : staticinitialization(@org.parallelj.internal.util.sm.StateMachine *) {
 			this.machine = new KStateMachine(thisJoinPoint.getSignature()
 					.getDeclaringType());
-			System.out.println(this.machine);
+			//System.out.println(this.machine);
 		}
 
 		after(Object self): execution((@org.parallelj.internal.util.sm.StateMachine *).new(..)) && this(self) {
