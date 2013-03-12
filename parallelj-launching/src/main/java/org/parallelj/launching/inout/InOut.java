@@ -32,6 +32,8 @@ public abstract class InOut {
 	 */
 	protected String name;
 	
+	protected int index;
+
 	/**
 	 * The type of the field declared in the Program class 
 	 */
@@ -48,7 +50,7 @@ public abstract class InOut {
 	 * @return the name of the declared field in the Program class
 	 */
 	public final String getName() {
-		return name;
+		return this.name;
 	}
 
 	/**
@@ -57,15 +59,23 @@ public abstract class InOut {
 	 * @return the type of the declared field in the Program class
 	 */
 	public final Class<?> getType() {
-		return type;
+		return this.type;
 	}
 
 	public Object getValue() {
-		return value;
+		return this.value;
 	}
 
 	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	public int getindex() {
+		return this.index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 }

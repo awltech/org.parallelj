@@ -22,6 +22,7 @@
 package org.parallelj.launching.remote;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.parallelj.Programs;
@@ -32,6 +33,7 @@ import org.parallelj.internal.reflect.ProcessHelperImpl;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.inout.Argument;
+import org.parallelj.launching.inout.ArgumentComparator;
 import org.parallelj.launching.inout.IProgramInputOutputs;
 import org.parallelj.launching.inout.Output;
 
@@ -52,6 +54,9 @@ public class RemoteProgram {
 					.getProcess()).getProgram())).getArguments();
 			this.output = ((IProgramInputOutputs) ((KProgram) ((KProcess) ((ProcessHelperImpl<?>) p)
 					.getProcess()).getProgram())).getOutputs();
+			
+			// Sorts Arguments
+			Collections.sort(this.arguments, new ArgumentComparator());
 		} catch (Exception e) {
 			LaunchingMessageKind.ELAUNCH0002.format(e);
 		}

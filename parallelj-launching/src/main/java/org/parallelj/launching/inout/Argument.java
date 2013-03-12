@@ -40,8 +40,8 @@ public class Argument extends InOut {
 
 	private Parser parserInstance;
 
-	public Argument(final String name, final Class<?> type, final Class<? extends Parser> parserClass, final Method writeMethod) {
-		this(name,type,parserClass, writeMethod, null);
+	public Argument(final String name, final int number, final Class<?> type, final Class<? extends Parser> parserClass, final Method writeMethod) {
+		this(name,number, type,parserClass, writeMethod, null);
 	}
 
 	/**
@@ -51,8 +51,9 @@ public class Argument extends InOut {
 	 * @param type
 	 * @param parserClass
 	 */
-	public Argument(final String name, final Class<?> type, final Class<? extends Parser> parserClass, final Method writeMethod, final Object value) {
+	public Argument(final String name, final int number, final Class<?> type, final Class<? extends Parser> parserClass, final Method writeMethod, final Object value) {
 		this.name = name;
+		this.index = number;
 		this.type = type;
 		this.parser = parserClass;
 		this.value = value;
@@ -102,6 +103,6 @@ public class Argument extends InOut {
 			}
 		}
 	}
-	
+
 }
 

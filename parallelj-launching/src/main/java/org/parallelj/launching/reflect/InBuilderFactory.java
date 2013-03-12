@@ -25,6 +25,7 @@ public class InBuilderFactory extends AnnotationBasedBuilderFactory {
 			String fieldName = this.getMember().getName();
 			Class<?> fieldType = this.getMember().getType();
 			Class<? extends Parser> parser = this.getMember().getAnnotation(In.class).parser();
+			int number = this.getMember().getAnnotation(In.class).index();
 			Method writeFieldMethod = null;
 			// Get the setter method for the Field
 			Class<?> programType = this.getBuilder().getType();
@@ -42,7 +43,7 @@ public class InBuilderFactory extends AnnotationBasedBuilderFactory {
 				LaunchingMessageKind.ELAUNCH0004.format(programType, fieldName, new Exception());
 			}
 
-			Argument argument = new Argument(fieldName, fieldType, parser, writeFieldMethod);
+			Argument argument = new Argument(fieldName, number, fieldType, parser, writeFieldMethod);
 			// Add the argument to the KProgram
 			((IProgramInputOutputs)this.getProgram()).addArgument(argument);
 			

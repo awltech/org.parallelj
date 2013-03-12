@@ -44,4 +44,5 @@ import org.parallelj.launching.parser.Parser;
 @Target(ElementType.FIELD)
 public @interface In {
 	public Class<? extends Parser> parser() default NopParser.class;
+	public int index() default 0;
 }
