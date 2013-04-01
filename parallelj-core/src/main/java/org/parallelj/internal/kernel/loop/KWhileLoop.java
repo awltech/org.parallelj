@@ -30,6 +30,7 @@ import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KSplit;
 import org.parallelj.internal.kernel.callback.Predicate;
 import org.parallelj.internal.kernel.join.KAbstractJoin;
+import org.parallelj.mirror.HandlerLoopPolicy;
 
 /**
  * Represents a while loop
@@ -173,7 +174,10 @@ public class KWhileLoop extends KElement {
 	 * @param call
 	 */
 	protected void iterating(KCall call) {
-
+		if(call.getProcedure().isError() 
+				&& call.getProcedure().getHandler().getHandlerLoopPolicy()==HandlerLoopPolicy.TERMINATE) {
+			this.isError=true;
+		}
 	}
 
 }

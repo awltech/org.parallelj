@@ -53,6 +53,7 @@ public class HandlerFactory extends AnnotationBasedBuilderFactory {
 					procedure.setHandler(this.kHandler);
 				}
 			}
+			this.kHandler.setHandlerLoopPolicy(handler.handlerLoopPolicy());
 			return super.complete();
 		}
 	}

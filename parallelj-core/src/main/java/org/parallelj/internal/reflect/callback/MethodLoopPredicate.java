@@ -19,42 +19,40 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj;
+package org.parallelj.internal.reflect.callback;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-import org.parallelj.mirror.HandlerLoopPolicy;
+import org.parallelj.internal.kernel.KElement;
+import org.parallelj.internal.kernel.KProcess;
+import org.parallelj.internal.kernel.callback.Predicate;
 
-/**
- * Specifies that the method is an exception handler. 
- * 
- * An handler is a special procedure which is called when an exception is thrown
- * by other procedures.
- * 
- * @author Atos Worldline
- * @since 0.3.0
- *
- */
-@Documented
-@Target(ElementType.METHOD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Handler {
+public class MethodLoopPredicate extends MethodPredicate {
 
-	/**
-	 * The list of procedures to handle exception.
-	 */
-	String[] value() default {};
+	KElement element;
 
-	/**
-	 * The handler loop policy.
-	 * Default value is RESUME.
-	 * 
-	 * @return The handler loop policy.
-	 */
-	HandlerLoopPolicy handlerLoopPolicy() default HandlerLoopPolicy.RESUME;
-	
+	public MethodLoopPredicate(KElement element, Method method) {
+		super(method);
+		this.element = element;
+	}
+
+	@Override
+	public boolean verify(KProcess process) {
+		boolean isError = this.element!=null && this.element.isError(); 
+		try {
+			return !isError && (Boolean) this.method.invoke(process.getContext());
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+
 }

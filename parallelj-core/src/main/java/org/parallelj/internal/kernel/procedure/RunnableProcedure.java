@@ -26,6 +26,7 @@ import org.parallelj.internal.kernel.KCall;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
+import org.parallelj.mirror.HandlerLoopPolicy;
 
 /**
  * Represents a procedure bound to a {@link Runnable}.
@@ -65,6 +66,10 @@ public class RunnableProcedure extends KProcedure {
 				} catch (Exception e) {
 					MessageKind.W0003.format(e);
 					RunnableCall.this.setException(e);
+					if (RunnableProcedure.this.getHandler()!=null 
+							&& RunnableProcedure.this.getHandler().getHandlerLoopPolicy()==HandlerLoopPolicy.TERMINATE) {
+						RunnableProcedure.this.setIsError(true);
+					}
 				} finally {
 					RunnableCall.this.complete();
 				}

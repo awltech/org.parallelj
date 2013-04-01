@@ -24,6 +24,8 @@ package org.parallelj.internal.kernel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.parallelj.mirror.HandlerLoopPolicy;
+
 /**
  * A {@link KHandler} is a special kind of {@link KProcedure} that manages
  * {@link KCall} on error.
@@ -50,6 +52,11 @@ public class KHandler extends KProcedure {
 	 * input parameter that will store the {@link KCall} on error.
 	 */
 	KInputParameter onError = new KInputParameter();
+
+	/**
+	 * The Exception handling policy.
+	 */
+	protected HandlerLoopPolicy handlerLoopPolicy = HandlerLoopPolicy.RESUME;
 
 	/**
 	 * Create a new {@link KHandler}
@@ -106,4 +113,11 @@ public class KHandler extends KProcedure {
 		this.getMarking(call.getProcess()).onError.add(call);
 	}
 
+	public HandlerLoopPolicy getHandlerLoopPolicy() {
+		return this.handlerLoopPolicy;
+	}
+
+	public void setHandlerLoopPolicy(HandlerLoopPolicy policy) {
+		this.handlerLoopPolicy = policy;
+	}
 }

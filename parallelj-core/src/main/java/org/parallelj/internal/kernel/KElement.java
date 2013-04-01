@@ -58,6 +58,8 @@ public abstract class KElement {
 	 */
 	List<KOutputLink> outputLinks = new ArrayList<KOutputLink>();
 
+	protected boolean isError = false;
+	
 	/**
 	 * 
 	 * @param program
@@ -151,5 +153,12 @@ public abstract class KElement {
 		return String.format("%s[name='%s']", this.getClass().getSimpleName(),
 				this.name);
 	}
+	
+	public boolean isError() {
+		return this.isError;
+	}
 
+	public void setIsError(boolean isError) {
+		this.isError = isError;
+	}
 }

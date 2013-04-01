@@ -26,6 +26,7 @@ import java.util.Iterator;
 import org.parallelj.internal.kernel.*;
 import org.parallelj.internal.kernel.callback.Iterable;
 import org.parallelj.internal.kernel.callback.Predicate;
+import org.parallelj.mirror.HandlerLoopPolicy;
 
 /**
  * 
@@ -44,6 +45,8 @@ public class KForEachLoop extends KWhileLoop {
 	 * KParameter that will store the element returned by the iterator.
 	 */
 	private final KInputParameter element = new KInputParameter();
+
+	private boolean isError = false;
 
 	/**
 	 * Create a new for each loop.
@@ -67,12 +70,16 @@ public class KForEachLoop extends KWhileLoop {
 
 	@Override
 	protected void iterating(KCall call) {
+		if(call.getProcedure().isError() 
+				&& call.getProcedure().getHandler().getHandlerLoopPolicy()==HandlerLoopPolicy.TERMINATE) {
+			this.isError=true;
+		}
 		element.set(call, iterable.iterator(call.getProcess()).next());
 	}
 
 	boolean hasNext(KProcess process) {
 		Iterator<?> iterator = iterable.iterator(process);
-		return (iterator == null) ? false : iterator.hasNext();
+		return (iterator == null || (this.isError)) ? false : iterator.hasNext();
 	}
 
 	/**
