@@ -5,18 +5,36 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProceduresOnError {
 	
-	Map<Object, Exception> mapProcs = new ConcurrentHashMap<Object, Exception>(); 
+	Map<Object, Exception> mapProceduresInError = new ConcurrentHashMap<Object, Exception>(); 
+	Map<Object, Exception> mapProceduresHandledInError = new ConcurrentHashMap<Object, Exception>(); 
 		
 	public void addProcedureInError(Object procedure, Exception exception) {
-		mapProcs.put(procedure, exception);
+		mapProceduresInError.put(procedure, exception);
+	}
+
+	public void addProcedureHandledInError(Object procedure, Exception exception) {
+		mapProceduresHandledInError.put(procedure, exception);
 	}
 
 	public boolean isExceptionForProcedure(Object procedure) {
-		return mapProcs.get(procedure)!=null;
+		return mapProceduresInError.get(procedure)!=null;
+	}
+	
+	public boolean isExceptionHandledForProcedure(Object procedure) {
+		return mapProceduresHandledInError.get(procedure)!=null;
 	}
 	
 	public boolean isErrorOfType(Class<?> error) {
-		for(Map.Entry<Object, Exception> entry:this.mapProcs.entrySet()) {
+		for(Map.Entry<Object, Exception> entry:this.mapProceduresInError.entrySet()) {
+			if (entry.getValue().getClass().equals(error)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isHandledErrorOfType(Class<?> error) {
+		for(Map.Entry<Object, Exception> entry:this.mapProceduresHandledInError.entrySet()) {
 			if (entry.getValue().getClass().equals(error)) {
 				return true;
 			}
@@ -25,7 +43,16 @@ public class ProceduresOnError {
 	}
 	
 	public boolean isErrorForProcedureOfType(Class<?> proc) {
-		for(Object entry:this.mapProcs.keySet()) {
+		for(Object entry:this.mapProceduresInError.keySet()) {
+			if (entry.getClass().equals(proc)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isHandledErrorForProcedureOfType(Class<?> proc) {
+		for(Object entry:this.mapProceduresHandledInError.keySet()) {
 			if (entry.getClass().equals(proc)) {
 				return true;
 			}
@@ -35,7 +62,15 @@ public class ProceduresOnError {
 	
 	public Exception getExceptionForProcedure(Object procedure) {
 		try {
-			return mapProcs.get(procedure);
+			return mapProceduresInError.get(procedure);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public Exception getHandledExceptionForProcedure(Object procedure) {
+		try {
+			return mapProceduresHandledInError.get(procedure);
 		} catch (Exception e) {
 			return null;
 		}
@@ -43,22 +78,34 @@ public class ProceduresOnError {
 	
 	public Exception getAndRemoveExceptionForProcedure(Object procedure) {
 		try {
-			return mapProcs.remove(procedure);
+			return mapProceduresInError.remove(procedure);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public Exception getAndRemoveHandledExceptionForProcedure(Object procedure) {
+		try {
+			return mapProceduresHandledInError.remove(procedure);
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
 	public long getNumberOfProceduresInError() {
-		return mapProcs.size();
+		return mapProceduresInError.size();
+	}
+
+	public long getNumberOfHandledProceduresInError() {
+		return mapProceduresHandledInError.size();
 	}
 
 	@Override
 	public String toString() {
 		String format = "[%s [%s]] ";
 		StringBuffer strb = new StringBuffer();
-		for (Object procedure : mapProcs.keySet()) {
-			strb.append(String.format(format, procedure, mapProcs.get(procedure)));
+		for (Object procedure : mapProceduresInError.keySet()) {
+			strb.append(String.format(format, procedure, mapProceduresInError.get(procedure)));
 		}
 		
 		return strb.toString();

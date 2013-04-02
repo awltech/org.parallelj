@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,11 +56,13 @@ public class ProgramJobAdapterTest {
 		ProceduresOnError errors = prg.getOnMynErrors();
 		assertNotNull(errors);
 		assertEquals(errors.getNumberOfProceduresInError(), 2);
-		//assertTrue(errors.isErrorForProcedureOfType(Runnable.class));
+		assertEquals(errors.getNumberOfHandledProceduresInError(), 1);
+		assertTrue(errors.isErrorOfType(Exception.class));
 		assertTrue(errors.isErrorOfType(RuntimeException.class));
 
-		//assertTrue(errors.isErrorForProcedureOfType(Callable.class));
 		assertTrue(errors.isErrorOfType(Exception.class));
+		assertTrue(errors.isHandledErrorOfType(Exception.class));
+		assertFalse(errors.isHandledErrorOfType(RuntimeException.class));
 
 		service.shutdown();
 	}

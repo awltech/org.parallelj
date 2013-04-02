@@ -20,6 +20,7 @@ privileged public aspect ProceduresOnErrorManagement {
 	public Method IProceduresOnError.getterMethod;
 	public String IProceduresOnError.fieldName;
 	private boolean IProceduresOnError.isErrors=false;
+	private boolean IProceduresOnError.isHandledErrors=false;
 	
 	public void IProceduresOnError.setGetterMethod(Method getterFieldMethod) {
 		this.getterMethod = getterFieldMethod;
@@ -59,6 +60,28 @@ privileged public aspect ProceduresOnErrorManagement {
 		
 	}
 	
+	public synchronized void IProceduresOnError.addProcedureHandledInError(KProgram kprogram, Object program, Object procedure, Exception exception) {
+		ProceduresOnError obj;
+		
+		this.isHandledErrors=true;
+		Method method = ((IProceduresOnError)kprogram).getGetterMethod();
+		if (method != null) {
+			try {
+				obj = (ProceduresOnError)method.invoke(program, new Object[]{});
+				if (obj==null) {
+					obj = new ProceduresOnError();
+					Field field = program.getClass().getDeclaredField(((IProceduresOnError)kprogram).getFieldName());
+					field.setAccessible(true);
+					field.set(program, obj);
+				}
+				obj.addProcedureHandledInError(procedure, exception);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
 	public synchronized ProceduresOnError IProceduresOnError.getAllProceduresInError(Object program) {
 		ProceduresOnError obj=null;
 		if (this.getGetterMethod()!=null) {
@@ -73,6 +96,10 @@ privileged public aspect ProceduresOnErrorManagement {
 	
 	public boolean IProceduresOnError.isError() {
 		return this.isErrors;
+	}
+	
+	public boolean IProceduresOnError.isHandledError() {
+		return this.isHandledErrors;
 	}
 	
     pointcut procsOnError(Object a): get(@OnError ProceduresOnError *.*) && this(a);
@@ -96,11 +123,14 @@ privileged public aspect ProceduresOnErrorManagement {
 		 
 		RunnableProcedure.RunnableCall runnable = (RunnableProcedure.RunnableCall)thisJoinPoint.getTarget();
 		RunnableProcedure procedure = (RunnableProcedure)runnable.getProcedure();
-		if (procedure.getHandler() == null
-				&& runnable.getException() != null) {
+		if (runnable.getException() != null) {
 			// There is an error !!!
 			KProcess process = runnable.getProcess();
-			((IProceduresOnError)process.getProgram()).addProcedureInError(process.getProgram(), process.getContext(), runnable.getContext(), runnable.getException());
+			if(procedure.getHandler() == null) {
+				((IProceduresOnError)process.getProgram()).addProcedureInError(process.getProgram(), process.getContext(), runnable.getContext(), runnable.getException());
+			} else {
+				((IProceduresOnError)process.getProgram()).addProcedureHandledInError(process.getProgram(), process.getContext(), runnable.getContext(), runnable.getException());
+			}
 		}
 		proceed(self);
 	}
@@ -112,13 +142,13 @@ privileged public aspect ProceduresOnErrorManagement {
 
 		CallableProcedure.CallableCall callable = (CallableProcedure.CallableCall)thisJoinPoint.getTarget();
 		CallableProcedure procedure = (CallableProcedure)callable.getProcedure(); 
-		if (
-				procedure.getHandler() == null
-				&& callable.getException() != null
-				) {
+		if (callable.getException() != null) {
 			// There is an error !!!
 			KProcess process = callable.getProcess();
-			((IProceduresOnError)process.getProgram()).addProcedureInError(process.getProgram(), process.getContext(), callable.getContext(), callable.getException());
+			if(procedure.getHandler() == null) {
+				((IProceduresOnError)process.getProgram()).addProcedureInError(process.getProgram(), process.getContext(), callable.getContext(), callable.getException());
+			} else {
+				((IProceduresOnError)process.getProgram()).addProcedureHandledInError(process.getProgram(), process.getContext(), callable.getContext(), callable.getException());			}
 		}
 		proceed(self);
 	}
