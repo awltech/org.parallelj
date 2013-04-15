@@ -1,6 +1,7 @@
 package org.parallelj.launching.errors;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProceduresOnError {
@@ -98,6 +99,14 @@ public class ProceduresOnError {
 
 	public long getNumberOfHandledProceduresInError() {
 		return mapProceduresHandledInError.size();
+	}
+
+	public Set<Object> getProceduresInError() {
+		return mapProceduresInError.keySet();
+	}
+
+	public Set<Object> getProceduresHandledInError() {
+		return mapProceduresHandledInError.keySet();
 	}
 
 	@Override
