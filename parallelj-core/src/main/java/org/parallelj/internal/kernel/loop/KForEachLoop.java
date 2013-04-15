@@ -46,8 +46,6 @@ public class KForEachLoop extends KWhileLoop {
 	 */
 	private final KInputParameter element = new KInputParameter();
 
-	private boolean isError = false;
-
 	/**
 	 * Create a new for each loop.
 	 * 
