@@ -31,6 +31,7 @@ import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ProgramReturnCodes;
 import org.parallelj.launching.internal.LaunchingObservable;
+import org.parallelj.launching.internal.ParallelJThreadFactory;
 import org.parallelj.mirror.ProgramType;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -101,11 +102,11 @@ privileged public aspect ProgramJobsAdapter {
 				short programCapacity = ((KProgram) programType)
 						.getCapacity();
 				service = (programCapacity == Short.MAX_VALUE) ? Executors
-						.newCachedThreadPool() : Executors
-						.newFixedThreadPool(programCapacity);
+						.newFixedThreadPool(100,new ParallelJThreadFactory()) : Executors
+						.newFixedThreadPool(programCapacity, new ParallelJThreadFactory());
 			} else {
 				service = Executors
-						.newCachedThreadPool();
+						.newCachedThreadPool(new ParallelJThreadFactory());
 			}
 			
 			/*
