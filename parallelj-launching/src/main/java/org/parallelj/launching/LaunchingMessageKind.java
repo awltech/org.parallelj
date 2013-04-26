@@ -286,6 +286,18 @@ public enum LaunchingMessageKind {
 	@Format("Invalid arguments %s for Program %s. Parser error!")
 	EREMOTE0010,
 	
+	/**
+	 * Invalid arguments %s for Program %s. Argument should be Key-Value pair!
+	 */
+	@Format("Invalid arguments %s for Program %s. Argument should be Key-Value pair!")
+	EREMOTE0011,
+	
+	//TODO: Warning message
+	/**
+	 * Invalid arguments %s for Program %s. Argument value(s) should be in quotes!
+	 */
+	@Format("Invalid arguments %s for Program %s. Please consider enclosing Argument value(s) in quotes!")
+	WREMOTE001,
 	
 	/*
 	 * Information messages for Ssh

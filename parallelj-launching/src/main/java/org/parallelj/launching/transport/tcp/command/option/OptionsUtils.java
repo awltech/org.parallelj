@@ -21,6 +21,8 @@
  */
 package org.parallelj.launching.transport.tcp.command.option;
 
+import java.util.Iterator;
+
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.inout.Argument;
 import org.parallelj.launching.parser.ParserException;
@@ -81,14 +83,33 @@ public final class OptionsUtils {
 	public static void initializeArg(final RemoteProgram remoteProgram, final String[] arguments, final JobDataMap jobDataMap)
 			throws OptionException, ParserException {
 
-		int index = 0;
-		for (Argument argument : remoteProgram.getArguments()) {
-			try {
-				argument.setValueUsingParser(arguments[index]);
-			} catch (Exception e) {
-				throw new OptionException(LaunchingMessageKind.EREMOTE0010.format(argument.getName(), remoteProgram.getClass().getCanonicalName()),e);
+		for (String argument : arguments) {
+			if (argument.indexOf("=") > 0) {
+				String[] arg = argument.split("=");
+				String argName = arg[0];
+				String argValue = arg[1];
+				
+				if (argValue.charAt(0) == '"' && argValue.charAt(argValue.length()-1) == '"') {
+					argValue = argValue.substring(1, argValue.length()-1);
+				}
+				
+				Iterator<Argument> argumentIterator = remoteProgram.getArguments().iterator();
+				boolean found = false;
+				while (argumentIterator.hasNext() && !found) {
+				Argument a = argumentIterator.next(); {
+					try {
+						if (a.getName().equals(argName)) {
+							a.setValueUsingParser(argValue);
+							found = true;
+						}
+					} catch (Exception e) {
+						throw new OptionException(LaunchingMessageKind.EREMOTE0010.format(a.getName(), remoteProgram.getClass().getCanonicalName()), e);
+					}
+				}
+				}	
+			} else {
+				throw new OptionException(LaunchingMessageKind.EREMOTE0011.format(remoteProgram.getClass().getCanonicalName()));
 			}
-			index++;
 		}
 	}
 
