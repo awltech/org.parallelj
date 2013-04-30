@@ -296,7 +296,7 @@ public enum LaunchingMessageKind {
 	/**
 	 * Invalid arguments %s for Program %s. Argument value(s) should be in quotes!
 	 */
-	@Format("Invalid arguments %s for Program %s. Please consider enclosing Argument value(s) in quotes!")
+	@Format("Invalid number of arguments for Program %s. Please consider enclosing Argument value(s) in quotes!")
 	WREMOTE001,
 	
 	/*

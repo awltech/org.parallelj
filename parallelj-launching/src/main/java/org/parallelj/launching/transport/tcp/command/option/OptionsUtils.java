@@ -83,11 +83,23 @@ public final class OptionsUtils {
 	public static void initializeArg(final RemoteProgram remoteProgram, final String[] arguments, final JobDataMap jobDataMap)
 			throws OptionException, ParserException {
 
+		int numberOfEquals = 0;
+		for (String argument : arguments) {
+			if (argument.indexOf('"') > -1)
+				numberOfEquals++;
+		}
+		
+		if (numberOfEquals != arguments.length)
+			throw new OptionException(LaunchingMessageKind.WREMOTE001.format(remoteProgram.getClass().getCanonicalName()));
+		
 		for (String argument : arguments) {
 			if (argument.indexOf("=") > 0) {
 				String[] arg = argument.split("=");
 				String argName = arg[0];
 				String argValue = arg[1];
+				
+				if (argValue != null && argValue.length() == 0)
+					argValue = null;
 				
 				if (argValue.charAt(0) == '"' && argValue.charAt(argValue.length()-1) == '"') {
 					argValue = argValue.substring(1, argValue.length()-1);
