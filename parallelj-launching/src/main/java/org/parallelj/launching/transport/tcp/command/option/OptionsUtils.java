@@ -85,7 +85,7 @@ public final class OptionsUtils {
 
 		int numberOfEquals = 0;
 		for (String argument : arguments) {
-			if (argument.indexOf('"') > -1)
+			if (argument.indexOf('=') > -1)
 				numberOfEquals++;
 		}
 		
