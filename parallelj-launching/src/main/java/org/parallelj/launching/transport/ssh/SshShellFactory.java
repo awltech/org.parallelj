@@ -144,10 +144,6 @@ public class SshShellFactory implements Factory<Command> {
 									}
 								}
 							}
-							
-							for (String string : lstArg) {
-								System.out.println("["+string+"]");
-							}
 						}
 						
 						// Try to launch the command
