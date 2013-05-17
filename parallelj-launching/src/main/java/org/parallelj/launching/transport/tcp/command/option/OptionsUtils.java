@@ -96,12 +96,14 @@ public final class OptionsUtils {
 			if (argument.indexOf("=") > 0) {
 				String[] arg = argument.split("=");
 				String argName = arg[0];
-				String argValue = arg[1];
+				String argValue = null;
+				if (arg.length>1)
+					argValue = arg[1];
 				
 				if (argValue != null && argValue.length() == 0)
 					argValue = null;
 				
-				if (argValue.charAt(0) == '"' && argValue.charAt(argValue.length()-1) == '"') {
+				if (argValue!=null && argValue.charAt(0) == '"' && argValue.charAt(argValue.length()-1) == '"') {
 					argValue = argValue.substring(1, argValue.length()-1);
 				}
 				

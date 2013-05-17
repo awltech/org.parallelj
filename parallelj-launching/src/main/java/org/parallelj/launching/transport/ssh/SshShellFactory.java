@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.sshd.common.Factory;
 import org.apache.sshd.server.Command;
@@ -120,6 +122,34 @@ public class SshShellFactory implements Factory<Command> {
 							cmd = args[0];
 						}
 	
+						List<String> lstArg = new ArrayList<String>();
+						if (args.length>0) {
+							boolean isArg=false;
+							int index=0;
+							for (String val : args) {
+								if (val.equals("-a")) {
+									lstArg.add(val);
+									index++;
+									isArg=true;
+								} else {
+									if (val.length()>0) {
+										if (isArg && val.charAt(0)!='-' && val.indexOf('=')==-1) {
+											lstArg.set(index-1, lstArg.get(index-1)+" "+val);
+										} else {
+											lstArg.add(val);
+											index++;
+										}
+									} else {
+										lstArg.set(index-1, lstArg.get(index-1)+" ");
+									}
+								}
+							}
+							
+							for (String string : lstArg) {
+								System.out.println("["+string+"]");
+							}
+						}
+						
 						// Try to launch the command
 						TcpCommand command = TcpIpCommands.getCommands().get(cmd);
 						String result = null;
@@ -128,12 +158,25 @@ public class SshShellFactory implements Factory<Command> {
 						if (command != null) {
 							if (command instanceof Quit) {
 								return;
-							} else if (args.length > 1) {
-								result = command.process(null,
-										Arrays.copyOfRange(args, 1, args.length));
+							} else if (args.length>1) {
+								try {
+								String[] finalArgs = new String[lstArg.size()];
+								for (int i=0; i< finalArgs.length; i++) {
+									String[] argSplit=lstArg.get(i).split("=");
+									if (argSplit.length==2 && argSplit[1].charAt(0)=='"' && argSplit[1].charAt(argSplit[1].length()-1)=='"' ) {
+										finalArgs[i]=argSplit[0]+"="+argSplit[1].substring(1, argSplit[1].length()-1);
+									} else {
+										finalArgs[i]=lstArg.get(i);
+									}
+								}
+								result = command.process(null, Arrays.copyOfRange(finalArgs, 1, finalArgs.length));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 							} else {
-								result = command.process(null, new String[] {});
+								result = command.process(null, new String[]{});
 							}
+
 						} else {
 							out.write((CMD_UNKNOWN + cmd).getBytes());
 						}
