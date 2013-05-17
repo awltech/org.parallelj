@@ -35,7 +35,7 @@ public class AsyncLaunchArgsOption implements IAsyncLaunchOption {
 		this.option = OptionBuilder.create("a");
 		this.option.setLongOpt("args");
 		this.option.setArgs(100);
-		this.option.setArgName("args...");
+		this.option.setArgName("arg1=value1 arg2=value2 ... argx=valueX");
 		this.option.setDescription("Arguments of the Program");
 		this.option.setRequired(false);
 	}
