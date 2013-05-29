@@ -43,6 +43,9 @@ public class UserCodeLaunchingListener extends AbstractLaunchingListener {
 					// Complete the JobDataMap
 				}
 				jobDataMap.put(QuartzUtils.USER_RETURN_CODE, userReturnCode);
+				if (context.getResult() instanceof JobDataMap) {
+					((JobDataMap)context.getResult()).put(QuartzUtils.USER_RETURN_CODE, userReturnCode);
+				}
 			} catch (IllegalAccessException e) {
 				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 				LaunchingMessageKind.EREMOTE0009.format(e);

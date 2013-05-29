@@ -30,6 +30,7 @@ import java.lang.annotation.Target;
 import org.parallelj.launching.parser.NopParser;
 import org.parallelj.launching.parser.Parser;
 
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

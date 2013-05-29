@@ -34,41 +34,45 @@ public class InOutLaunchingListener extends AbstractLaunchingListener {
 		IProgramInputOutputs programInputOutput = (IProgramInputOutputs)processHelper.getProcess().getProgram();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> parameters = (Map<String, Object>)context.getJobDetail().getJobDataMap().get(Launch.PARAMETERS);
-		for(String key:parameters.keySet()) {
-			Object value = parameters.get(key);
-			Argument argument = programInputOutput.getArgument(key);
-			if (argument!=null) {
-				argument.setValue(value);
+		if (parameters!=null) {
+			for(String key:parameters.keySet()) {
+				Object value = parameters.get(key);
+				Argument argument = programInputOutput.getArgument(key);
+				if (argument!=null) {
+					argument.setValue(value);
+				}
 			}
-		}
 		
-		// Initialize fields with annotation @In
-		List<Argument> arguments = programInputOutput.getArguments();
-		for (Argument argument:arguments) {
-			Method setter = argument.getWriteMethod();
-			try {
-				// Call the setter method
-				setter.invoke(adapter, argument.getValue());
-			} catch (IllegalAccessException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
-				LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
-				throw new JobExecutionException(e);
-			} catch (IllegalArgumentException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
-				LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
-				throw new JobExecutionException(e);
-			} catch (InvocationTargetException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
-				LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
-				throw new JobExecutionException(e);
-			} catch (NullPointerException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
-				LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
-				throw new JobExecutionException(e);
-			} catch (ExceptionInInitializerError e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
-				LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
-				throw new JobExecutionException(e);
+			// Initialize fields with annotation @In
+			List<Argument> arguments = programInputOutput.getArguments();
+			for (Argument argument:arguments) {
+				Method setter = argument.getWriteMethod();
+				try {
+					// Call the setter method
+					// If there is a Parser to use, it is called first...
+					argument.setValueUsingParser(String.valueOf(argument.getValue())); 
+					setter.invoke(adapter, argument.getValue());
+				} catch (IllegalAccessException e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
+					throw new JobExecutionException(e);
+				} catch (IllegalArgumentException e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
+					throw new JobExecutionException(e);
+				} catch (InvocationTargetException e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
+					throw new JobExecutionException(e);
+				} catch (NullPointerException e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
+					throw new JobExecutionException(e);
+				} catch (ExceptionInInitializerError e) {
+					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+					LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);
+					throw new JobExecutionException(e);
+				}
 			}
 		}
 	}
@@ -115,7 +119,7 @@ public class InOutLaunchingListener extends AbstractLaunchingListener {
 			}
 		}
 		
-		jobDataMap.put(Launch.OUTPUTS, outputs);
+		((JobDataMap)context.getResult()).put(Launch.OUTPUTS, outputs);
 		
 	}
 

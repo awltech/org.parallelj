@@ -27,6 +27,7 @@ import org.parallelj.Program;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
+@Deprecated
 public class ProgramFieldsBinder {
 
 	public static void getProgramOutputFields(Object prog, JobExecutionContext context)

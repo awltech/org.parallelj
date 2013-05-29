@@ -40,6 +40,7 @@ import org.parallelj.tracknrestart.listeners.ForEachListener;
 import org.parallelj.tracknrestart.plugins.TrackNRestartPluginAll;
 import org.parallelj.internal.kernel.procedure.RunnableProcedure;
 import org.parallelj.internal.kernel.procedure.CallableProcedure;
+import org.parallelj.launching.internal.LaunchingObservable;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -86,6 +87,7 @@ privileged public aspect QuartzContextAdapter percflow(execution(public void Job
 	
 	//---------------------------------------------------------------------------------------------------
 	
+	@SuppressWarnings("deprecation")
 	public void Job.execute(JobExecutionContext context) throws JobExecutionException {
 		
 //		ExecutorService service = null;
@@ -98,9 +100,16 @@ privileged public aspect QuartzContextAdapter percflow(execution(public void Job
 
 //			service = Executors.newFixedThreadPool(5);
 
-//			ProcessHelper<?> p = Programs.as((Adapter) this).execute(service).join();
-			ProcessHelper<?> p = Programs.as((Adapter) this).execute().join();
-
+			ProcessHelper<?> processHelper = Programs.as((Adapter) this);
+			//((JobDataMap)context.getResult()).put(QuartzUtils.CONTEXT, processHelper);
+			
+			LaunchingObservable observable = new LaunchingObservable();
+			observable.prepareLaunching((Adapter) this, processHelper, context);
+			
+			processHelper.execute().join();
+			//((JobDataMap)context.getResult()).put(QuartzUtils.CONTEXT, processHelper);
+			
+			observable.finalizeLaunching((Adapter) this, processHelper, context);
 			ProgramFieldsBinder.getProgramOutputFields(this, context);
 
 			X current = (X)this;
