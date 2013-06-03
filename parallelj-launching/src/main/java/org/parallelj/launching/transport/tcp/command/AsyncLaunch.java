@@ -81,7 +81,7 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand 
 		} catch (OptionException e) {
 			return e.getFormatedMessage();
 		} catch (LaunchException e) {
-			return  LaunchingMessageKind.EQUARTZ0003.format(remoteProgram!=null?remoteProgram.getAdapterClass():"unknown");
+			return  LaunchingMessageKind.EQUARTZ0003.format(remoteProgram!=null?remoteProgram.getAdapterClass():"unknown",e);
 		}
 	}
 

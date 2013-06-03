@@ -97,7 +97,7 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 		} catch (LaunchException e) {
 			return LaunchingMessageKind.EQUARTZ0003
 					.format(remoteProgram != null ? remoteProgram
-							.getAdapterClass() : "unknown");
+							.getAdapterClass() : "unknown",e);
 		}
 	}
 
