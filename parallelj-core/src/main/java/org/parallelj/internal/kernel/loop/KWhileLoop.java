@@ -183,12 +183,4 @@ public class KWhileLoop extends KElement {
 	protected void iterating(KCall call) {
 	}
 
-//	public void addInError(KProcess process) {
-//		process.addElementInError(this);
-//	}
-//
-//	public boolean isInError(KProcess process) {
-//		return process.getElementsInError().contains(this);
-//	}
-	
 }
