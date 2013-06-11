@@ -86,6 +86,11 @@ public class KPipelineForEachLoop extends KElement {
 				join.join(call);
 				KPipelineForEachLoop.this.iterable(call);
 			}
+
+			@Override
+			public KElement getProcedure() {
+				return KPipelineForEachLoop.this;
+			}
 		};
 	}
 

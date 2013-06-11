@@ -30,7 +30,6 @@ import java.util.List;
 
 import org.parallelj.While;
 import org.parallelj.internal.kernel.loop.KWhileLoop;
-import org.parallelj.internal.reflect.callback.MethodLoopPredicate;
 import org.parallelj.internal.reflect.callback.MethodPredicate;
 
 public class WhileFactory extends AnnotationBasedBuilderFactory {
@@ -42,7 +41,7 @@ public class WhileFactory extends AnnotationBasedBuilderFactory {
 			KWhileLoop loop = new KWhileLoop(this.getProcedure(), this
 					.getProcedure());
 			While w = this.getMember().getAnnotation(While.class);
-			loop.setPredicate(new MethodLoopPredicate(loop, SplitFactory.getPredicate(
+			loop.setPredicate(new MethodPredicate(SplitFactory.getPredicate(
 					this.getBuilder().getType(), w.value())));
 			return super.complete();
 		}

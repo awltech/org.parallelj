@@ -25,6 +25,7 @@ import java.util.concurrent.Callable;
 
 import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KCall;
+import org.parallelj.internal.kernel.KElement;
 import org.parallelj.internal.kernel.KOutputParameter;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
@@ -63,8 +64,8 @@ public class CallableProcedure extends KProcedure {
 					MessageKind.W0003.format(e);
 					CallableCall.this.setException(e);
 					if (CallableProcedure.this.getHandler()!=null 
-							&& CallableProcedure.this.getHandler().getHandlerLoopPolicy()==HandlerLoopPolicy.TERMINATE) {
-						CallableProcedure.this.setIsError(true);
+							&& CallableProcedure.this.getHandler().getHandlerLoopPolicy().isTerminating()) {
+						((KElement)CallableCall.this.getProcedure().getJoin().getProcedure()).addElementInError(CallableCall.this.getProcess());
 					}
 				} finally {
 					CallableCall.this.complete();

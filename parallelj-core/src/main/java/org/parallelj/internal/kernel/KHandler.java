@@ -82,7 +82,26 @@ public class KHandler extends KProcedure {
 			 */
 			@Override
 			public boolean isEnabled(KProcess process) {
-				return !KHandler.this.getMarking(process).onError.isEmpty();
+				boolean isEnabled = !KHandler.this.getMarking(process).onError.isEmpty();
+				boolean isBusyOrEnable=false;
+				
+				if (isEnabled) {
+					// Does we have to wait for the end of the Procedure before activate the Handler??
+					if (KHandler.this.getHandlerLoopPolicy().isWaitingPolicy()) {
+						for (KCall call : KHandler.this.getMarking(process).onError) {
+							if (call.getProcedure().isBusy(process) || call.getProcedure().isEnabled(process)) {
+								isBusyOrEnable=true;
+								break;
+							}
+						}
+					}
+				}
+				return !isBusyOrEnable && isEnabled;
+			}
+
+			@Override
+			public KElement getProcedure() {
+				return KHandler.this;
 			}
 		});
 	}

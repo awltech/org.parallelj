@@ -115,6 +115,11 @@ public class KPipeline extends KElement {
 
 				KPipeline.this.condition.consume(call.getProcess());
 			}
+
+			@Override
+			public KElement getProcedure() {
+				return KPipeline.this;
+			}
 		};
 	}
 
@@ -135,6 +140,11 @@ public class KPipeline extends KElement {
 				}
 
 				KPipeline.this.condition.produce(call.getProcess());
+			}
+			
+			@Override
+			public KElement getProcedure() {
+				return KPipeline.this;
 			}
 		};
 	}

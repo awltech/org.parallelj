@@ -153,7 +153,7 @@ public class KProcedure extends KElement implements Procedure {
 	 * 
 	 * @return <code>true</code> if this procedure is enabled.
 	 */
-	public final boolean isEnabled(KProcess process) {
+	public boolean isEnabled(KProcess process) {
 		return this.verifyLiveness(process) && this.join.isEnabled(process);
 	}
 
@@ -228,10 +228,10 @@ public class KProcedure extends KElement implements Procedure {
 		// this.getInstances(program).clear();
 	}
 
-	protected void terminate(KCall call) {
+	public final void terminate(KCall call) {
 	}
 
-	protected void abort(KCall call) {
+	public final void abort(KCall call) {
 	}
 
 	/**

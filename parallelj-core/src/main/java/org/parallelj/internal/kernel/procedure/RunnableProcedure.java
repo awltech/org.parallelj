@@ -23,10 +23,10 @@ package org.parallelj.internal.kernel.procedure;
 
 import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KCall;
+import org.parallelj.internal.kernel.KElement;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.mirror.HandlerLoopPolicy;
 
 /**
  * Represents a procedure bound to a {@link Runnable}.
@@ -46,7 +46,7 @@ public class RunnableProcedure extends KProcedure {
 	 * 
 	 */
 	class RunnableCall extends KCall {
-
+		
 		class RunnableCallRunnable implements Runnable {
 			private RunnableCall runnableCall;
 			
@@ -67,14 +67,13 @@ public class RunnableProcedure extends KProcedure {
 					MessageKind.W0003.format(e);
 					RunnableCall.this.setException(e);
 					if (RunnableProcedure.this.getHandler()!=null 
-							&& RunnableProcedure.this.getHandler().getHandlerLoopPolicy()==HandlerLoopPolicy.TERMINATE) {
-						RunnableProcedure.this.setIsError(true);
+							&& RunnableProcedure.this.getHandler().getHandlerLoopPolicy().isTerminating()) {
+						((KElement)RunnableCall.this.getProcedure().getJoin().getProcedure()).addElementInError(RunnableCall.this.getProcess());
 					}
 				} finally {
 					RunnableCall.this.complete();
 				}
 			}
-			
 		}
 		
 		protected RunnableCall(KProcess process) {

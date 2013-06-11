@@ -59,6 +59,7 @@ public abstract class KAbstractJoin implements KJoin {
 	/**
 	 * @return the procedure containing the join
 	 */
+	@Override
 	public KProcedure getProcedure() {
 		return procedure;
 	}

@@ -21,6 +21,8 @@
  */
 package org.parallelj.internal.kernel;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.parallelj.internal.util.sm.Entry;
@@ -32,6 +34,7 @@ import org.parallelj.internal.util.sm.Transition;
 import org.parallelj.internal.util.sm.Transitions;
 import org.parallelj.internal.util.sm.Trigger;
 import org.parallelj.mirror.CallState;
+import org.parallelj.mirror.HandlerLoopPolicy;
 import org.parallelj.mirror.MachineKind;
 import org.parallelj.mirror.Process;
 import org.parallelj.mirror.ProcessState;
@@ -75,6 +78,8 @@ public class KProcess extends KMachine<ProcessState> implements Process, StateLi
 	private String parentId = "0.0.0.0";
 
 	KProcessor processor;
+	
+	private Set<KElement> elementsInError = Collections.synchronizedSet(new HashSet<KElement>());
 
 	protected KProcess(KProgram program, Object context) {
 		super(MachineKind.PROCESS, ProcessState.PENDING);
@@ -160,6 +165,9 @@ public class KProcess extends KMachine<ProcessState> implements Process, StateLi
 		} else {
 			if (procedure.getHandler() != null) {
 				procedure.getHandler().addCallOnError(call);
+				if(procedure.getHandler().getHandlerLoopPolicy().equals(HandlerLoopPolicy.TERMINATE)) {
+					procedure.abort(call);
+				}
 			} else {
 				switch (this.program.getExceptionHandlingPolicy()) {
 				case RESUME:
@@ -294,4 +302,13 @@ public class KProcess extends KMachine<ProcessState> implements Process, StateLi
 			this.getProcessor().fire(this);
 		}
 	}
+
+	public void addElementInError(KElement procedure) {
+		this.elementsInError.add(procedure);
+	}
+
+	public Set<KElement> getElementsInError() {
+		return this.elementsInError;
+	}
+	
 }

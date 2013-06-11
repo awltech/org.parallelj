@@ -52,5 +52,7 @@ public interface KJoin {
 	 * 
 	 */
 	public abstract void join(KCall call);
+	
+	public KElement getProcedure();
 
 }

@@ -30,7 +30,6 @@ import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KSplit;
 import org.parallelj.internal.kernel.callback.Predicate;
 import org.parallelj.internal.kernel.join.KAbstractJoin;
-import org.parallelj.mirror.HandlerLoopPolicy;
 
 /**
  * Represents a while loop
@@ -97,7 +96,7 @@ public class KWhileLoop extends KElement {
 
 			@Override
 			public boolean isEnabled(KProcess process) {
-				return predicate.verify(process)
+				return !process.getElementsInError().contains(KWhileLoop.this) && predicate.verify(process)
 						&& (started.contains(process) || join
 								.isEnabled(process));
 			}
@@ -110,6 +109,12 @@ public class KWhileLoop extends KElement {
 				}
 				diff.produce(call.getProcess());
 				KWhileLoop.this.iterating(call);
+				
+			}
+
+			@Override
+			public KElement getProcedure() {
+				return KWhileLoop.this;
 			}
 		};
 	}
@@ -119,9 +124,11 @@ public class KWhileLoop extends KElement {
 
 			@Override
 			public void split(KCall call) {
-				diff.consume(call.getProcess());
-				if ((diff.isEmpty(call.getProcess()))
-						&& !predicate.verify(call.getProcess())) {
+				if (!diff.isEmpty(call.getProcess())) {
+					diff.consume(call.getProcess());
+				}
+				if (((diff.isEmpty(call.getProcess()))
+						&& !predicate.verify(call.getProcess()))) {
 					complete(split, call);
 				}
 			}
@@ -174,10 +181,14 @@ public class KWhileLoop extends KElement {
 	 * @param call
 	 */
 	protected void iterating(KCall call) {
-		if(call.getProcedure().isError() 
-				&& call.getProcedure().getHandler().getHandlerLoopPolicy()==HandlerLoopPolicy.TERMINATE) {
-			this.isError=true;
-		}
 	}
 
+//	public void addInError(KProcess process) {
+//		process.addElementInError(this);
+//	}
+//
+//	public boolean isInError(KProcess process) {
+//		return process.getElementsInError().contains(this);
+//	}
+	
 }
