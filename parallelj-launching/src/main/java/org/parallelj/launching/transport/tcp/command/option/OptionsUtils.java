@@ -22,6 +22,7 @@
 package org.parallelj.launching.transport.tcp.command.option;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.inout.Argument;
@@ -106,11 +107,11 @@ public final class OptionsUtils {
 				if (argValue!=null && argValue.charAt(0) == '"' && argValue.charAt(argValue.length()-1) == '"') {
 					argValue = argValue.substring(1, argValue.length()-1);
 				}
-				
+
 				Iterator<Argument> argumentIterator = remoteProgram.getArguments().iterator();
 				boolean found = false;
 				while (argumentIterator.hasNext() && !found) {
-				Argument a = argumentIterator.next(); {
+					Argument a = argumentIterator.next();
 					try {
 						if (a.getName().equals(argName)) {
 							a.setValueUsingParser(argValue);
@@ -120,7 +121,8 @@ public final class OptionsUtils {
 						throw new OptionException(LaunchingMessageKind.EREMOTE0010.format(a.getName(), remoteProgram.getClass().getCanonicalName()), e);
 					}
 				}
-				}	
+				if (!found) {
+					throw new OptionException(LaunchingMessageKind.EREMOTE0012.format(argument, remoteProgram.getClass().getCanonicalName(), argument));				}
 			} else {
 				throw new OptionException(LaunchingMessageKind.EREMOTE0011.format(remoteProgram.getClass().getCanonicalName()));
 			}

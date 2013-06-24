@@ -292,6 +292,12 @@ public enum LaunchingMessageKind {
 	@Format("Invalid arguments %s for Program %s. Argument should be Key-Value pair!")
 	EREMOTE0011,
 	
+	/**
+	 * Invalid arguments %s for Program %s. Unknown argument name!
+	 */
+	@Format("Invalid arguments %s for Program %s. Unknown argument name: %s !")
+	EREMOTE0012,
+	
 	//TODO: Warning message
 	/**
 	 * Invalid arguments %s for Program %s. Argument value(s) should be in quotes!
