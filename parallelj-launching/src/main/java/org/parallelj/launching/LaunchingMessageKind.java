@@ -222,6 +222,12 @@ public enum LaunchingMessageKind {
 	@Format("A Scheduler error occured.")
 	EQUARTZ0005,
 	
+	/**
+	 * Error while launching Program %s. Program not launched
+	 */
+	@Format("Error invoking Program %s: %s")
+	EQUARTZ0006,
+	
 	/*
 	 * Error messages for remote access
 	 */

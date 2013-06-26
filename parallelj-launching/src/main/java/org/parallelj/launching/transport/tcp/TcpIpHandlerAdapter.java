@@ -104,7 +104,7 @@ extends IoHandlerAdapter {
 		
 		// Parse the command
 		String cmd = null;
-		final String[] args = str.split("[\t ]");
+		final String[] args = str.trim().split("[\t ]");
 		if (args.length>0) {
 			cmd = args[0];
 		}
@@ -153,7 +153,7 @@ extends IoHandlerAdapter {
 				}
 				result = command.process(session, Arrays.copyOfRange(finalArgs, 1, finalArgs.length));
 				} catch (Exception e) {
-					e.printStackTrace();
+					result = LaunchingMessageKind.EQUARTZ0006.format(cmd, e);
 				}
 			} else {
 				result = command.process(session, new String[]{});

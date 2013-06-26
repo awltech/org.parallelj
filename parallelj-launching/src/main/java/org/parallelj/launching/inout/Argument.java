@@ -96,7 +96,8 @@ public class Argument extends InOut {
 			try {
 				this.parserInstance = this.parser.newInstance();
 			} catch (InstantiationException e) {
-				e.printStackTrace();
+				LaunchingMessageKind.EREMOTE0007.format(
+						this.parser.getCanonicalName(), e);
 			} catch (IllegalAccessException e) {
 				LaunchingMessageKind.EREMOTE0007.format(
 						this.parser.getCanonicalName(), e);

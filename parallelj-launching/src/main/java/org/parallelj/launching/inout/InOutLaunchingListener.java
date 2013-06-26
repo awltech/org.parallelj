@@ -50,8 +50,10 @@ public class InOutLaunchingListener extends AbstractLaunchingListener {
 				try {
 					// Call the setter method
 					// If there is a Parser to use, it is called first...
-					argument.setValueUsingParser(String.valueOf(argument.getValue())); 
-					setter.invoke(adapter, argument.getValue());
+					if(argument.getValue()!=null) {
+						argument.setValueUsingParser(String.valueOf(argument.getValue())); 
+						setter.invoke(adapter, argument.getValue());
+					}
 				} catch (IllegalAccessException e) {
 					jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 					LaunchingMessageKind.EREMOTE0010.format(argument.getName(),adapter.getClass().getCanonicalName(), e);

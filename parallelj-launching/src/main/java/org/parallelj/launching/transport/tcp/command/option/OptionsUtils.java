@@ -101,11 +101,19 @@ public final class OptionsUtils {
 				if (arg.length>1)
 					argValue = arg[1];
 				
-				if (argValue != null && argValue.length() == 0)
+				if (argValue != null && argValue.trim().length() == 0)
 					argValue = null;
 				
 				if (argValue!=null && argValue.charAt(0) == '"' && argValue.charAt(argValue.length()-1) == '"') {
 					argValue = argValue.substring(1, argValue.length()-1);
+				}
+				
+				if (argValue!=null && argValue.charAt(0) == '\'' && argValue.charAt(argValue.length()-1) == '\'') {
+					argValue = argValue.substring(1, argValue.length()-1);
+				}
+				
+				if (argValue!=null && argValue.equals("''")){
+					argValue = "";
 				}
 
 				Iterator<Argument> argumentIterator = remoteProgram.getArguments().iterator();
