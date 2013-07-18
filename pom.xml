@@ -9,7 +9,7 @@
 
 	<groupId>org.parallelj</groupId>
 	<artifactId>parallelj</artifactId>
-	<version>1.3.3-SNAPSHOT</version>
+	<version>1.4.0-SNAPSHOT</version>
 	<name>ParallelJ</name>
 	<packaging>pom</packaging>
 
@@ -98,16 +98,17 @@
 		<module>parallelj-archetype-web</module>
 		<module>parallelj-jmx</module>
 		<module>parallelj-launching</module>
-		<module>parallelj-tracknrestart</module>
 		<module>parallelj-extensions</module>
 		<module>parallelj-ssh</module>
+<!-- 		<module>parallelj-tracknrestart</module> -->
 	</modules>
 
 	<properties>
-		<aspectjweaver.version>1.7.0</aspectjweaver.version>
-		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectjweaver.version}/aspectjweaver-${aspectjweaver.version}.jar</aspectj.javaagent.location>
-		<ajdtVersion>1.7.0</ajdtVersion>
-		<org.aspectj.aspectjrt>1.7.0</org.aspectj.aspectjrt>
+		<java.source>1.7</java.source>
+		<java.target>1.7</java.target>
+		<aspectj.version>1.7.3</aspectj.version>
+		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</aspectj.javaagent.location>
+		<ajdtVersion>2.2.3</ajdtVersion>
 		<aspectj.maven.plugin.version>1.2</aspectj.maven.plugin.version>
 		<maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
 		<maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
@@ -194,8 +195,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>${java.source}</source>
+					<target>${java.target}</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -271,7 +272,7 @@
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjrt</artifactId>
-				<version>${org.aspectj.aspectjrt}</version>
+				<version>${aspectj.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
@@ -292,7 +293,7 @@
 			<dependency>
 				<groupId>org.aspectj</groupId>
 				<artifactId>aspectjweaver</artifactId>
-				<version>${aspectjweaver.version}</version>
+				<version>${aspectj.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
@@ -332,7 +333,7 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.16</version>
+				<version>5.1.23</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.ibatis</groupId>
@@ -342,7 +343,7 @@
 			<dependency>
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
-				<version>2.2.4</version>
+				<version>2.2.8</version>
 				<scope>test</scope>
 			</dependency>
 			<!-- Logging api -->

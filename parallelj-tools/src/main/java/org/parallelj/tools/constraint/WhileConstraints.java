@@ -46,7 +46,7 @@ import org.parallelj.tools.util.Elements;
  * 
  */
 @SupportedAnnotationTypes({ "org.parallelj.While" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class WhileConstraints extends AbstractProcessor {
 
 	@Override

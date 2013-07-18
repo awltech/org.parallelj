@@ -19,32 +19,23 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.tracknrestart.annotations;
+package executable;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.parallelj.Attribute;
+import org.parallelj.Executable;
 
-/**
- *
- *
- */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface TrackNRestart {
+@Executable
+public class MyExecutable implements Runnable {
+	
+	@Attribute
+	String name;
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
-	/**
-	 * These exceptions, if thrown by a //J procedure instance, are intended 
-	 *  to make the //J flow keep on running, instead of stop it.
-	 * If a //J procedure instance throws such exceptions during tracking, it
-	 *  will be persisted in tracking history database with status='FAILURE' 
-	 *  (under key given by return value of getOID() conventional method).
-	 * A procedure instance stated 'FAILURE' become candidate to be attempt again
-	 *  if job is later restarted.    
-	 */
-	Class<? extends Throwable>[] filteredExceptions() default {};
+
 }

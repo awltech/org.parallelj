@@ -47,13 +47,10 @@ public class InOutLaunchingListener extends AbstractLaunchingListener {
 			List<Argument> arguments = programInputOutput.getArguments();
 			for (Argument argument:arguments) {
 				Method setter = argument.getWriteMethod();
-				if (setter == null) {
-					LaunchingMessageKind.ELAUNCH0005.format(adapter, argument.getName());
-				}
 				try {
 					// Call the setter method
 					// If there is a Parser to use, it is called first...
-					if(argument.getValue()!=null && setter != null) {
+					if(argument.getValue()!=null) {
 						argument.setValueUsingParser(String.valueOf(argument.getValue())); 
 						setter.invoke(adapter, argument.getValue());
 					}
@@ -98,14 +95,9 @@ public class InOutLaunchingListener extends AbstractLaunchingListener {
 			Method getter = output.getReadMethod();
 			try {
 				// Call the getter method
-				if (getter == null) {
-					LaunchingMessageKind.ELAUNCH0004.format(adapter, output.getName());
-				}
-				if (getter != null) {
-					Object result = getter.invoke(adapter);
-					// Complete the JobDataMap
-					outputs.put(output.getName(), result);
-				}
+				Object result = getter.invoke(adapter);
+				// Complete the JobDataMap
+				outputs.put(output.getName(), result);
 			} catch (IllegalAccessException e) {
 				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
 				LaunchingMessageKind.EREMOTE0009.format(e);

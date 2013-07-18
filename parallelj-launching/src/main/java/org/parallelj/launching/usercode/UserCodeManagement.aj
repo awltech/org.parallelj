@@ -4,28 +4,29 @@ import java.lang.reflect.Method;
 
 public aspect UserCodeManagement {
 
-	declare parents: org.parallelj.internal.kernel.KProgram implements IUserReturnCode;
+	declare parents: org.parallelj.internal.kernel.KProgram 
+		implements org.parallelj.launching.usercode.IUserReturnCode;
 
 	/*
 	 * Add the interface IUserReturnCodeCode to the KProgram
 	*/
-	public String IUserReturnCode.errorCode = "";
-	public Method IUserReturnCode.getterMethod;
+	public String org.parallelj.launching.usercode.IUserReturnCode.errorCode = "";
+	public Method org.parallelj.launching.usercode.IUserReturnCode.getterReturnCodeMethod;
 	
-	public String IUserReturnCode.getUserReturnCode() {
+	public String org.parallelj.launching.usercode.IUserReturnCode.getUserReturnCode() {
 		return this.errorCode;
 	}
 	
-	public void IUserReturnCode.setUserReturnCode(String errorCode) {
+	public void org.parallelj.launching.usercode.IUserReturnCode.setUserReturnCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
 
-	public void IUserReturnCode.setUserReturnCodeGetterMethod(Method getterFieldMethod) {
-		this.getterMethod = getterFieldMethod;
+	public void org.parallelj.launching.usercode.IUserReturnCode.setUserReturnCodeGetterMethod(Method getterFieldMethod) {
+		this.getterReturnCodeMethod = getterFieldMethod;
 	}
 
-	public Method IUserReturnCode.getUserReturnCodeGetterMethod() {
-		return this.getterMethod;
+	public Method org.parallelj.launching.usercode.IUserReturnCode.getUserReturnCodeGetterMethod() {
+		return this.getterReturnCodeMethod;
 	}
 
 }

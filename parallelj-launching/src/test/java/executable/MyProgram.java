@@ -19,20 +19,32 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.tracknrestart.databinding;
+package executable;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.parallelj.AndSplit;
+import org.parallelj.Attribute;
+import org.parallelj.Begin;
+import org.parallelj.Program;
 
-import org.parallelj.launching.parser.NopParser;
-import org.parallelj.launching.parser.Parser;
+@Program
+public class MyProgram {
+	
+	@Attribute
+	String name;
+	
+	@Attribute
+	String value = "a complex string with special char &;<>";
+	
+	@Begin
+	public MyExecutable run() {
+		MyExecutable executable = new MyExecutable();
+		executable.name = "run " + this;
+		return executable;
+	}
+	
+	@AndSplit("end")
+	public void run(MyExecutable executable) {
+		
+	}
 
-@Deprecated
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface Out {
-	Class<? extends Parser> parser() default NopParser.class;}
+}

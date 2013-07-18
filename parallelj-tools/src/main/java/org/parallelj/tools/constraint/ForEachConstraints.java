@@ -47,7 +47,7 @@ import org.parallelj.tools.util.Types;
  * 
  */
 @SupportedAnnotationTypes({ "org.parallelj.ForEach" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ForEachConstraints extends AbstractProcessor {
 
 	@Override

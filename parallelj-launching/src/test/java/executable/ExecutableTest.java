@@ -19,25 +19,22 @@
  *     License along with this library; if not, write to the Free Software
  *     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
-package org.parallelj.tracknrestart.test.quartz.pjj.flow;
+package executable;
 
-import java.util.List;
-import java.util.concurrent.Executors;
-
+import org.junit.Assert;
+import org.junit.Test;
 import org.parallelj.Programs;
+import org.parallelj.Programs.ProcessHelper;
 
-public class Prog1Runner {
+public class ExecutableTest {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Prog1 prog1 = new Prog1();
-		List<String> data1 = prog1.getData1();
-		data1.add("a");
-		data1.add("b");
-		data1.add("c");
-		Programs.as(prog1).execute(Executors.newCachedThreadPool()).join();
+	@Test
+	public void run() {
+		MyProgram program = new MyProgram();
+		program.name = "name";
+		ProcessHelper<?> p = Programs.as(program);
+
+		Assert.assertNotNull(p);
 	}
-
+	
 }
