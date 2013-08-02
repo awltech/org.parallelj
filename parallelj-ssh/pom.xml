@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>parallelj</artifactId>
 		<groupId>org.parallelj</groupId>
-		<version>1.3.2</version>
+		<version>1.3.2-BUGFIX</version>
 	</parent>
 	<artifactId>parallelj-ssh</artifactId>
 
