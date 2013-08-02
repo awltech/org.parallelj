@@ -38,4 +38,8 @@ public class LaunchException extends Exception {
 		super(cause);
 	}
 
+	public LaunchException(final String message, final SchedulerException cause) {
+		super(message, cause);
+	}
+
 }
