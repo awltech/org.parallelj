@@ -78,12 +78,12 @@ public class Launch {
 	private JobDetail job;
 
 	private Job adapter;
-	
+
 	private Map<String, Object> parameters = new HashMap<String, Object>();
-	
+
 	/**
-	 * The Executor service to use when launching the program 
-	 * associated to this Launch
+	 * The Executor service to use when launching the program associated to this
+	 * Launch
 	 */
 	private Executor executorService = null;
 
@@ -111,13 +111,14 @@ public class Launch {
 	 *            The Program Adapter class
 	 * @throws LaunchException
 	 */
-	public Launch(final Scheduler scheduler, final Class<?> jobClass) throws LaunchException {
+	public Launch(final Scheduler scheduler, final Class<?> jobClass)
+			throws LaunchException {
 		this(scheduler, jobClass, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public Launch(final Scheduler scheduler, final Class<?> jobClass, ExecutorService executorService)
-			throws LaunchException {
+	public Launch(final Scheduler scheduler, final Class<?> jobClass,
+			ExecutorService executorService) throws LaunchException {
 		this.scheduler = scheduler;
 		this.executorService = executorService;
 		try {
@@ -131,12 +132,13 @@ public class Launch {
 		this.job = jobBuilder.withIdentity(this.jobClass.getCanonicalName(),
 				DEFAULT_GROUP_NAME).build();
 
-		// If an ExecutorService was specified, 
-		// we put it in the JobDataMap to be able to use it when the program will be launched.
-		if (this.executorService!=null) {
+		// If an ExecutorService was specified,
+		// we put it in the JobDataMap to be able to use it when the program
+		// will be launched.
+		if (this.executorService != null) {
 			this.job.getJobDataMap().put(DEFAULT_EXECUTOR_KEY, executorService);
 		}
-		
+
 		this.trigger = triggerBuilder
 				.withIdentity(String.valueOf(triggerBuilder),
 						String.valueOf(triggerBuilder)).startNow().build();
@@ -150,13 +152,14 @@ public class Launch {
 	 *             When a SchedulerException occurred.
 	 */
 	public Launch synchLaunch() throws LaunchException {
-		try {
-			this.job.getJobDataMap().put(PARAMETERS, parameters);
+		this.job.getJobDataMap().put(PARAMETERS, parameters);
 
-			// Define a listener to get the jobId and to wait until the Job is
-			// completed
-			final AdapterJobListener listener = new AdapterJobListener(
-					this.jobClass.getCanonicalName(), this.scheduler);
+		// Define a listener to get the jobId and to wait until the Job is
+		// completed
+		final AdapterJobListener listener = new AdapterJobListener(
+				this.jobClass.getCanonicalName(), this.scheduler);
+
+		try {
 			this.scheduler.getListenerManager().addJobListener(listener,
 					EverythingMatcher.allJobs());
 			this.scheduler.getListenerManager().addSchedulerListener(listener);
@@ -192,6 +195,19 @@ public class Launch {
 			// System.out.println(obj);
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
+		} finally {
+
+			// Remove listeners added before starting the job
+			try {
+				this.scheduler.getListenerManager().removeSchedulerListener(
+						listener);
+				this.scheduler.getListenerManager().removeJobListener(
+						listener.getName());
+			} catch (SchedulerException e) {
+				throw new LaunchException(
+						"cannot remove listener from scheduler", e);
+			}
+
 		}
 		return this;
 	}
@@ -316,7 +332,7 @@ public class Launch {
 
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getOuputs() {
-		return (Map<String, Object>)this.launchResult.getResult().get(OUTPUTS);
+		return (Map<String, Object>) this.launchResult.getResult().get(OUTPUTS);
 	}
-	
+
 }
