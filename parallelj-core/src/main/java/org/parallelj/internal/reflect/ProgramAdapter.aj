@@ -27,6 +27,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KProgram;
+import org.parallelj.internal.reflect.callback.FieldIterable;
 
 @SuppressWarnings("unchecked")
 public aspect ProgramAdapter {
@@ -51,7 +52,7 @@ public aspect ProgramAdapter {
 	 * @return
 	 */
 	@XmlTransient
-	public Map<String, Iterator<?>> Adapter.iterators = new java.util.concurrent.ConcurrentHashMap<String, Iterator<?>>();
+	public Map<FieldIterable, Iterator<?>> Adapter.iterators = new java.util.concurrent.ConcurrentHashMap<FieldIterable, Iterator<?>>();
 
 	declare parents:
 		(@org.parallelj.Program *) implements Adapter;
@@ -71,7 +72,7 @@ public aspect ProgramAdapter {
 		return null;
 	}
 
-	public static Map<String, Iterator<?>> getIterators(Object object) {
+	public static Map<FieldIterable, Iterator<?>> getIterators(Object object) {
 		if (object instanceof Adapter) {
 			return ((Adapter) object).iterators;
 		}
