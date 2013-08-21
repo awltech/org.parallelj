@@ -22,21 +22,20 @@
 package org.parallelj.launching.transport.tcp.command.option;
 
 import java.util.Iterator;
-import java.util.List;
 
+import org.parallelj.launching.Launch;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.inout.Argument;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.remote.RemoteProgram;
 import org.parallelj.launching.remote.RemotePrograms;
-import org.quartz.JobDataMap;
 
 public final class OptionsUtils {
 	
 	private OptionsUtils() {
 	}
 
-	public static void processId(final IOption ioption, final JobDataMap jobDataMap)
+	public static void processId(final IOption ioption, final Launch launch)
 			throws OptionException {
 		String strId=null;
 		try {
@@ -54,7 +53,7 @@ public final class OptionsUtils {
 		}
 	}
 
-	public static void processArgs(final IOption ioption, final JobDataMap jobDataMap,
+	public static void processArgs(final IOption ioption, final Launch launch,
 			final Object... args) throws OptionException, ParserException {
 		// Check arguments number
 		final String[] arguments = ioption.getOption().getValues();
@@ -68,7 +67,7 @@ public final class OptionsUtils {
 			}
 
 			// Initialize arguments format
-			initializeArg(remoteProgram, arguments, jobDataMap);
+			initializeArg(remoteProgram, arguments, launch);
 		}
 	}
 
@@ -81,7 +80,7 @@ public final class OptionsUtils {
 	 * @param arguments
 	 * @throws ParserException
 	 */
-	public static void initializeArg(final RemoteProgram remoteProgram, final String[] arguments, final JobDataMap jobDataMap)
+	public static void initializeArg(final RemoteProgram remoteProgram, final String[] arguments, final Launch launch)
 			throws OptionException, ParserException {
 
 		int numberOfEquals = 0;

@@ -6,9 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import org.parallelj.Programs.ProcessHelper;
-import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
-import org.quartz.JobExecutionContext;
+import org.parallelj.launching.Launch;
 
 public class LaunchingObservable {
 
@@ -55,11 +53,11 @@ public class LaunchingObservable {
 		}
 	}
 	
-	public void prepareLaunching(Adapter adapter, ProcessHelper<?> processHelper, JobExecutionContext context) {
+	public void prepareLaunching(Launch launch) {
 		//eventManagement.dispatch(event);
 		for (LaunchingListener listener : this.listeners) {
 			try {
-				listener.prepareLaunching(adapter, processHelper,  context);
+				listener.prepareLaunching(launch);
 			} catch (Exception e) {
 				// TODO add message kind
 				e.printStackTrace();
@@ -67,11 +65,11 @@ public class LaunchingObservable {
 		}
 	}
 	
-	public void finalizeLaunching(Adapter adapter, ProcessHelper<?> processHelper, JobExecutionContext context) {
+	public void finalizeLaunching(Launch launch) {
 		//eventManagement.dispatch(event);
 		for (LaunchingListener listener : this.listeners) {
 			try {
-				listener.finalizeLaunching(adapter, processHelper,  context);
+				listener.finalizeLaunching(launch);
 			} catch (Exception e) {
 				// TODO add message kind
 				e.printStackTrace();

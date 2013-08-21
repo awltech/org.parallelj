@@ -32,15 +32,10 @@ import org.parallelj.internal.util.Formatter.Format;
  */
 public enum LaunchingMessageKind {
 	
+	
 	/*
 	 * Information messages for Simple Launching
 	 */
-	
-	/**
-	 * Error launching %s. Is the program annotated with @QuartzExecution?
-	 */
-	@Format("Error launching %s. Is the program annotated with @QuartzExecution?")
-	ELAUNCH0001,
 	
 	/**
 	 * An Error occurred
@@ -71,6 +66,18 @@ public enum LaunchingMessageKind {
 	 */
 	@Format("An Error occurred when launching the Program %s: field '%s' is annotated with @OnError but no setter method is defined for this field!!! Program not launched!!!")
 	ELAUNCH0006,
+	
+	/**
+	 * Error while launching Program %s. Program not launched
+	 */
+	@Format("Error invoking Program %s: %s")
+	ELAUNCH0007,
+	
+	/**
+	 * Error invoking Program %s. Program not launched
+	 */
+	@Format("Error invoking Program %s. Program not launched")
+	ELAUNCH0008,
 	
 	/*
 	 * Information messages for TcpIp
@@ -167,67 +174,33 @@ public enum LaunchingMessageKind {
 	EJMX0004,
 	
 	/*
-	 * Information messages for Quartz 
+	 * Information messages for Launching 
 	 */
-	
-	/**
-	 * QuartzScheduler started
-	 */
-	@Format("QuartzScheduler started")
-	IQUARTZ0001,
 	
 	/**
 	 * Program %s launched! jobId: %s 
 	 */
 	@Format("Program %s launched! jobId: %s ")
-	IQUARTZ0002,
+	ILAUNCH0002,
 	
 	/**
-	 * Program %s with jobId %s is terminated!
+	 * Program %s with jobId %s is terminated with status %s! Return code: [%s]
 	 */
 	@Format("Program %s with jobId %s is terminated with status %s! Return code: [%s]")
-	IQUARTZ0003,
-	
-	/*
-	 * Error messages for Quartz 
-	 */
+	ILAUNCH0003,
 	
 	/**
-	 * Error starting Quartz Scheduler
+	 * Error starting ParallelJ Servlet listener
 	 */
-	@Format("Error starting Quartz Scheduler")
-	EQUARTZ0001,
+	@Format("Error starting ParallelJ Servlet listener")
+	EWLAUNCH0001,
 	
 	/**
-	 * Quartz Scheduler failed to shutdown cleanly
+	 * ParallelJ Servlet listener failed to shutdown cleanly
 	 */
-	@Format("Quartz Scheduler failed to shutdown cleanly")
-	EQUARTZ0002,
-	
-	/**
-	 * Error invoking Program %s. Program not launched
-	 */
-	@Format("Error invoking Program %s. Program not launched")
-	EQUARTZ0003,
-	
-	/**
-	 * Error deleting Job for Program %s.
-	 */
-	@Format("Error deleting Job for Program %s.")
-	EQUARTZ0004,
-	
-	/**
-	 * A Scheduler error occured.
-	 */
-	@Format("A Scheduler error occured.")
-	EQUARTZ0005,
-	
-	/**
-	 * Error while launching Program %s. Program not launched
-	 */
-	@Format("Error invoking Program %s: %s")
-	EQUARTZ0006,
-	
+	@Format("ParallelJ Servlet listener failed to shutdown cleanly")
+	EWLAUNCH0002,
+
 	/*
 	 * Error messages for remote access
 	 */

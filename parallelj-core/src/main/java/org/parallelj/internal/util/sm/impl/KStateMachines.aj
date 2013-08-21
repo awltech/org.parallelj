@@ -73,6 +73,7 @@ public privileged aspect KStateMachines {
 			if (previous != current && current != null) {
 				occurrence.getSupport().fireStateChanded(current.value);
 			}
+			proceed(self);
 		}
 	}
 

@@ -23,9 +23,9 @@ package org.parallelj.launching.transport.tcp.command.option;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
+import org.parallelj.launching.Launch;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.remote.RemoteProgram;
-import org.quartz.JobDataMap;
 
 public class AsyncLaunchIdOption implements IAsyncLaunchOption, IIdOption {
 
@@ -50,9 +50,9 @@ public class AsyncLaunchIdOption implements IAsyncLaunchOption, IIdOption {
 	}
 
 	@Override
-	public void process(final JobDataMap jobDataMap, final Object... args)
+	public void process(final Launch launch, final Object... args)
 			throws OptionException, ParserException {
-		OptionsUtils.processId(this, jobDataMap);
+		OptionsUtils.processId(this, launch);
 	}
 
 	@Override

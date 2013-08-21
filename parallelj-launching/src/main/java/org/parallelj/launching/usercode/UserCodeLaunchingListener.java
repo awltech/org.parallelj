@@ -3,35 +3,30 @@ package org.parallelj.launching.usercode;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
+import org.parallelj.launching.Launch;
+import org.parallelj.launching.LaunchError;
+import org.parallelj.launching.LaunchException;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ProgramReturnCodes;
 import org.parallelj.launching.internal.AbstractLaunchingListener;
-import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.mirror.ProgramType;
-import org.quartz.JobDataMap;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 public class UserCodeLaunchingListener extends AbstractLaunchingListener {
 
 	@Override
-	public void prepareLaunching(Adapter adapter, ProcessHelper<?> processHelper, JobExecutionContext context) throws Exception {
-		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+	public void prepareLaunching(Launch launch) throws Exception {
 	}
 
 	@Override
-	public void finalizeLaunching(Adapter adapter, ProcessHelper<?> processHelper, JobExecutionContext context) throws Exception {
-		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+	public void finalizeLaunching(Launch launch) throws Exception {
 		
 		/*
 		 * User's return code 
 		 *  
 		 * Get the ErrorCode initialized by the user
 		 */
-		ProgramType programType = processHelper.getProcess().getProgram();
+		ProgramType programType = launch.getProcessHelper().getProcess().getProgram();
 		IUserReturnCode errorCodeP = (IUserReturnCode)programType;
 		if (programType instanceof KProgram) {
 			Method getterErrorMethod = errorCodeP.getUserReturnCodeGetterMethod();
@@ -39,33 +34,30 @@ public class UserCodeLaunchingListener extends AbstractLaunchingListener {
 				Object userReturnCode="";
 				if(getterErrorMethod!=null) {
 					// Call the getter method
-					userReturnCode = getterErrorMethod.invoke(adapter);
+					userReturnCode = getterErrorMethod.invoke(launch.getJobInstance());
 					// Complete the JobDataMap
 				}
-				jobDataMap.put(QuartzUtils.USER_RETURN_CODE, userReturnCode);
-				if (context.getResult() instanceof JobDataMap) {
-					((JobDataMap)context.getResult()).put(QuartzUtils.USER_RETURN_CODE, userReturnCode);
-				}
+				launch.getLaunchResult().setReturnCode(String.valueOf(userReturnCode));
 			} catch (IllegalAccessException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+				launch.getLaunchResult().setStatusCode(ProgramReturnCodes.FAILURE);
 				LaunchingMessageKind.EREMOTE0009.format(e);
-				throw new JobExecutionException(e);
+				throw new LaunchException(e);
 			} catch (IllegalArgumentException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+				launch.getLaunchResult().setStatusCode(ProgramReturnCodes.FAILURE);
 				LaunchingMessageKind.EREMOTE0009.format(e);
-				throw new JobExecutionException(e);
+				throw new LaunchException(e);
 			} catch (InvocationTargetException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+				launch.getLaunchResult().setStatusCode(ProgramReturnCodes.FAILURE);
 				LaunchingMessageKind.EREMOTE0009.format(e);
-				throw new JobExecutionException(e);
+				throw new LaunchException(e);
 			} catch (NullPointerException e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+				launch.getLaunchResult().setStatusCode(ProgramReturnCodes.FAILURE);
 				LaunchingMessageKind.EREMOTE0009.format(e);
-				throw new JobExecutionException(e);
+				throw new LaunchException(e);
 			} catch (ExceptionInInitializerError e) {
-				jobDataMap.put(QuartzUtils.RETURN_CODE, ProgramReturnCodes.FAILURE);
+				launch.getLaunchResult().setStatusCode(ProgramReturnCodes.FAILURE);
 				LaunchingMessageKind.EREMOTE0009.format(e);
-				throw new JobExecutionException(e);
+				throw new LaunchError(e);
 			}
 		}
 	}
