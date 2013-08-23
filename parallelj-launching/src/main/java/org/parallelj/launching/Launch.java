@@ -144,7 +144,7 @@ public class Launch {
 		return this;
 	}
 
-	private void internalaSynchLaunch(Object programInstance, ExecutorService executorService) {
+	private void internalaSynchLaunch(Object programInstance, ExecutorService executorService) throws LaunchException {
 		this.processHelper.execute(this.executorService);
 		LaunchingMessageKind.ILAUNCH0002.format(this.jobClass.getCanonicalName(), this.getLaunchId());
 	}

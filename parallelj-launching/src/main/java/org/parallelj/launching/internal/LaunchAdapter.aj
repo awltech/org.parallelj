@@ -25,9 +25,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
-import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KProcessor;
 import org.parallelj.launching.Launch;
+import org.parallelj.launching.LaunchException;
+import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.mirror.ProcessState;
 
 /**
  * Implements the Job.execute(..) method
@@ -69,10 +71,14 @@ privileged public aspect LaunchAdapter {
 	}
 	
 	
-	void around(Launch self, Object programInstance, ExecutorService executorService): 
-	execution( private void internalaSynchLaunch(..) )
+	void around(Launch self, Object programInstance, ExecutorService executorService) throws LaunchException: 
+	execution( private void internalaSynchLaunch(..) throws LaunchException)
 	&& args(programInstance, executorService)
 	&& this(self) {
+		if (self.getProcessHelper().getProcess().getState() != ProcessState.PENDING) {
+			throw new LaunchException(LaunchingMessageKind.ELAUNCH0009.getFormatedMessage(programInstance));
+		}
+		
 		proceed(self, programInstance, executorService);
 
 		this.launchProcessors.put(((KProcessor)self.getProcessHelper().getProcess().getProcessor()), self);
