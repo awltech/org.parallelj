@@ -26,6 +26,9 @@
     <procedures>
         <procedure capacity="5" name="pr1"/>
         <procedure capacity="10" name="pr2"/>
+        <procedure capacity="25" name="tutorial.MyPipelineTest"/>
+        <procedure capacity="12" name="forEachProcedure"/>
+        <procedure capacity="3" name="procone"/>
     </procedures>
     <servers>
         <telnet port="10000" host="localhost"/>

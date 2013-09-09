@@ -31,6 +31,7 @@
 		<aspect name="org.parallelj.Executables$PerExecutable"/>
 		<aspect name="org.parallelj.internal.reflect.ProgramAdapter$PerProgram"/>
 		<aspect name="org.parallelj.internal.log.Logs"/>
+		<aspect name="org.parallelj.internal.conf.ProcedureCapacityAdapter" />
 		
 		<!-- Of the set of aspects declared to the weaver
              declare witch ones must be used for weaving. -->
@@ -41,6 +42,7 @@
 		<include within="org.parallelj.Executables$PerExecutable"/>
 		<include within="org.parallelj.internal.reflect.ProgramAdapter$PerProgram"/>
 		<include within="org.parallelj.internal.log.Logs"/>
+		<include within="org.parallelj.internal.conf.ProcedureCapacityAdapter"/>
     </aspects>
     <weaver options="-verbose">
     </weaver>
