@@ -44,7 +44,7 @@ public class ConfigurationTest {
 		assertNotNull(conf);
 		assertNotNull(conf.getProcedures());
 		assertNotNull(conf.getProcedures().getProcedure());
-		assertEquals(conf.getProcedures().getProcedure().size(), 2);
+		assertEquals(conf.getProcedures().getProcedure().size(), 5);
 
 		List<CProcedure> prs = conf.getProcedures().getProcedure();
 		for (CProcedure procedure : prs) {

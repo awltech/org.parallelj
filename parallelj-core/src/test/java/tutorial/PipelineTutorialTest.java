@@ -21,12 +21,19 @@
  */
 package tutorial;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.parallelj.Programs;
+import org.parallelj.Programs.ProcessHelper;
+import org.parallelj.internal.kernel.KProcedure;
+import org.parallelj.internal.kernel.KProgram;
+import org.parallelj.internal.kernel.procedure.SubProcessProcedure;
+import org.parallelj.mirror.Procedure;
 
 public class PipelineTutorialTest {
 
@@ -41,7 +48,21 @@ public class PipelineTutorialTest {
 		// run the program with a cached thread pool
 		// wait for the completion of the program: Programs.join()
 		
-		Programs.as(tutorial).execute(Executors.newFixedThreadPool(10)).join();
+		// Test Capacities from parallelj.xml
+		ProcessHelper<MyPipelineTest> prgTest = Programs.as(tutorial).execute(Executors.newFixedThreadPool(10)).join();
+		short prgCapacity = ((KProgram)prgTest.getProcess().getProgram()).getCapacity();
+		assertEquals(prgCapacity, 25);
+		
+		for(Procedure procedure:prgTest.getProcess().getProgram().getProcedures() ) {
+			if (procedure.getClass().equals(MyInnerProgram.class)) {
+				assertEquals(((SubProcessProcedure)procedure).getSubProgram().getCapacity(), 12);
+				for(Procedure subProcedure:((SubProcessProcedure)procedure).getSubProgram().getProcedures()) {
+					if (subProcedure.getName().equals("procone")) {
+					 assertEquals(((KProcedure)subProcedure).getCapacity(),3);
+					}
+				}
+			}
+		}
 		
 		// check that all values are in upper case
 		for (String s : tutorial.getList()) {
