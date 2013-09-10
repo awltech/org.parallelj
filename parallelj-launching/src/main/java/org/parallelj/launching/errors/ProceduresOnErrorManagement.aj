@@ -4,18 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.parallelj.internal.MessageKind;
-import org.parallelj.internal.kernel.KCall;
-import org.parallelj.internal.kernel.KJoin;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.internal.kernel.KSplit;
-import org.parallelj.internal.kernel.loop.KWhileLoop;
 import org.parallelj.internal.kernel.procedure.CallableProcedure;
 import org.parallelj.internal.kernel.procedure.RunnableProcedure;
 import org.parallelj.launching.OnError;
-import org.parallelj.launching.errors.IProceduresOnError;
-
-import debug.Debug;
 
 privileged public aspect ProceduresOnErrorManagement {
 
