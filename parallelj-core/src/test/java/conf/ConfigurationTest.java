@@ -27,10 +27,15 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.junit.Test;
+import org.parallelj.Programs;
+import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.pojos.CProcedure;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
+import org.parallelj.internal.kernel.KProgram;
+
+import tutorial.MyPipelineTest;
 
 public class ConfigurationTest {
 
@@ -44,7 +49,7 @@ public class ConfigurationTest {
 		assertNotNull(conf);
 		assertNotNull(conf.getProcedures());
 		assertNotNull(conf.getProcedures().getProcedure());
-		assertEquals(conf.getProcedures().getProcedure().size(), 2);
+		assertEquals(conf.getProcedures().getProcedure().size(), 5);
 
 		List<CProcedure> prs = conf.getProcedures().getProcedure();
 		for (CProcedure procedure : prs) {
@@ -73,5 +78,6 @@ public class ConfigurationTest {
 		assertEquals(conf.getServers().getBeans().getBean().size(), 1);
 		assertEquals(conf.getServers().getBeans().getBean().get(0).getClazz(), "sample.programs.MyProgram");
 	}
+	
 
 }
