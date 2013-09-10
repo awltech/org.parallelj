@@ -42,7 +42,7 @@ public class FieldIterable implements Iterable {
 	@Override
 	public Iterator<?> iterator(KProcess process) {
 		Iterator<?> iterator = ProgramAdapter
-				.getIterators(process.getContext()).get(this.name);
+				.getIterators(process.getContext()).get(this);
 		if (iterator == null) {
 			// try new one
 			java.lang.Iterable<?> iterable = null;
@@ -60,7 +60,7 @@ public class FieldIterable implements Iterable {
 				iterator = iterable.iterator();
 				if (iterator != null) {
 					ProgramAdapter.getIterators(process.getContext()).put(
-							this.name, iterator);
+							this, iterator);
 				}
 			}
 		}
@@ -69,7 +69,7 @@ public class FieldIterable implements Iterable {
 
 	@Override
 	public void close(KProcess process) {
-		ProgramAdapter.getIterators(process.getContext()).remove(this.name);
+		ProgramAdapter.getIterators(process.getContext()).remove(this);
 	}
 	
 	/**
