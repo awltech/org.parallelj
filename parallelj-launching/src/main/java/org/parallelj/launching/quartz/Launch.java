@@ -150,12 +150,13 @@ public class Launch {
 	 *             When a SchedulerException occurred.
 	 */
 	public Launch synchLaunch() throws LaunchException {
+		AdapterJobListener listener = null;
 		try {
 			this.job.getJobDataMap().put(PARAMETERS, parameters);
 
 			// Define a listener to get the jobId and to wait until the Job is
 			// completed
-			final AdapterJobListener listener = new AdapterJobListener(
+			listener = new AdapterJobListener(
 					this.jobClass.getCanonicalName(), this.scheduler);
 			this.scheduler.getListenerManager().addJobListener(listener,
 					EverythingMatcher.allJobs());
@@ -187,10 +188,14 @@ public class Launch {
 			this.launchResult = new LaunchResult(listener.getJobId(),
 					listener.getResult());
 			this.launchResult.getResult().putAll(this.job.getJobDataMap());
-
-			// Object obj = this.launchResult.getResult();
-			// System.out.println(obj);
 		} catch (SchedulerException e) {
+			throw new LaunchException(e);
+		}
+		
+		try {
+			this.scheduler.getListenerManager().removeSchedulerListener(listener);
+		} catch (SchedulerException e) {
+			LaunchingMessageKind.EQUARTZ0007.format(e);
 			throw new LaunchException(e);
 		}
 		return this;
@@ -204,11 +209,12 @@ public class Launch {
 	 *             When a SchedulerException occurred.
 	 */
 	public Launch aSynchLaunch() throws LaunchException {
+		AdapterJobListener listener = null;
 		try {
 			this.job.getJobDataMap().put(PARAMETERS, parameters);
 
 			// Define a listener to get the jobId
-			final AdapterJobListener listener = new AdapterJobListener(
+			listener = new AdapterJobListener(
 					this.jobClass.getCanonicalName(), this.scheduler);
 			this.scheduler.getListenerManager().addJobListener(listener,
 					EverythingMatcher.allJobs());
@@ -232,10 +238,18 @@ public class Launch {
 			this.launchResult = new LaunchResult(listener.getJobId(),
 					listener.getResult());
 			this.launchResult.getResult().putAll(this.job.getJobDataMap());
-			// this.scheduler.getListenerManager().removeJobListener(listener.getName());
+			this.scheduler.getListenerManager().removeSchedulerListener(listener);
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
 		}
+		
+		try {
+			this.scheduler.getListenerManager().removeSchedulerListener(listener);
+		} catch (SchedulerException e) {
+			LaunchingMessageKind.EQUARTZ0007.format(e);
+			throw new LaunchException(e);
+		}
+		
 		return this;
 	}
 

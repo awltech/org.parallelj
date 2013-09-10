@@ -228,6 +228,12 @@ public enum LaunchingMessageKind {
 	@Format("Error invoking Program %s: %s")
 	EQUARTZ0006,
 	
+	/**
+	 * cannot remove listener from scheduler
+	 */
+	@Format("cannot remove listener from scheduler")
+	EQUARTZ0007,
+	
 	/*
 	 * Error messages for remote access
 	 */
