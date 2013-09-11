@@ -85,6 +85,18 @@ public enum LaunchingMessageKind {
 	@Format("Error invoking Program %s. Program has already been launched. Use another Program instance to launch it again!")
 	ELAUNCH0009,
 	
+	/**
+	 * Error occured during Servers launch!
+	 */
+	@Format("Error occured during Servers launch!")
+	ELAUNCH0010,
+	
+	/**
+	 * Starting Servers
+	 */
+	@Format("Starting Servers...")
+	ILAUNCH0001,
+	
 	/*
 	 * Information messages for TcpIp
 	 */

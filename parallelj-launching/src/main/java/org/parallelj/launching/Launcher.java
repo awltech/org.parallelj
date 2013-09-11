@@ -23,6 +23,8 @@ package org.parallelj.launching;
 
 import java.util.concurrent.ExecutorService;
 
+import org.parallelj.launching.internal.LaunchImpl;
+
 /**
  * Entry point for launching Programs.
  */
@@ -56,9 +58,15 @@ public final class Launcher {
 		// Do Nothing..
 	}
 
-	public Launch newLaunch(Class<?> class1) throws LaunchException {
-		return new Launch(class1);
+	public  <T> Launch<T> newLaunch(Class<? extends T> class1) throws LaunchException {
+		return new LaunchImpl<T>(class1);
 	}
+	
+	/*
+	public  <T> Launch<T> newLaunch(T object) throws LaunchException {
+		return new LaunchImpl<T>(object);
+	}
+	*/
 	
 	/**
 	 * Create a new instance of Launch.
@@ -68,8 +76,8 @@ public final class Launcher {
 	 * @return An instance of Launch.
 	 * @throws LaunchException 
 	 */
-	public synchronized Launch newLaunch(final Class<?> jobClass, ExecutorService executorService) throws LaunchException {
-		return new Launch(jobClass, executorService);
+	public synchronized <T> Launch<T> newLaunch(final Class<? extends T> jobClass, ExecutorService executorService) throws LaunchException {
+		return new LaunchImpl<T>(jobClass, executorService);
 	}
 	
 	

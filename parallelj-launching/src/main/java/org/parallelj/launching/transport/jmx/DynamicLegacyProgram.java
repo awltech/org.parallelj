@@ -153,7 +153,7 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			final Map<String, Object> jobDataMap = buildJobDataMap(curCmd, params);
 
 			final Launch launch = Launcher.getLauncher()
-					.newLaunch((Class<?>) remoteProgram.getAdapterClass()).addDatas(jobDataMap);
+					.newLaunch((Class<?>) remoteProgram.getAdapterClass()).addAllData(jobDataMap);
 			if (isSync) {
 				// Launch and wait until terminated
 				launch.synchLaunch();

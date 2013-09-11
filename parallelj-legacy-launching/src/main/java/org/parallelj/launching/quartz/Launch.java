@@ -61,7 +61,7 @@ public class Launch {
 	 */
 	public Launch(final Class<?> jobClass) throws LaunchException {
 		try {
-			this.launch = new org.parallelj.launching.Launch(jobClass);
+			this.launch = new org.parallelj.launching.internal.LaunchImpl(jobClass);
 		} catch (org.parallelj.launching.LaunchException e) {
 			throw new LaunchException(e);
 		}
@@ -70,7 +70,7 @@ public class Launch {
 	public Launch(final Class<?> jobClass, ExecutorService executorService)
 			throws LaunchException {
 		try {
-			this.launch = new org.parallelj.launching.Launch(jobClass, executorService);
+			this.launch = new org.parallelj.launching.internal.LaunchImpl(jobClass, executorService);
 		} catch (org.parallelj.launching.LaunchException e) {
 			throw new LaunchException(e);
 		}
@@ -142,7 +142,7 @@ public class Launch {
 		for (String key:jobDataMap.getKeys()) {
 			data.put(key, jobDataMap.get(key));
 		}
-		this.launch.addDatas(data);
+		this.launch.addAllData(data);
 		return this;
 	}
 
@@ -174,7 +174,7 @@ public class Launch {
 	public void addParameter(String name, Object value) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(name, value);
-		this.launch.addDatas(dataMap);
+		this.launch.addAllData(dataMap);
 	}
 
 	public Map<String, Object> getOuputs() {

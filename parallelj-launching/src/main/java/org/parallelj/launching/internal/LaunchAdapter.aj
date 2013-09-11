@@ -88,7 +88,7 @@ privileged public aspect LaunchAdapter {
 		execution(@org.parallelj.internal.util.sm.Trigger void complete()) 
 		&& this(self) {
 		
-		Launch launch = this.launchProcessors.get(self);
+		LaunchImpl launch = (LaunchImpl)this.launchProcessors.get(self);
 		if (launch!=null) {
 			this.observable.finalizeLaunching(launch);
 			launch.finalizeInstance();
