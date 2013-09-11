@@ -21,9 +21,13 @@
  */
 package org.parallelj.internal.kernel.loop;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.parallelj.Programs;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProgram;
+
+import executable.ForEachProgram;
 
 public class ForEachLoopTest {
 
@@ -42,4 +46,11 @@ public class ForEachLoopTest {
 		new KForEachLoop(null, new KProcedure(new KProgram()));
 	}
 */
+	@Test
+	public void testTwoLoops() {
+		ForEachProgram prg = new ForEachProgram();
+		Programs.as(prg).execute().join();
+		Assert.assertEquals(prg.getCpt(), 6);
+	}
+	
 }
