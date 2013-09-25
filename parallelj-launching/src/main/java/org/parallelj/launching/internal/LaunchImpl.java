@@ -49,14 +49,11 @@ public class LaunchImpl<T> implements Launch<T> {
 	 * The Program Adapter class.
 	 */
 	private Class<?> jobClass;
-	private Object jobInstance;
+	private T jobInstance;
 	private UUID launchId;
 	private int launchRemoteIndex;
 	ProcessHelper<?> processHelper = null;
 	boolean stopExecutorServiceAfterExecution=false;
-
-	private Lock lock = new ReentrantLock();
-	private Condition join = lock.newCondition();
 
 	private Map<String, Object> inputParameters = new HashMap<String, Object>();
 	
@@ -90,7 +87,7 @@ public class LaunchImpl<T> implements Launch<T> {
 		checkProgramInstance();
 	}
 	
-	public LaunchImpl(Class<? extends T> jobClass, Object instance, ExecutorService executorService) throws LaunchException {
+	public LaunchImpl(Class<? extends T> jobClass, T instance, ExecutorService executorService) throws LaunchException {
 		this.jobClass = jobClass;
 		this.jobInstance = instance;
 		this.executorService = executorService;
@@ -102,12 +99,13 @@ public class LaunchImpl<T> implements Launch<T> {
 		this.inputParameters.put(name, value);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void checkProgramInstance() throws LaunchException{
 		if (this.jobClass==null && this.jobInstance == null) {
 			throw new LaunchException("");
 		} else if (this.jobClass!=null && this.jobInstance==null) {
 			try {
-				this.jobInstance = this.jobClass.newInstance();
+				this.jobInstance = (T)this.jobClass.newInstance();
 			} catch (InstantiationException e) {
 				throw new LaunchException(e);
 			} catch (IllegalAccessException e) {
@@ -131,15 +129,6 @@ public class LaunchImpl<T> implements Launch<T> {
 		internalaSynchLaunch(this.jobInstance, this.executorService);
 	
 		this.processHelper.join();
-		
-		try {
-			this.lock.lock();
-			this.join.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			this.lock.unlock();
-		}
 		
 		return this;
 	}
@@ -192,13 +181,8 @@ public class LaunchImpl<T> implements Launch<T> {
 	 * 
 	 * @param launch
 	 */
+	@SuppressWarnings("unused")
 	private void finalizeInstance() {
-		try {
-			this.lock.lock();
-			this.join.signalAll();
-		} finally {
-			this.lock.unlock();
-		}
 		if(this.stopExecutorServiceAfterExecution) {
 			this.executorService.shutdown();
 		}
@@ -227,7 +211,7 @@ public class LaunchImpl<T> implements Launch<T> {
 	}
 
 	@Override
-	public Object getJobInstance() {
+	public T getJobInstance() {
 		return jobInstance;
 	}
 

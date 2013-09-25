@@ -19,7 +19,7 @@ import org.parallelj.launching.internal.AbstractLaunchingListener;
 public class InOutLaunchingListener extends AbstractLaunchingListener {
 
 	@Override
-	public void prepareLaunching(Launch launch) throws Exception {
+	public void prepareLaunching(Launch<?> launch) throws Exception {
 		
 		/*
 		 * Arguments for the Program
@@ -74,7 +74,7 @@ public class InOutLaunchingListener extends AbstractLaunchingListener {
 	}
 
 	@Override
-	public void finalizeLaunching(Launch launch) throws Exception {
+	public void finalizeLaunching(Launch<?> launch) throws Exception {
 		
 		/*
 		 *  If some output values are specified in the Program, we initialize the corresponding JobDataMap values..

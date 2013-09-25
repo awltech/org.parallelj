@@ -29,11 +29,19 @@ import org.parallelj.Begin;
 import org.parallelj.Handler;
 import org.parallelj.Program;
 import org.parallelj.XorJoin;
+import org.parallelj.launching.In;
 import org.parallelj.launching.OnError;
+import org.parallelj.launching.Out;
 import org.parallelj.launching.errors.ProceduresOnError;
 
 @Program
 public class ProgramWithoutErrors {
+	
+	@In
+	private String in;
+	
+	@Out
+	private String out;
 
 	@Begin
 	public Runnable processing1() {
@@ -54,6 +62,7 @@ public class ProgramWithoutErrors {
 		return new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
+				ProgramWithoutErrors.this.out = "out_"+ProgramWithoutErrors.this.in;
 				return null;
 			}
 		};
@@ -91,4 +100,14 @@ public class ProgramWithoutErrors {
 	public ProceduresOnError getOnMynErrors() {
 		return this.onMynErrors;
 	}
+
+	public String getOut() {
+		return out;
+	}
+
+	public void setIn(String in) {
+		this.in = in;
+	}
+	
+	
 }

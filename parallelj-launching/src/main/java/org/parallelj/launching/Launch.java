@@ -14,7 +14,7 @@ public interface Launch<T> {
 	public Map<String, Object> getInputParameters();
 	public void setInputParameters(Map<String, Object> inputParameters);
 	public ProcessHelper<?> getProcessHelper();
-	public Object getJobInstance();
+	public T getJobInstance();
 	public Launch<T> addAllData(Map<String, Object> dataMap);
 	public String getLaunchId();
 	public ExecutorService getExecutorService();
