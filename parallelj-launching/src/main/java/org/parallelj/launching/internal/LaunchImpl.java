@@ -55,9 +55,6 @@ public class LaunchImpl<T> implements Launch<T> {
 	ProcessHelper<?> processHelper = null;
 	boolean stopExecutorServiceAfterExecution=false;
 
-	private Lock lock = new ReentrantLock();
-	private Condition join = lock.newCondition();
-
 	private Map<String, Object> inputParameters = new HashMap<String, Object>();
 	
 	/**
@@ -132,15 +129,6 @@ public class LaunchImpl<T> implements Launch<T> {
 	
 		this.processHelper.join();
 		
-		try {
-			this.lock.lock();
-			this.join.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			this.lock.unlock();
-		}
-		
 		return this;
 	}
 
@@ -192,13 +180,8 @@ public class LaunchImpl<T> implements Launch<T> {
 	 * 
 	 * @param launch
 	 */
+	@SuppressWarnings("unused")
 	private void finalizeInstance() {
-		try {
-			this.lock.lock();
-			this.join.signalAll();
-		} finally {
-			this.lock.unlock();
-		}
 		if(this.stopExecutorServiceAfterExecution) {
 			this.executorService.shutdown();
 		}

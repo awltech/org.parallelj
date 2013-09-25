@@ -9,11 +9,11 @@ import org.parallelj.launching.internal.AbstractLaunchingListener;
 public class ProceduresOnErrorLaunchingListener extends AbstractLaunchingListener {
 
 	@Override
-	public void prepareLaunching(Launch launch) throws Exception {
+	public void prepareLaunching(Launch<?> launch) throws Exception {
 	}
 
 	@Override
-	public void finalizeLaunching(Launch launch) throws Exception {
+	public void finalizeLaunching(Launch<?> launch) throws Exception {
 		
 		/*
 		 * User's return code 

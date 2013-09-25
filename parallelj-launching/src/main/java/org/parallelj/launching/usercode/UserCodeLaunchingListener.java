@@ -15,11 +15,11 @@ import org.parallelj.mirror.ProgramType;
 public class UserCodeLaunchingListener extends AbstractLaunchingListener {
 
 	@Override
-	public void prepareLaunching(Launch launch) throws Exception {
+	public void prepareLaunching(Launch<?> launch) throws Exception {
 	}
 
 	@Override
-	public void finalizeLaunching(Launch launch) throws Exception {
+	public void finalizeLaunching(Launch<?> launch) throws Exception {
 		
 		/*
 		 * User's return code 
