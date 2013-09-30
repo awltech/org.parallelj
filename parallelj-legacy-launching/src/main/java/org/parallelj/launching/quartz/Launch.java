@@ -48,6 +48,7 @@ public class Launch {
 	 */
 	private LaunchResult legacyLaunchResult;
 	
+	@SuppressWarnings("rawtypes")
 	private org.parallelj.launching.Launch launch;
 
 	/**
@@ -59,6 +60,7 @@ public class Launch {
 	 *            The Program Adapter class
 	 * @throws LaunchException
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Launch(final Class<?> jobClass) throws LaunchException {
 		try {
 			this.launch = new org.parallelj.launching.internal.LaunchImpl(jobClass);
@@ -67,6 +69,7 @@ public class Launch {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Launch(final Class<?> jobClass, ExecutorService executorService)
 			throws LaunchException {
 		try {
@@ -137,6 +140,7 @@ public class Launch {
 	 *            A JobDatamap
 	 * @return This Launch instance.
 	 */
+	@SuppressWarnings("unchecked")
 	public synchronized Launch addDatas(final JobDataMap jobDataMap) {
 		Map<String,Object> data = new HashMap<>();
 		for (String key:jobDataMap.getKeys()) {
@@ -171,6 +175,7 @@ public class Launch {
 		return (Job)this.launch.getJobInstance();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void addParameter(String name, Object value) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(name, value);

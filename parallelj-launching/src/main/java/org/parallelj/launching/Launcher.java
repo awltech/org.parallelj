@@ -59,14 +59,8 @@ public final class Launcher {
 	}
 
 	public  <T> Launch<T> newLaunch(Class<? extends T> class1) throws LaunchException {
-		return new LaunchImpl<T>(class1);
+		return newLaunch(class1, null);
 	}
-	
-	/*
-	public  <T> Launch<T> newLaunch(T object) throws LaunchException {
-		return new LaunchImpl<T>(object);
-	}
-	*/
 	
 	/**
 	 * Create a new instance of Launch.

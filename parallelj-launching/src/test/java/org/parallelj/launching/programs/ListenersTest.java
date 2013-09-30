@@ -58,14 +58,14 @@ public class ListenersTest {
 
 	@Test
 	public void testProgramWithUserErrorCode() {
-		Launch<ProgramWithUserErrorCode> launch;
+		Launch<ProgramWithoutErrors> launch;
 		try {
-			launch = Launcher.getLauncher().newLaunch(ProgramWithUserErrorCode.class);
+			launch = Launcher.getLauncher().newLaunch(ProgramWithoutErrors.class);
 			launch.synchLaunch();
 			Assert.assertNotNull(launch.getLaunchResult().getReturnCode());
 			Assert.assertEquals(launch.getLaunchResult().getReturnCode(), "USER_RETURN_CODE");
 		} catch (LaunchException e) {
-			e.printStackTrace();
+			Assert.fail(e.getMessage());
 		}
 	}
 
@@ -75,12 +75,29 @@ public class ListenersTest {
 		try {
 			launch = Launcher.getLauncher().newLaunch(ProgramWithoutErrors.class);
 			launch.addParameter("in", "InValue");
+			launch.addParameter("complexIn", "complexValue");
 			launch.synchLaunch();
 			Assert.assertNotNull(launch.getJobInstance());
 			Assert.assertNotNull(launch.getJobInstance().getOut());
 			Assert.assertEquals(launch.getJobInstance().getOut(), "out_InValue");
+			Assert.assertNotNull(launch.getJobInstance().getComplexIn());
+			Assert.assertTrue(launch.getJobInstance().getComplexIn() instanceof InternalClass);
+			Assert.assertEquals(launch.getJobInstance().getComplexIn().value,"in_complexValue");
 		} catch (LaunchException e) {
-			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+	}
+
+	@Test
+	public void testAsyncProgramWithoutErrorInOut() {
+		Launch<ProgramWithoutErrors> launch;
+		try {
+			launch = Launcher.getLauncher().newLaunch(ProgramWithoutErrors.class);
+			launch.addParameter("in", "InValue");
+			launch.addParameter("complexIn", "complexValue");
+			launch.aSynchLaunch();
+		} catch (LaunchException e) {
+			Assert.fail(e.getMessage());
 		}
 	}
 }

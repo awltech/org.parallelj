@@ -26,18 +26,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
-//import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.launching.Launch;
 import org.parallelj.launching.LaunchException;
 import org.parallelj.launching.LaunchResult;
-import org.parallelj.launching.LaunchingMessageKind;
 
 /**
  * A launch entry of a Program.
@@ -53,69 +48,56 @@ public class LaunchImpl<T> implements Launch<T> {
 	private UUID launchId;
 	private int launchRemoteIndex;
 	ProcessHelper<?> processHelper = null;
-	boolean stopExecutorServiceAfterExecution=false;
+	boolean multiThreading=true;
 
 	private Map<String, Object> inputParameters = new HashMap<String, Object>();
-	
+
 	/**
-	 * The Executor service to use when launching the program 
-	 * associated to this Launch
+	 * The Executor service to use when launching the program associated to this
+	 * Launch
 	 */
-	private ExecutorService executorService=null;
-	
+	private ExecutorService executorService = null;
+	private boolean stopExecutorServiceAfterExecution = false;
+
 	/**
 	 * The result Object of this Launch.
 	 */
 	private LaunchResult launchResult = new LaunchResult();
-	
+
 	public LaunchImpl(Class<? extends T> class1) throws LaunchException {
 		this(class1, null);
 	}
-	
-//	public LaunchImpl() throws LaunchException {
-//		this(null, null);
-//	}
-	
-	public LaunchImpl(T instance) throws LaunchException {
-		this(null, instance, null);
-	}
-	
-	public LaunchImpl(Class<? extends T> jobClass, ExecutorService executorService) throws LaunchException {
+
+	public LaunchImpl(Class<? extends T> jobClass,
+			ExecutorService executorService) throws LaunchException {
 		this.jobClass = jobClass;
 		this.executorService = executorService;
-		
+
 		checkProgramInstance();
 	}
-	
-	public LaunchImpl(Class<? extends T> jobClass, T instance, ExecutorService executorService) throws LaunchException {
-		this.jobClass = jobClass;
-		this.jobInstance = instance;
-		this.executorService = executorService;
-		checkProgramInstance();
-	}
-	
+
 	@Override
 	public void addParameter(String name, String value) {
 		this.inputParameters.put(name, value);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	private void checkProgramInstance() throws LaunchException{
-		if (this.jobClass==null && this.jobInstance == null) {
+	private void checkProgramInstance() throws LaunchException {
+		if (this.jobClass == null && this.jobInstance == null) {
 			throw new LaunchException("");
-		} else if (this.jobClass!=null && this.jobInstance==null) {
+		} else if (this.jobClass != null && this.jobInstance == null) {
 			try {
-				this.jobInstance = (T)this.jobClass.newInstance();
+				this.jobInstance = (T) this.jobClass.newInstance();
 			} catch (InstantiationException e) {
 				throw new LaunchException(e);
 			} catch (IllegalAccessException e) {
 				throw new LaunchException(e);
 			}
-		} else if (this.jobClass==null && this.jobInstance!=null) {
+		} else if (this.jobClass == null && this.jobInstance != null) {
 			this.jobClass = this.jobInstance.getClass();
 		}
 	}
-	
+
 	/**
 	 * Launch a Program and wait until it's terminated.
 	 * 
@@ -126,13 +108,8 @@ public class LaunchImpl<T> implements Launch<T> {
 	@Override
 	public Launch<T> synchLaunch() throws LaunchException {
 		initializeInstance();
-		internalaSynchLaunch(this.jobInstance, this.executorService);
-	
-		this.processHelper.join();
-		
 		return this;
 	}
-
 
 	/**
 	 * Launch a Program and continue.
@@ -144,50 +121,40 @@ public class LaunchImpl<T> implements Launch<T> {
 	@Override
 	public Launch<T> aSynchLaunch() throws LaunchException {
 		initializeInstance();
-		internalaSynchLaunch(this.jobInstance, this.executorService);
-		
 		return this;
 	}
 
-	private void internalaSynchLaunch(Object programInstance, ExecutorService executorService) throws LaunchException {
-		this.processHelper.execute(this.executorService);
-		LaunchingMessageKind.ILAUNCH0002.format(this.jobClass.getCanonicalName(), this.getLaunchId());
-	}
-	
 	/**
-	 * Initialize the jobInstance using LaunchingListener and an aspect
+	 * Initialize the jobInstance:
+	 * - ExecutorService if null
+	 * - launchId if null
 	 * 
 	 * @param launch
 	 */
 	private void initializeInstance() {
 		this.processHelper = Programs.as(this.jobInstance);
-		
-		if (this.executorService==null) {
+
+		if (this.multiThreading && this.executorService == null) {
+			short programCapacity = ((KProgram) this.getProcessHelper()
+					.getProcess().getProgram()).getCapacity();
+			this.executorService = (programCapacity == Short.MAX_VALUE) ? Executors
+					.newFixedThreadPool(100, new ParallelJThreadFactory())
+					: Executors.newFixedThreadPool(programCapacity,
+							new ParallelJThreadFactory());
 			this.stopExecutorServiceAfterExecution=true;
-			short programCapacity = ((KProgram)this.getProcessHelper().getProcess().getProgram()).getCapacity();
-			this.executorService = (programCapacity == Short.MAX_VALUE) 
-					? Executors.newFixedThreadPool(100,new ParallelJThreadFactory())
-					: Executors.newFixedThreadPool(programCapacity, new ParallelJThreadFactory());
 		}
-		
-		if (this.launchId==null) {
-			this.launchId=UUID.randomUUID();
+
+		if (this.launchId == null) {
+			this.launchId = UUID.randomUUID();
 		}
 		this.launchResult = new LaunchResult();
 	}
-	
-	/**
-	 * Finalize the jobInstance using LaunchingListener and an aspect
-	 * 
-	 * @param launch
-	 */
+
 	@SuppressWarnings("unused")
-	private void finalizeInstance() {
-		if(this.stopExecutorServiceAfterExecution) {
+	private void complete() {
+		if (this.stopExecutorServiceAfterExecution) {
 			this.executorService.shutdown();
 		}
-		LaunchingMessageKind.ILAUNCH0003.format(this.getJobInstance(), this.getLaunchId(),this.getLaunchResult().getStatusCode(),this.getLaunchResult().getReturnCode());
-		
 	}
 
 	@Override
@@ -227,7 +194,7 @@ public class LaunchImpl<T> implements Launch<T> {
 	}
 
 	public void setLaunchId(String id) {
-		this.launchId=UUID.fromString(id);
+		this.launchId = UUID.fromString(id);
 	}
 
 	public int getLaunchRemoteIndex() {
@@ -243,5 +210,8 @@ public class LaunchImpl<T> implements Launch<T> {
 		return executorService;
 	}
 
-	
+	public void setMultiThreading(boolean multiThreading) {
+		this.multiThreading = multiThreading;
+	}
+
 }

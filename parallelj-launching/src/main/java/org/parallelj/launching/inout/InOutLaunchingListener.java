@@ -89,7 +89,7 @@ public class InOutLaunchingListener extends AbstractLaunchingListener {
 			try {
 				// Call the getter method
 				Object result = getter.invoke(launch.getJobInstance());
-				// Complete the JobDataMap
+				// Complete the Map result
 				outputs.put(output.getName(), result);
 			} catch (IllegalAccessException e) {
 				launch.getLaunchResult().setStatusCode(ProgramReturnCodes.FAILURE);

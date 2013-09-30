@@ -47,31 +47,29 @@ public class LaunchingObservable {
 			try {
 				listeners.add(listenerClass.newInstance());
 			} catch (Exception e) {
-				// TODO:
+				// TODO: add message kind
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public void prepareLaunching(Launch launch) {
-		//eventManagement.dispatch(event);
+	public void prepareLaunching(Launch<?> launch) {
 		for (LaunchingListener listener : this.listeners) {
 			try {
 				listener.prepareLaunching(launch);
 			} catch (Exception e) {
-				// TODO add message kind
+				// TODO: add message kind
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public void finalizeLaunching(Launch launch) {
-		//eventManagement.dispatch(event);
+	public void finalizeLaunching(Launch<?> launch) {
 		for (LaunchingListener listener : this.listeners) {
 			try {
 				listener.finalizeLaunching(launch);
 			} catch (Exception e) {
-				// TODO add message kind
+				// TODO: add message kind
 				e.printStackTrace();
 			}
 		}

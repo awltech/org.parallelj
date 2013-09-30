@@ -57,7 +57,7 @@ public class DefaultLauncher {
 		if (programInstance != null) {
 			// Run the Program
 			Launcher launcher = null;
-			Launch launch =  null;
+			Launch<?> launch =  null;
 			try {
 				launcher = Launcher.getLauncher();
 				launch = launcher.newLaunch(programClass);
