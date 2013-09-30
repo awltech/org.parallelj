@@ -23,20 +23,18 @@ package org.parallelj.launching.transport.tcp.command;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.mina.core.session.IoSession;
+import org.parallelj.launching.Launch;
+import org.parallelj.launching.LaunchException;
+import org.parallelj.launching.LaunchResult;
+import org.parallelj.launching.Launcher;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ProgramReturnCodes;
 import org.parallelj.launching.parser.ParserException;
-import org.parallelj.launching.quartz.Launch;
-import org.parallelj.launching.quartz.LaunchException;
-import org.parallelj.launching.quartz.Launcher;
-import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.launching.remote.RemoteProgram;
 import org.parallelj.launching.transport.jmx.JmxCommand;
 import org.parallelj.launching.transport.tcp.command.option.IOption;
 import org.parallelj.launching.transport.tcp.command.option.ISyncLaunchOption;
 import org.parallelj.launching.transport.tcp.command.option.OptionException;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
 
 /**
  * SuncLaunch TcpCommand
@@ -58,35 +56,32 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 	 */
 	@Override
 	public final String process(final IoSession session, final String... args) {
-		final JobDataMap jobDataMap = new JobDataMap();
 		RemoteProgram remoteProgram = null;
 		// Get the corresponding remoteProgram
 		try {
 			remoteProgram = parseCommandLine(args);
 
-			for (IOption ioption : this.getOptions()) {
-				ioption.process(jobDataMap, remoteProgram);
-			}
-
-			@SuppressWarnings("unchecked")
-			final Class<? extends Job> jobClass = (Class<? extends Job>) remoteProgram
+			final Class<?> jobClass = (Class<?>) remoteProgram
 					.getAdapterClass();
 			final Launcher launcher = Launcher.getLauncher();
 
-			final Launch launch = launcher.newLaunch(jobClass)
-					.addDatas(jobDataMap).synchLaunch();
+			final Launch launch = launcher.newLaunch(jobClass);
 
-			final JobDataMap jdm = launch.getLaunchResult();
-			String status = null;
-			String userErrorCode = null;
-			if (jdm == null) {
-				status = ProgramReturnCodes.NOTSTARTED.name();
-			} else {
-				status = String.valueOf(jdm.get(QuartzUtils.RETURN_CODE));
-				userErrorCode = String.valueOf(jdm.get(QuartzUtils.USER_RETURN_CODE));
+			for (IOption ioption : this.getOptions()) {
+				ioption.process(launch, remoteProgram);
 			}
 
-			return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
+			final LaunchResult launchResult = launch.synchLaunch().getLaunchResult();
+			String status = null;
+			String userErrorCode = null;
+			if (launchResult == null) {
+				status = ProgramReturnCodes.NOTSTARTED.name();
+			} else {
+				status = String.valueOf(launchResult.getStatusCode());
+				userErrorCode = String.valueOf(launchResult.getReturnCode());
+			}
+
+			return LaunchingMessageKind.ILAUNCH0003.getFormatedMessage(
 					jobClass.getCanonicalName(), launch.getLaunchId(), status, userErrorCode);
 		} catch (ParseException e) {
 			return e.getMessage();
@@ -95,11 +90,11 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 		} catch (OptionException e) {
 			return e.getFormatedMessage();
 		} catch (LaunchException e) {
-			return LaunchingMessageKind.EQUARTZ0003
+			return LaunchingMessageKind.ELAUNCH0008
 					.format(remoteProgram != null ? remoteProgram
 							.getAdapterClass() : "unknown",e);
 		} catch (Exception e) {
-			return LaunchingMessageKind.EQUARTZ0006
+			return LaunchingMessageKind.ELAUNCH0008
 					.format(remoteProgram != null ? remoteProgram
 							.getAdapterClass() : "unknown",e.getMessage(), e);
 		}

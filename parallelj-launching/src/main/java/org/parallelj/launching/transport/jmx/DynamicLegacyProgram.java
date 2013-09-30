@@ -23,7 +23,9 @@ package org.parallelj.launching.transport.jmx;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.management.Attribute;
 import javax.management.AttributeList;
@@ -37,16 +39,13 @@ import javax.management.MBeanParameterInfo;
 import javax.management.ReflectionException;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.parallelj.launching.Launch;
+import org.parallelj.launching.LaunchException;
+import org.parallelj.launching.Launcher;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.inout.Argument;
 import org.parallelj.launching.parser.NopParser;
-import org.parallelj.launching.quartz.Launch;
-import org.parallelj.launching.quartz.LaunchException;
-import org.parallelj.launching.quartz.Launcher;
-import org.parallelj.launching.quartz.QuartzUtils;
 import org.parallelj.launching.remote.RemoteProgram;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
 
 /**
  * Dynamic MBean to register a Program as a MBean
@@ -108,9 +107,9 @@ public class DynamicLegacyProgram implements DynamicMBean {
 	 * @throws MBeanException
 	 *             If an error appends when initializing the JobDataMap
 	 */
-	protected JobDataMap buildJobDataMap(final JmxCommand jmxCommand,
+	protected Map<String, Object> buildJobDataMap(final JmxCommand jmxCommand,
 			final Object[] params) throws MBeanException {
-		final JobDataMap jobDataMap = new JobDataMap();
+		final Map<String, Object> jobDataMap = new HashMap<String, Object>();
 
 		try {
 			int ind = 0;
@@ -151,26 +150,25 @@ public class DynamicLegacyProgram implements DynamicMBean {
 		final boolean isSync = actionName.startsWith("sync");
 		try {
 			// initialize arguments for lunching (using Quartz)
-			final JobDataMap jobDataMap = buildJobDataMap(curCmd, params);
+			final Map<String, Object> jobDataMap = buildJobDataMap(curCmd, params);
 
-			@SuppressWarnings("unchecked")
 			final Launch launch = Launcher.getLauncher()
-					.newLaunch((Class<Job>) remoteProgram.getAdapterClass()).addDatas(jobDataMap);
+					.newLaunch((Class<?>) remoteProgram.getAdapterClass()).addAllData(jobDataMap);
 			if (isSync) {
 				// Launch and wait until terminated
 				launch.synchLaunch();
-				return LaunchingMessageKind.IQUARTZ0003.getFormatedMessage(
+				return LaunchingMessageKind.ILAUNCH0003.getFormatedMessage(
 						remoteProgram.getAdapterClass().getCanonicalName(), launch.getLaunchId(),
-						launch.getLaunchResult().get(QuartzUtils.RETURN_CODE),
-						launch.getLaunchResult().get(QuartzUtils.USER_RETURN_CODE));
+						launch.getLaunchResult().getStatusCode(),
+						launch.getLaunchResult().getReturnCode());
 			} else {
 				// Launch and continue
 				launch.aSynchLaunch();
-				return LaunchingMessageKind.IQUARTZ0002.getFormatedMessage(
+				return LaunchingMessageKind.ILAUNCH0002.getFormatedMessage(
 						remoteProgram.getAdapterClass().getCanonicalName(), launch.getLaunchId());
 			}
 		} catch (LaunchException e) {
-			LaunchingMessageKind.EQUARTZ0003.format(actionName, e);
+			LaunchingMessageKind.ELAUNCH0003.format(actionName, e);
 		}
 		
 		return null;

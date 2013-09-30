@@ -23,18 +23,16 @@ package org.parallelj.launching.transport.tcp.command;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.mina.core.session.IoSession;
+import org.parallelj.launching.Launch;
+import org.parallelj.launching.LaunchException;
+import org.parallelj.launching.Launcher;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.parser.ParserException;
-import org.parallelj.launching.quartz.Launch;
-import org.parallelj.launching.quartz.LaunchException;
-import org.parallelj.launching.quartz.Launcher;
 import org.parallelj.launching.remote.RemoteProgram;
 import org.parallelj.launching.transport.jmx.JmxCommand;
 import org.parallelj.launching.transport.tcp.command.option.IAsyncLaunchOption;
 import org.parallelj.launching.transport.tcp.command.option.IOption;
 import org.parallelj.launching.transport.tcp.command.option.OptionException;
-import org.quartz.Job;
-import org.quartz.JobDataMap;
 
 /**
  * AsyncLaunch TcpCommand
@@ -54,26 +52,23 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand 
 	 */
 	@Override
 	public final String process(final IoSession session, final String... args) {
-		final JobDataMap jobDataMap = new JobDataMap();
 		RemoteProgram remoteProgram=null;
 		// Get the corresponding RemoteProgram
 		try {
 			remoteProgram = parseCommandLine(args);
 			
-			for (IOption ioption:this.getOptions()) {
-				ioption.process(jobDataMap, remoteProgram);
-			}
-			
-			@SuppressWarnings("unchecked")
-			final Class<? extends Job> jobClass = (Class<? extends Job>) remoteProgram.getAdapterClass();
+			final Class<?> jobClass = (Class<?>) remoteProgram.getAdapterClass();
 			final Launcher launcher = Launcher.getLauncher();
 
-			final Launch launch = launcher.newLaunch(jobClass)
-					.addDatas(jobDataMap).aSynchLaunch();
+			final Launch launch = launcher.newLaunch(jobClass);
+			for (IOption ioption:this.getOptions()) {
+				ioption.process(launch, remoteProgram);
+			}
 			
-			return LaunchingMessageKind.IQUARTZ0002.getFormatedMessage(
-					jobClass.getCanonicalName(),
-					launch.getLaunchId());
+			launch.aSynchLaunch();
+			
+			return LaunchingMessageKind.ILAUNCH0002.getFormatedMessage(
+					jobClass.getCanonicalName(), launch.getLaunchId());
 		} catch (ParseException e) {
 			return e.getMessage();
 		} catch (ParserException e) {
@@ -81,7 +76,7 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand 
 		} catch (OptionException e) {
 			return e.getFormatedMessage();
 		} catch (LaunchException e) {
-			return  LaunchingMessageKind.EQUARTZ0003.format(remoteProgram!=null?remoteProgram.getAdapterClass():"unknown",e);
+			return  LaunchingMessageKind.ELAUNCH0008.format(remoteProgram!=null?remoteProgram.getAdapterClass():"unknown",e);
 		}
 	}
 

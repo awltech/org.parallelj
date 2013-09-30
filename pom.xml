@@ -100,6 +100,7 @@
 		<module>parallelj-launching</module>
 		<module>parallelj-extensions</module>
 		<module>parallelj-ssh</module>
+		<module>parallelj-legacy-launching</module>
 <!-- 		<module>parallelj-tracknrestart</module> -->
 	</modules>
 

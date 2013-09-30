@@ -1,0 +1,11 @@
+org.parallelj.launching.transport.tcp.command.Help
+org.parallelj.launching.transport.tcp.command.AlHelp
+org.parallelj.launching.transport.tcp.command.ListPrograms
+org.parallelj.launching.transport.tcp.command.AlList
+org.parallelj.launching.transport.tcp.command.SyncLaunch
+org.parallelj.launching.transport.tcp.command.AlSyncLaunch
+org.parallelj.launching.transport.tcp.command.AsyncLaunch
+org.parallelj.launching.transport.tcp.command.AlAsyncLaunch
+org.parallelj.launching.transport.tcp.command.Quit
+org.parallelj.launching.transport.tcp.command.AlQuit
+#org.parallelj.launching.transport.tcp.command.Stop

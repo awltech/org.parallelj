@@ -22,9 +22,9 @@
 package org.parallelj.launching.transport.tcp.command.option;
 
 import org.apache.commons.cli.Option;
+import org.parallelj.launching.Launch;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.remote.RemoteProgram;
-import org.quartz.JobDataMap;
 
 /**
  * Define an Option for a remote Command.
@@ -68,6 +68,6 @@ public interface IOption {
 	 * @throws OptionException
 	 * @throws ParserException
 	 */
-	public void process(JobDataMap jobDataMap, Object... args)
+	public void process(Launch launch, Object... args)
 			throws OptionException, ParserException;
 }

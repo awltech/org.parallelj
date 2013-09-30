@@ -29,17 +29,37 @@ import org.parallelj.Begin;
 import org.parallelj.Handler;
 import org.parallelj.Program;
 import org.parallelj.XorJoin;
+import org.parallelj.launching.In;
 import org.parallelj.launching.OnError;
+import org.parallelj.launching.Out;
+import org.parallelj.launching.ReturnCode;
 import org.parallelj.launching.errors.ProceduresOnError;
 
 @Program
 public class ProgramWithoutErrors {
+	@In
+	private String in;
+
+	@In(parser=InternalParser.class)
+	private InternalClass complexIn;
+
+	@Out
+	private String out;
+
+	@ReturnCode
+	private String userErrorCode;
+	
+	public String getUserErrorCode() {
+		return userErrorCode;
+	}
 
 	@Begin
 	public Runnable processing1() {
 		return new Runnable() {
 			@Override
 			public void run() {
+				System.out.println("Setting User code...");
+				ProgramWithoutErrors.this.userErrorCode="USER_RETURN_CODE";
 			}
 		};
 	}
@@ -54,6 +74,7 @@ public class ProgramWithoutErrors {
 		return new Callable<Void>() {
 			@Override
 			public Void call() throws Exception {
+				ProgramWithoutErrors.this.out = "out_"+ProgramWithoutErrors.this.in;
 				return null;
 			}
 		};
@@ -91,4 +112,22 @@ public class ProgramWithoutErrors {
 	public ProceduresOnError getOnMynErrors() {
 		return this.onMynErrors;
 	}
+
+	public String getOut() {
+		return out;
+	}
+
+	public void setIn(String in) {
+		this.in = in;
+	}
+
+	public InternalClass getComplexIn() {
+		return complexIn;
+	}
+
+	public void setComplexIn(InternalClass complexIn) {
+		this.complexIn = complexIn;
+	}
+	
+	
 }

@@ -1,0 +1,2 @@
+org.parallelj.launching.transport.tcp.command.option.SyncLaunchIdOption
+org.parallelj.launching.transport.tcp.command.option.SyncLaunchArgsOption

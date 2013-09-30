@@ -56,6 +56,18 @@ public enum MessageKind {
 	@Format("can't call method [%s] on class [%s]")
 	E0004,
 	
+	/**Error: An error occurred during program execution [%s]
+	 * 
+	 */
+	@Format("An error occurred during program execution [%s]")
+	E0005,
+	
+	/**Error: An error occurred during program execution [%s] on  [%s]
+	 * 
+	 */
+	@Format("An error occurred during program execution [%s] on  [%s]")
+	E0006,
+	
 	/**
 	 * Info: building a program
 	 */
