@@ -50,7 +50,7 @@ public class AsyncLaunchIdOption implements IAsyncLaunchOption, IIdOption {
 	}
 
 	@Override
-	public void process(final Launch launch, final Object... args)
+	public void process(final Launch<?> launch, final Object... args)
 			throws OptionException, ParserException {
 		OptionsUtils.processId(this, launch);
 	}

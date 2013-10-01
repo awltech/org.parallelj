@@ -60,7 +60,7 @@ public class AsyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand 
 			final Class<?> jobClass = (Class<?>) remoteProgram.getAdapterClass();
 			final Launcher launcher = Launcher.getLauncher();
 
-			final Launch launch = launcher.newLaunch(jobClass);
+			final Launch<?> launch = launcher.newLaunch(jobClass);
 			for (IOption ioption:this.getOptions()) {
 				ioption.process(launch, remoteProgram);
 			}

@@ -8,14 +8,13 @@ import org.parallelj.Programs.ProcessHelper;
 public interface Launch<T> {
 
 	public void addParameter(String name, String value);
+	public Launch<T> addParameters(Map<String, Object> dataMap);
 	public Launch<T> synchLaunch() throws LaunchException;
 	public Launch<T> aSynchLaunch() throws LaunchException;
 	public LaunchResult getLaunchResult();
-	public Map<String, Object> getInputParameters();
-	public void setInputParameters(Map<String, Object> inputParameters);
+	public Map<String, Object> getParameters();
 	public ProcessHelper<?> getProcessHelper();
 	public T getJobInstance();
-	public Launch<T> addAllData(Map<String, Object> dataMap);
 	public String getLaunchId();
 	public ExecutorService getExecutorService();
 }

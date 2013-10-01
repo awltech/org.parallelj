@@ -88,7 +88,7 @@ public class Launch {
 	 */
 	public Launch synchLaunch() throws LaunchException {
 		JobDataMap jobDataMap = new JobDataMap();
-		jobDataMap.put(Launch.PARAMETERS, this.launch.getInputParameters());
+		jobDataMap.put(Launch.PARAMETERS, this.launch.getParameters());
 		jobDataMap.put(Launch.DEFAULT_EXECUTOR_KEY, this.launch.getExecutorService());
 		try {
 			this.launch.synchLaunch();
@@ -115,18 +115,13 @@ public class Launch {
 	 */
 	public Launch aSynchLaunch() throws LaunchException {
 		JobDataMap jobDataMap = new JobDataMap();
-		jobDataMap.put(Launch.PARAMETERS, this.launch.getInputParameters());
+		jobDataMap.put(Launch.PARAMETERS, this.launch.getParameters());
 		jobDataMap.put(Launch.DEFAULT_EXECUTOR_KEY, this.launch.getExecutorService());
 		try {
 			this.launch.aSynchLaunch();
 		} catch (org.parallelj.launching.LaunchException e) {
 			throw new LaunchException(e);
 		}
-		//org.parallelj.launching.LaunchResult result = this.launch.getLaunchResult();
-		//jobDataMap.put(QuartzUtils.RETURN_CODE, result.getStatusCode());
-		//jobDataMap.put(QuartzUtils.USER_RETURN_CODE, result.getReturnCode());
-		//jobDataMap.put(QuartzUtils.PROCEDURES_IN_ERROR, result.getProceduresInError());
-		//jobDataMap.put(Launch.OUTPUTS, result.getOutputParameters());
 		this.legacyLaunchResult = new LaunchResult(launch.getLaunchId(), jobDataMap);
 		
 		return this;
@@ -146,7 +141,7 @@ public class Launch {
 		for (String key:jobDataMap.getKeys()) {
 			data.put(key, jobDataMap.get(key));
 		}
-		this.launch.addAllData(data);
+		this.launch.addParameters(data);
 		return this;
 	}
 
@@ -179,7 +174,7 @@ public class Launch {
 	public void addParameter(String name, Object value) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(name, value);
-		this.launch.addAllData(dataMap);
+		this.launch.addParameters(dataMap);
 	}
 
 	public Map<String, Object> getOuputs() {

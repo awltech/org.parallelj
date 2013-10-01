@@ -35,7 +35,7 @@ public final class OptionsUtils {
 	private OptionsUtils() {
 	}
 
-	public static void processId(final IOption ioption, final Launch launch)
+	public static void processId(final IOption ioption, final Launch<?> launch)
 			throws OptionException {
 		String strId=null;
 		try {
@@ -53,7 +53,7 @@ public final class OptionsUtils {
 		}
 	}
 
-	public static void processArgs(final IOption ioption, final Launch launch,
+	public static void processArgs(final IOption ioption, final Launch<?> launch,
 			final Object... args) throws OptionException, ParserException {
 		// Check arguments number
 		final String[] arguments = ioption.getOption().getValues();
@@ -80,7 +80,7 @@ public final class OptionsUtils {
 	 * @param arguments
 	 * @throws ParserException
 	 */
-	public static void initializeArg(final RemoteProgram remoteProgram, final String[] arguments, final Launch launch)
+	public static void initializeArg(final RemoteProgram remoteProgram, final String[] arguments, final Launch<?> launch)
 			throws OptionException, ParserException {
 
 		int numberOfEquals = 0;

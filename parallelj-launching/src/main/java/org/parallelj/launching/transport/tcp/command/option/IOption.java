@@ -68,6 +68,6 @@ public interface IOption {
 	 * @throws OptionException
 	 * @throws ParserException
 	 */
-	public void process(Launch launch, Object... args)
+	public void process(Launch<?> launch, Object... args)
 			throws OptionException, ParserException;
 }

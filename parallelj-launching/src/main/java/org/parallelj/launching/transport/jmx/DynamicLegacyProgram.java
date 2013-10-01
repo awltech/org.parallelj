@@ -152,8 +152,8 @@ public class DynamicLegacyProgram implements DynamicMBean {
 			// initialize arguments for lunching (using Quartz)
 			final Map<String, Object> jobDataMap = buildJobDataMap(curCmd, params);
 
-			final Launch launch = Launcher.getLauncher()
-					.newLaunch((Class<?>) remoteProgram.getAdapterClass()).addAllData(jobDataMap);
+			final Launch<?> launch = Launcher.getLauncher()
+					.newLaunch((Class<?>) remoteProgram.getAdapterClass()).addParameters(jobDataMap);
 			if (isSync) {
 				// Launch and wait until terminated
 				launch.synchLaunch();

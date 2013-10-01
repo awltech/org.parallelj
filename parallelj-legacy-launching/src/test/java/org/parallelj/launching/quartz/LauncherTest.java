@@ -21,42 +21,31 @@
  */
 package org.parallelj.launching.quartz;
 
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.parallelj.Programs;
-import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.launching.programs.BeginProgram;
-import org.parallelj.launching.programs.ProgramWithErrors;
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 
 public class LauncherTest {
 
 	@Test
 	public void testNewLaunch() {
-		// TODO Fix this test
-		// try {
-		// Launcher launcher = Launcher.getLauncher();
-		// Launch launch = launcher.newLaunch(BeginProgram.class);
-		// launch.synchLaunch();
-		// Job job = launch.getAdapter();
-		// launcher.complete();
-		//
-		// assertNotNull(job);
-		// assertEquals(job.getClass(), BeginProgram.class);
-		// // Test Program has been executed.
-		// assertEquals(((BeginProgram)job).begin, true);
-		// } catch (LaunchException e) {
-		// fail("Error");
-		// }
+		try {
+			Launcher launcher = Launcher.getLauncher();
+			Launch launch = launcher.newLaunch(BeginProgram.class);
+			launch.synchLaunch();
+			Job job = launch.getAdapter();
+			launcher.complete();
+
+			assertNotNull(job);
+			assertEquals(job.getClass(), BeginProgram.class);
+			// Test Program has been executed.
+			assertEquals(((BeginProgram) job).begin, true);
+		} catch (LaunchException e) {
+			fail("Error");
+		}
 	}
 }

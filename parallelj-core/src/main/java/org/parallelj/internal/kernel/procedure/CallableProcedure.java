@@ -30,7 +30,6 @@ import org.parallelj.internal.kernel.KOutputParameter;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.mirror.HandlerLoopPolicy;
 
 /**
  * Represents a procedure bound to a {@link Callable}.

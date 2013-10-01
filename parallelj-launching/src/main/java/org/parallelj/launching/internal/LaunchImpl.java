@@ -81,6 +81,17 @@ public class LaunchImpl<T> implements Launch<T> {
 		this.inputParameters.put(name, value);
 	}
 
+	@Override
+	public Launch<T> addParameters(Map<String, Object> dataMap) {
+		this.inputParameters.putAll(dataMap);
+		return this;
+	}
+	
+	@Override
+	public Map<String, Object> getParameters() {
+		return this.inputParameters;
+	}
+
 	@SuppressWarnings("unchecked")
 	private void checkProgramInstance() throws LaunchException {
 		if (this.jobClass == null && this.jobInstance == null) {
@@ -163,16 +174,6 @@ public class LaunchImpl<T> implements Launch<T> {
 	}
 
 	@Override
-	public Map<String, Object> getInputParameters() {
-		return inputParameters;
-	}
-
-	@Override
-	public void setInputParameters(Map<String, Object> inputParameters) {
-		this.inputParameters = inputParameters;
-	}
-
-	@Override
 	public ProcessHelper<?> getProcessHelper() {
 		return processHelper;
 	}
@@ -180,12 +181,6 @@ public class LaunchImpl<T> implements Launch<T> {
 	@Override
 	public T getJobInstance() {
 		return jobInstance;
-	}
-
-	@Override
-	public Launch<T> addAllData(Map<String, Object> dataMap) {
-		this.inputParameters.putAll(dataMap);
-		return this;
 	}
 
 	@Override

@@ -65,7 +65,7 @@ public class SyncLaunch extends AbstractLaunchTcpCommand implements JmxCommand {
 					.getAdapterClass();
 			final Launcher launcher = Launcher.getLauncher();
 
-			final Launch launch = launcher.newLaunch(jobClass);
+			final Launch<?> launch = launcher.newLaunch(jobClass);
 
 			for (IOption ioption : this.getOptions()) {
 				ioption.process(launch, remoteProgram);

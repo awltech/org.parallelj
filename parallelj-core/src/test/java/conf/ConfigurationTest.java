@@ -27,15 +27,10 @@ import static org.junit.Assert.assertNotNull;
 import java.util.List;
 
 import org.junit.Test;
-import org.parallelj.Programs;
-import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.pojos.CProcedure;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
-import org.parallelj.internal.kernel.KProgram;
-
-import tutorial.MyPipelineTest;
 
 public class ConfigurationTest {
 

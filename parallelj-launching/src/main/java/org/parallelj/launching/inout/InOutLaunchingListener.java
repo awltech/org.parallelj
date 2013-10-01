@@ -27,7 +27,7 @@ public class InOutLaunchingListener extends AbstractLaunchingListener {
 		 *  If some parameters are specified in JobDataMap, we initialize the corresponding values..
 		 */
 		IProgramInputOutputs programInputOutput = (IProgramInputOutputs)launch.getProcessHelper().getProcess().getProgram();
-		Map<String, Object> parameters = (Map<String, Object>)launch.getInputParameters();
+		Map<String, Object> parameters = (Map<String, Object>)launch.getParameters();
 		if (parameters!=null) {
 			for(String key:parameters.keySet()) {
 				Object value = parameters.get(key);

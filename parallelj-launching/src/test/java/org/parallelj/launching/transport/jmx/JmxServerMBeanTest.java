@@ -21,15 +21,15 @@
  */
 package org.parallelj.launching.transport.jmx;
 
-import static org.junit.Assert.assertEquals;
+//import static org.junit.Assert.assertEquals;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.parallelj.internal.conf.ConfigurationService;
-import org.parallelj.internal.conf.ParalleljConfigurationManager;
-import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
-import org.parallelj.launching.programs.BeginProgram;
+//import org.junit.After;
+//import org.junit.Before;
+//import org.junit.Test;
+//import org.parallelj.internal.conf.ConfigurationService;
+//import org.parallelj.internal.conf.ParalleljConfigurationManager;
+//import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
+//import org.parallelj.launching.programs.BeginProgram;
 
 /**
  * The class <code>JmxServerTest</code> contains tests for the class
@@ -40,9 +40,9 @@ import org.parallelj.launching.programs.BeginProgram;
  * @version $Revision: 1.0 $
  */
 public class JmxServerMBeanTest {
-	private JmxServer fixture;
-	private String host;
-	private int port;
+//	private JmxServer fixture;
+//	private String host;
+//	private int port;
 
 	/**
 	 * Run the void registerMBean(String) method test.

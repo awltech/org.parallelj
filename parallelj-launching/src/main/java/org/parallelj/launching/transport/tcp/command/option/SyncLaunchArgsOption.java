@@ -49,7 +49,7 @@ public class SyncLaunchArgsOption implements ISyncLaunchOption {
 	}
 
 	@Override
-	public void process(final Launch launch, final Object... args)
+	public void process(final Launch<?> launch, final Object... args)
 			throws OptionException, ParserException {
 		OptionsUtils.processArgs(this, launch, args);
 	}
