@@ -101,7 +101,7 @@
 		<module>parallelj-extensions</module>
 		<module>parallelj-ssh</module>
 		<module>parallelj-legacy-launching</module>
-<!-- 		<module>parallelj-tracknrestart</module> -->
+		<!-- module>parallelj-tracknrestart</module> -->
 	</modules>
 
 	<properties>
