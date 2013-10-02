@@ -6,6 +6,8 @@
 		<version>1.4.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>parallelj-ssh-publickey</artifactId>
+	<name>Parallelj - SSH - PublicKey</name>
+	<description>Management of ParallelJ extensions for SSH using public key</description>
 
 	<dependencies>
 		<dependency>
@@ -28,6 +30,21 @@
 			<artifactId>bcprov-jdk15</artifactId>
 		</dependency>
 	</dependencies>
-	<name>Parallelj - SSH - PublicKey</name>
-	<description>Management of ParallelJ extensions for SSH using public key</description>
+	
+	<build>
+		<plugins>
+			<plugin>
+			  <groupId>org.apache.maven.plugins</groupId>
+			  <artifactId>maven-source-plugin</artifactId>
+			  <executions>
+			    <execution>
+			      <id>attach-sources</id>
+			      <goals>
+			        <goal>jar</goal>
+			      </goals>
+			    </execution>
+			  </executions>
+			</plugin>			
+		</plugins>
+	</build>
 </project>
