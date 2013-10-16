@@ -25,11 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
-import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.launching.Launch;
 import org.parallelj.launching.LaunchException;
 import org.parallelj.launching.LaunchResult;
@@ -48,7 +46,6 @@ public class LaunchImpl<T> implements Launch<T> {
 	private UUID launchId;
 	private int launchRemoteIndex;
 	ProcessHelper<?> processHelper = null;
-	boolean multiThreading=true;
 
 	private Map<String, Object> inputParameters = new HashMap<String, Object>();
 
@@ -57,7 +54,7 @@ public class LaunchImpl<T> implements Launch<T> {
 	 * Launch
 	 */
 	private ExecutorService executorService = null;
-	private boolean stopExecutorServiceAfterExecution = false;
+	private boolean stopExecutorServiceAfterExecution = true;
 
 	/**
 	 * The result Object of this Launch.
@@ -73,7 +70,21 @@ public class LaunchImpl<T> implements Launch<T> {
 		this.jobClass = jobClass;
 		this.executorService = executorService;
 
-		checkProgramInstance();
+		if (this.jobClass == null) {
+			throw new LaunchException("Program Class can't be null");
+		} else {
+			try {
+				this.jobInstance = (T) this.jobClass.newInstance();
+			} catch (InstantiationException e) {
+				throw new LaunchException(e);
+			} catch (IllegalAccessException e) {
+				throw new LaunchException(e);
+			}
+		} 
+		
+		if (this.executorService!=null) {
+			this.stopExecutorServiceAfterExecution=false;
+		}
 	}
 
 	@Override
@@ -90,23 +101,6 @@ public class LaunchImpl<T> implements Launch<T> {
 	@Override
 	public Map<String, Object> getParameters() {
 		return this.inputParameters;
-	}
-
-	@SuppressWarnings("unchecked")
-	private void checkProgramInstance() throws LaunchException {
-		if (this.jobClass == null && this.jobInstance == null) {
-			throw new LaunchException("");
-		} else if (this.jobClass != null && this.jobInstance == null) {
-			try {
-				this.jobInstance = (T) this.jobClass.newInstance();
-			} catch (InstantiationException e) {
-				throw new LaunchException(e);
-			} catch (IllegalAccessException e) {
-				throw new LaunchException(e);
-			}
-		} else if (this.jobClass == null && this.jobInstance != null) {
-			this.jobClass = this.jobInstance.getClass();
-		}
 	}
 
 	/**
@@ -145,16 +139,6 @@ public class LaunchImpl<T> implements Launch<T> {
 	private void initializeInstance() {
 		this.processHelper = Programs.as(this.jobInstance);
 
-		if (this.multiThreading && this.executorService == null) {
-			short programCapacity = ((KProgram) this.getProcessHelper()
-					.getProcess().getProgram()).getCapacity();
-			this.executorService = (programCapacity == Short.MAX_VALUE) ? Executors
-					.newFixedThreadPool(100, new ParallelJThreadFactory())
-					: Executors.newFixedThreadPool(programCapacity,
-							new ParallelJThreadFactory());
-			this.stopExecutorServiceAfterExecution=true;
-		}
-
 		if (this.launchId == null) {
 			this.launchId = UUID.randomUUID();
 		}
@@ -163,7 +147,7 @@ public class LaunchImpl<T> implements Launch<T> {
 
 	@SuppressWarnings("unused")
 	private void complete() {
-		if (this.stopExecutorServiceAfterExecution) {
+		if (this.executorService!=null && this.stopExecutorServiceAfterExecution) {
 			this.executorService.shutdown();
 		}
 	}
@@ -203,10 +187,6 @@ public class LaunchImpl<T> implements Launch<T> {
 	@Override
 	public ExecutorService getExecutorService() {
 		return executorService;
-	}
-
-	public void setMultiThreading(boolean multiThreading) {
-		this.multiThreading = multiThreading;
 	}
 
 }

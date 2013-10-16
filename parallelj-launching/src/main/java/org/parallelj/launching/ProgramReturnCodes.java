@@ -29,5 +29,9 @@ package org.parallelj.launching;
  */
 public enum ProgramReturnCodes {
 
-	SUCCESS, FAILURE, ABORTED, NOTSTARTED;
+	NOTSTARTED, RUNNING, SUCCESS, FAILURE, ABORTED;
+	
+	public boolean isProgramRunning() {
+		return this == RUNNING || this == NOTSTARTED;
+	}
 }

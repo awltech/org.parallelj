@@ -97,6 +97,18 @@ public enum LaunchingMessageKind {
 	@Format("Starting Servers...")
 	ILAUNCH0001,
 	
+	/**
+	 * Error occured during default ExecutorService instanciation
+	 */
+	@Format("Error occured during default ExecutorService instanciation!")
+	ELAUNCH0011,
+	
+	/**
+	 * Error occured during ExecutorService instanciation
+	 */
+	@Format("Error occured during ExecutorService instanciation!")
+	ELAUNCH0012,
+	
 	/*
 	 * Information messages for TcpIp
 	 */
