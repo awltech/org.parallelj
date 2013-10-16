@@ -54,8 +54,6 @@ public class Launch {
 	/**
 	 * Default Constructor.
 	 * 
-	 * @param scheduler
-	 *            The ParalleljScheduler
 	 * @param jobClass
 	 *            The Program Adapter class
 	 * @throws LaunchException
@@ -111,7 +109,7 @@ public class Launch {
 	 * 
 	 * @return A Launch instance.
 	 * @throws LaunchException
-	 *             When a SchedulerException occurred.
+	 *             When an Exception occurred.
 	 */
 	public Launch aSynchLaunch() throws LaunchException {
 		JobDataMap jobDataMap = new JobDataMap();
@@ -157,7 +155,7 @@ public class Launch {
 	/**
 	 * Get the result Object of the Launch.
 	 * 
-	 * @return The result Object of the launch.
+	 * @return The result Object of the launch as a Quartz Data Map.
 	 */
 	public JobDataMap getLaunchResult() {
 		return this.legacyLaunchResult.getResult();

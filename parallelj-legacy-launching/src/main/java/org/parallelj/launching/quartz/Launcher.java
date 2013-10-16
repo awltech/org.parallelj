@@ -54,7 +54,7 @@ public final class Launcher {
 	/**
 	 * Private Constructor for the unique Launcher instance.
 	 * 
-	 * @throws LaunchException If a SchedulerException occurred when initializing the scheduler.
+	 * @throws LaunchException If an Exception occurred.
 	 */
 	private Launcher() throws LaunchException {
 	}
@@ -75,6 +75,7 @@ public final class Launcher {
 	 * 
 	 * @param jobClass The Program Adapter class.
 	 * @param executorService The ExecutorService instance to use.
+	 * 
 	 * @return An instance of Launch.
 	 * @throws LaunchException 
 	 */
