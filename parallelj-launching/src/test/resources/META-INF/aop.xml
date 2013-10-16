@@ -24,7 +24,8 @@
 <aspectj>
 	<aspects>
 		<!-- declare two existing aspects to the weaver -->
-		<aspect name="org.parallelj.launching.internal.LaunchAdapter"/>
+		<aspect name="org.parallelj.launching.internal.LaunchManagement"/>
+		<aspect name="org.parallelj.launching.internal.LaunchManagement.LaunchAdapter"/>
 		<aspect name="org.parallelj.launching.internal.ext.Extensions"/>
 		<aspect name="org.parallelj.launching.inout.InOutManagement"/>
 		<aspect name="org.parallelj.launching.inout.InOutManagement"/>

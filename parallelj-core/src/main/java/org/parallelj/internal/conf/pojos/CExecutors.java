@@ -12,21 +12,22 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for CProcedures complex type.
+ * <p>Java class for CExecutors complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="CProcedures">
+ * &lt;complexType name="CExecutors">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice maxOccurs="unbounded">
- *         &lt;element ref="{http://parallelj.org}procedure"/>
- *       &lt;/choice>
+ *       &lt;sequence maxOccurs="unbounded">
+ *         &lt;element ref="{http://parallelj.org}executor-service"/>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -35,40 +36,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "CProcedures", propOrder = {
-    "procedure"
+@XmlType(name = "CExecutors", propOrder = {
+    "executorService"
 })
-public class CProcedures {
+public class CExecutors {
 
-    protected List<CProcedure> procedure;
+    @XmlElement(name = "executor-service", required = true)
+    protected List<CExecutor> executorService;
 
     /**
-     * Gets the value of the procedure property.
+     * Gets the value of the executorService property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the procedure property.
+     * This is why there is not a <CODE>set</CODE> method for the executorService property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getProcedure().add(newItem);
+     *    getExecutorService().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link CProcedure }
+     * {@link CExecutor }
      * 
      * 
      */
-    public List<CProcedure> getProcedure() {
-        if (procedure == null) {
-            procedure = new ArrayList<CProcedure>();
+    public List<CExecutor> getExecutorService() {
+        if (executorService == null) {
+            executorService = new ArrayList<CExecutor>();
         }
-        return this.procedure;
+        return this.executorService;
     }
 
 }

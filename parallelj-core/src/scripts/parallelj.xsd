@@ -13,6 +13,7 @@ xmlns="http://parallelj.org">
 			<xs:sequence>
 				<xs:element ref="procedures" />
 				<xs:element ref="servers" />
+				<xs:element ref="executor-services"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -97,5 +98,30 @@ xmlns="http://parallelj.org">
 		</xs:choice>
 	</xs:complexType>
 	<xs:element name="auths" type="CAuths" />
+
+	
+	<xs:complexType name="CExecutor">
+		<xs:attribute name="program-name" type="xs:string" use="required" />
+		<xs:attribute name="service-type" type="threadpooltype" use="required" />
+		<xs:attribute name="service-class" type="xs:string" use="optional" />
+		<xs:attribute name="pool-size" type="xs:nonNegativeInteger" use="optional" />
+	</xs:complexType>
+	<xs:element name="executor-service" type="CExecutor" />
+
+	<xs:simpleType name="threadpooltype">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="FIXED_THREAD_POOL" />
+			<xs:enumeration value="CACHED_THREAD_POOL" />
+			<xs:enumeration value="SINGLE_THREAD_EXECUTOR" />
+			<xs:enumeration value="PROVIDED" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:complexType name="CExecutors">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element ref="executor-service" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="executor-services" type="CExecutors" />
 
 </xs:schema>

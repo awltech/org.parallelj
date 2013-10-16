@@ -45,9 +45,9 @@ public class RunnableProcedure extends KProcedure {
 	 * @author Atos Worldline
 	 * 
 	 */
-	class RunnableCall extends KCall {
+	public class RunnableCall extends KCall {
 		
-		class RunnableCallRunnable implements Runnable {
+		public class RunnableCallRunnable implements Runnable {
 			private RunnableCall runnableCall;
 			
 			public RunnableCallRunnable(RunnableCall runnableCall) {

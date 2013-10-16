@@ -1,4 +1,4 @@
-package org.parallelj.launching.internal;
+package org.parallelj.mirror;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
@@ -9,6 +9,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * 
  */
 public class ParallelJThreadFactory implements ThreadFactory {
+
+	private static class Holder {
+		private static final ParallelJThreadFactory INSTANCE = new ParallelJThreadFactory();
+	}
+
+	public static ParallelJThreadFactory getInstance() {
+		return ParallelJThreadFactory.Holder.INSTANCE;
+	}
 
 	private static final String defaultThreadGroupName="//J-";
 	private static final String defaultThreadName="//J-Thread-";
@@ -28,26 +36,14 @@ public class ParallelJThreadFactory implements ThreadFactory {
 	 */
 	private ThreadGroup threadGroup;
 
-	public ParallelJThreadFactory() {
+	private ParallelJThreadFactory() {
 		this.threadGroup=new ThreadGroup(defaultThreadGroupName);
 		this.threadName=defaultThreadName;
-	}
-
-	public ParallelJThreadFactory(String threadName) {
-		this.threadGroup=new ThreadGroup(defaultThreadGroupName);
-		this.threadName=threadName;
-	}
-
-	public ParallelJThreadFactory(String threadName, String groupName) {
-		this.threadGroup=new ThreadGroup(groupName);
-		this.threadName=threadName;
 	}
 
 	@Override
 	public Thread newThread(Runnable r) {
 		return new Thread(this.threadGroup, r, this.threadName+counter.incrementAndGet());
 	}
-
-
 
 }

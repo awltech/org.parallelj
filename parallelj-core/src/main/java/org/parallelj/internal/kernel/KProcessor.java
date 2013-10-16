@@ -198,7 +198,7 @@ public class KProcessor extends KMachine<ProcessorState> implements Processor {
 	}
 */
 	
-	class KProcessorRunnable implements Runnable {
+	public class KProcessorRunnable implements Runnable {
 		private Runnable runnable;
 		
 		public KProcessorRunnable(Runnable runnable) {
@@ -230,6 +230,10 @@ public class KProcessor extends KMachine<ProcessorState> implements Processor {
 	 */
 	public void submit(final Runnable runnable) {
 		this.executor.execute(new KProcessorRunnable(runnable));
+	}
+
+	public void submit(final Runnable runnable, ExecutorService service) {
+		service.execute(new KProcessorRunnable(runnable));
 	}
 
 	@Entry({ "RUNNING", "PENDING", "SUSPENDED" })

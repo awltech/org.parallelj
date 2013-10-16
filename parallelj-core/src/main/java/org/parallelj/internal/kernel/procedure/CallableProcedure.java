@@ -39,9 +39,9 @@ import org.parallelj.internal.kernel.KProgram;
  */
 public class CallableProcedure extends KProcedure {
 
-	class CallableCall extends KCall {
+	public class CallableCall extends KCall {
 
-		class CallableCallRunnable implements Runnable {
+		public class CallableCallRunnable implements Runnable {
 			private CallableCall callableCall;
 			
 			public CallableCallRunnable(CallableCall callableCall) {

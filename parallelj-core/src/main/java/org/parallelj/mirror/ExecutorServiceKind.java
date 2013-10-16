@@ -24,6 +24,8 @@ package org.parallelj.mirror;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.parallelj.internal.MessageKind;
+
 /**
  * The kind of {@link ExecutorService} that can be used by the {@link Processor}
  * 
@@ -46,15 +48,39 @@ public enum ExecutorServiceKind {
 	 * Use a {@link Executors#newCachedThreadPool()}.
 	 */
 	CACHED_THREAD_POOL,
-	
+
 	/**
 	 * Use a {@link Executors#newFixedThreadPool(int)}.
 	 */
 	FIXED_THREAD_POOL,
-	
+
 	/**
 	 * Use a provided executor service
 	 */
 	PROVIDED;
+
+	public ExecutorService create(int size, String className) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		switch (this) {
+			case PROVIDED:
+				if (className==null) {
+					throw new IllegalArgumentException(MessageKind.E0001.format(
+							this, className));
+				}
+				return (ExecutorService) Class.forName(String.valueOf(className)).newInstance();
+			case NONE:
+				return null;
+			case SINGLE_THREAD_EXECUTOR:
+				return Executors.newSingleThreadExecutor(ParallelJThreadFactory.getInstance());
+			case CACHED_THREAD_POOL:
+				return Executors.newCachedThreadPool(ParallelJThreadFactory.getInstance());
+			case FIXED_THREAD_POOL:
+				if (size == 0) {
+					throw new IllegalArgumentException(MessageKind.E0001.format(
+							this, size));
+				}
+				return Executors.newFixedThreadPool(size);
+		}
+		return null;
+	}
 
 }
