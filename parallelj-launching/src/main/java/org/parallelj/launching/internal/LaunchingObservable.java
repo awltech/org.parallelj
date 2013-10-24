@@ -36,7 +36,6 @@ public class LaunchingObservable {
 	
 	private LaunchingObservable() {
 		this.loader = ServiceLoader.load(LaunchingListener.class, LaunchingObservable.class.getClassLoader());
-		System.out.println(this.loader.iterator().hasNext());
 		if (this.loader==null || this.loader.iterator()==null || !this.loader.iterator().hasNext()) {
 			this.loader = ServiceLoader.load(LaunchingListener.class, Thread.currentThread().getContextClassLoader());
 		}
