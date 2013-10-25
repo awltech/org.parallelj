@@ -31,6 +31,7 @@ import java.lang.annotation.Target;
  * Specifies that a @Program can be launched with Quartz.
  *
  */
+@Deprecated
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
