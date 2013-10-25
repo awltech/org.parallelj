@@ -187,7 +187,9 @@ public class Launch {
 			this.adapter = listener.getAdapter();
 			this.launchResult = new LaunchResult(listener.getJobId(),
 					listener.getResult());
-			this.launchResult.getResult().putAll(this.job.getJobDataMap());
+			if(this.launchResult != null && this.launchResult.getResult() != null) {
+				this.launchResult.getResult().putAll(this.job.getJobDataMap());
+			}
 		} catch (SchedulerException e) {
 			throw new LaunchException(e);
 		}
