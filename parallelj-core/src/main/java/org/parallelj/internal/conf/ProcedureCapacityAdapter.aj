@@ -3,17 +3,16 @@ package org.parallelj.internal.conf;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
-import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.conf.pojos.CProcedure;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.internal.kernel.KProcedure;
+import org.parallelj.internal.kernel.KProcess;
+import org.parallelj.internal.kernel.KProcessor;
 import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.internal.kernel.procedure.CallableProcedure;
 import org.parallelj.internal.kernel.procedure.RunnableProcedure;
 import org.parallelj.internal.kernel.procedure.SubProcessProcedure;
-import org.parallelj.internal.reflect.ProcessHelperImpl;
 import org.parallelj.mirror.Procedure;
 
 public privileged aspect ProcedureCapacityAdapter {
@@ -43,16 +42,14 @@ public privileged aspect ProcedureCapacityAdapter {
 		return new ArrayList<>();
 	}
 	
-	@SuppressWarnings("rawtypes")
-	ProcessHelperImpl around(ProcessHelperImpl processHelper, ExecutorService service): execution(public ProcessHelper execute(..))
-		&& this(processHelper)
-		&& args(service) {
+	void around(KProcessor kProcessor, KProcess kProcess): execution(public void execute(..))
+	&& this(kProcessor)
+	&& args(kProcess) {
 		
 		List<CProcedure> porceduresConfiguration = getProceduresConfiguration();
-		KProgram program = (KProgram)processHelper.getProcess().getProgram();
+		KProgram program = (KProgram)kProcess.getProgram();
 		setProcedureCapacityFromConfiguration(program, porceduresConfiguration);
-		ProcessHelperImpl processHelperImpl = proceed(processHelper, service);
-		return processHelperImpl;
+		proceed(kProcessor, kProcess);
 	}
 	
 	private void setProcedureCapacityFromConfiguration(KProgram program, List<CProcedure> proceduresConfiguration) {
