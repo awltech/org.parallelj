@@ -59,6 +59,7 @@ public class LTWMessageHandler implements IMessageHandler {
 		return true;
 	}
 
+	@Override
 	public boolean isIgnoring(IMessage.Kind kind) {
 		if (kind.equals(IMessage.WEAVEINFO)) {
 			return !showWeaveInfo;
@@ -72,6 +73,7 @@ public class LTWMessageHandler implements IMessageHandler {
 		return !showWarn;
 	}
 
+	@Override
 	public void dontIgnore(IMessage.Kind kind) {
 		if (kind.equals(IMessage.WEAVEINFO)) {
 			showWeaveInfo = true;
@@ -82,6 +84,7 @@ public class LTWMessageHandler implements IMessageHandler {
 		}
 	}
 
+	@Override
 	public void ignore(IMessage.Kind kind) {
 		if (kind.equals(IMessage.WEAVEINFO)) {
 			showWeaveInfo = false;

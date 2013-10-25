@@ -39,9 +39,6 @@ public class LaunchingObservable {
 		if (this.loader==null || this.loader.iterator()==null || !this.loader.iterator().hasNext()) {
 			this.loader = ServiceLoader.load(LaunchingListener.class, Thread.currentThread().getContextClassLoader());
 		}
-		if (this.loader==null || this.loader.iterator()==null || !this.loader.iterator().hasNext()) {
-			this.loader = ServiceLoader.loadInstalled(LaunchingListener.class);
-		}
 		List<Class<? extends LaunchingListener>>  listenersClasses = new ArrayList<Class<? extends LaunchingListener>>();
 		
 		List<LaunchingListener> lst = new ArrayList<LaunchingListener>();

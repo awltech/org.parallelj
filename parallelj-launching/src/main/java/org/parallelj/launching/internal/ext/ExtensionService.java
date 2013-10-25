@@ -17,7 +17,10 @@ public class ExtensionService {
 	}
 
 	private synchronized void initialize() {
-		ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class);
+		ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, ExtensionService.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(Extension.class, Thread.currentThread().getContextClassLoader());
+		}
 		for (Extension ext : loader) {
 			// Try to load all available extensions
 			try {

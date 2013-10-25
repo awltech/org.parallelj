@@ -47,7 +47,10 @@ public final class JmxOptions {
 	 */
 	private JmxOptions() {
 		// Search for available commands
-		final ServiceLoader<JmxOption> loader = ServiceLoader.load(JmxOption.class);
+		ServiceLoader<JmxOption> loader = ServiceLoader.load(JmxOption.class, JmxOptions.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(JmxOption.class, Thread.currentThread().getContextClassLoader());
+		}
 		for (JmxOption option:loader) {
 			this.options.add(option);
 		}

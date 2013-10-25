@@ -200,7 +200,11 @@ public class KReflection implements Reflection {
 	private KReflection() {
 
 		// load built-in listener from META-INF
-		for (EventListener listener : ServiceLoader.load(EventListener.class)) {
+		ServiceLoader<EventListener> loader = ServiceLoader.load(EventListener.class, KReflection.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(EventListener.class, Thread.currentThread().getContextClassLoader());
+		}
+		for (EventListener listener : loader) {
 			this.listeners.add(listener);
 		}
 	}
