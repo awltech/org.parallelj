@@ -62,8 +62,7 @@ privileged aspect LaunchManagement {
 			org.parallelj.internal.util.sm.impl.KStateMachines.PerMachine,
 			org.parallelj.Executables$PerExecutable,
 			org.parallelj.internal.reflect.ProgramAdapter.PerProgram,
-			org.parallelj.internal.log.Logs,
-			org.parallelj.internal.conf.ProcedureCapacityAdapter;
+			org.parallelj.internal.log.Logs;
 	
 		pointcut launchInstance() : execution(* Launch+.*(..));
 	
