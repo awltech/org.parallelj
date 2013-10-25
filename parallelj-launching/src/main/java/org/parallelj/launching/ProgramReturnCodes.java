@@ -23,11 +23,25 @@ package org.parallelj.launching;
 
 /**
  * This enumeration contains the execution codes returned by //J Launching.
- * 
+ * Values are:
+ * 	NOTSTARTED
+ * 	RUNNING
+ * 	SUCCESS
+ * 	FAILURE
+ * 	ABORTED
+
  * @author Atos Worldline
  * @since 0.5.0
  */
 public enum ProgramReturnCodes {
 
-	SUCCESS, FAILURE, ABORTED, NOTSTARTED;
+	NOTSTARTED,
+	RUNNING, 
+	SUCCESS, 
+	FAILURE, 
+	ABORTED;
+	
+	public boolean isProgramRunning() {
+		return this == RUNNING || this == NOTSTARTED;
+	}
 }

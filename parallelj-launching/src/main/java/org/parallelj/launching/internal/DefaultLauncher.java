@@ -1,13 +1,12 @@
 package org.parallelj.launching.internal;
 
 import org.parallelj.internal.reflect.ProcessHelperImpl;
+import org.parallelj.launching.Launch;
+import org.parallelj.launching.LaunchException;
+import org.parallelj.launching.LaunchResult;
+import org.parallelj.launching.Launcher;
 import org.parallelj.launching.errors.ProceduresOnError;
 import org.parallelj.launching.errors.ProceduresOnErrorManagement;
-import org.parallelj.launching.quartz.Launch;
-import org.parallelj.launching.quartz.LaunchException;
-import org.parallelj.launching.quartz.Launcher;
-import org.parallelj.launching.quartz.QuartzUtils;
-import org.quartz.JobDataMap;
 
 public class DefaultLauncher {
 
@@ -58,7 +57,7 @@ public class DefaultLauncher {
 		if (programInstance != null) {
 			// Run the Program
 			Launcher launcher = null;
-			Launch launch =  null;
+			Launch<?> launch =  null;
 			try {
 				launcher = Launcher.getLauncher();
 				launch = launcher.newLaunch(programClass);
@@ -68,11 +67,11 @@ public class DefaultLauncher {
 				launch.synchLaunch();
 				
 				// Get the result of the launch and print Program status
-				JobDataMap jobDataMap = launch.getLaunchResult();
-				System.out.println("Program status ["+jobDataMap.get(QuartzUtils.RETURN_CODE)+"] Return code ["+jobDataMap.get(QuartzUtils.USER_RETURN_CODE)+"]");
+				LaunchResult result = launch.getLaunchResult();
+				System.out.println("Program status ["+result.getStatusCode()+"] Return code ["+result.getReturnCode()+"]");
 				
 				// Get and sho Procedures on error if exists.
-				ProcessHelperImpl<?> processhelper = (ProcessHelperImpl<?>)jobDataMap.get(QuartzUtils.CONTEXT);
+				ProcessHelperImpl<?> processhelper = (ProcessHelperImpl<?>)launch.getProcessHelper();
 				ProceduresOnError procOnError = ProceduresOnErrorManagement.getProceduresInErrors(processhelper.getProcess());
 				if (procOnError != null && procOnError.getNumberOfProceduresInError()>0) {
 					System.err.println("Program terminated with errors: "+procOnError);
@@ -80,9 +79,6 @@ public class DefaultLauncher {
 			} catch (LaunchException e) {
 				e.printStackTrace();
 			} finally {
-				if (launcher != null) {
-					launcher.complete();
-				}
 			}
 		}
 

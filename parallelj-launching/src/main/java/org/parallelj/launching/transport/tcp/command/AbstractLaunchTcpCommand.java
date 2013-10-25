@@ -136,8 +136,10 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 		if (iOptionClass != null) {
 			if (this.options == null) {
 				this.options = new ArrayList<IOption>();
-				final ServiceLoader<? extends IOption> loader = ServiceLoader
-						.load(iOptionClass);
+				ServiceLoader<? extends IOption> loader = ServiceLoader.load(iOptionClass, AbstractLaunchTcpCommand.class.getClassLoader());
+				if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+					loader = ServiceLoader.load(iOptionClass, Thread.currentThread().getContextClassLoader());
+				}
 				for (IOption option : loader) {
 					this.options.add(option);
 				}

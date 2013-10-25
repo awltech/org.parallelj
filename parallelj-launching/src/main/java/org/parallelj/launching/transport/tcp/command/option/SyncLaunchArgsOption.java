@@ -23,9 +23,9 @@ package org.parallelj.launching.transport.tcp.command.option;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
+import org.parallelj.launching.Launch;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.remote.RemoteProgram;
-import org.quartz.JobDataMap;
 
 public class SyncLaunchArgsOption implements ISyncLaunchOption {
 
@@ -49,9 +49,9 @@ public class SyncLaunchArgsOption implements ISyncLaunchOption {
 	}
 
 	@Override
-	public void process(final JobDataMap jobDataMap, final Object... args)
+	public void process(final Launch<?> launch, final Object... args)
 			throws OptionException, ParserException {
-		OptionsUtils.processArgs(this, jobDataMap, args);
+		OptionsUtils.processArgs(this, launch, args);
 	}
 
 	@Override

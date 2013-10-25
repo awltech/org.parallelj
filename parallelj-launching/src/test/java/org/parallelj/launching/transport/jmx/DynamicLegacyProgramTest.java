@@ -23,9 +23,6 @@ package org.parallelj.launching.transport.jmx;
 
 import static org.junit.Assert.*;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.MBeanInfo;
@@ -34,7 +31,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
-import org.parallelj.launching.inout.Argument;
 import org.parallelj.launching.remote.RemoteProgram;
 
 /**

@@ -44,7 +44,7 @@ import org.parallelj.tools.AbstractProcessor;
  * 
  */
 @SupportedAnnotationTypes({ "org.parallelj.Begin", "org.parallelj.Program" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class BeginConstraints extends AbstractProcessor {
 
 	@Override

@@ -57,9 +57,9 @@ public class SubProcessProcedure extends KProcedure {
 
 	String pipelineDataName;
 
-	class SubProcessCall extends KCall {
+	public class SubProcessCall extends KCall {
 
-		class SubProcessRunnable implements
+		public class SubProcessRunnable implements
 				StateListener<KProcess, ProcessState>, Runnable {
 
 			private SubProcessCall subProcessCall;

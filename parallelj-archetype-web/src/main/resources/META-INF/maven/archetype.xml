@@ -27,7 +27,6 @@
 	<resources>
 		<resource>.project</resource>
 		<resource>src/main/resources/META-INF/ParallelJ/.touch</resource>
-		<resource>src/main/resources/quartz.properties</resource>
 		<resource>src/main/resources/log4j.xml</resource>
 		<resource>src/main/resources/parallelj.xml</resource>
 		<resource>src/main/webapp/WEB-INF/web.xml</resource>

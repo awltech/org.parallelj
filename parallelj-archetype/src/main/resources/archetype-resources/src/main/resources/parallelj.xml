@@ -47,5 +47,15 @@
 		</ssh>
 		 -->
     </servers>
+    
+<!--     
+   	<executor-services default-service-type="FIXED_THREAD_POOL" default-pool-size="1">
+		<executor-service program-name="my.program.Program1" service-type="CACHED_THREAD_POOL"/>
+		<executor-service program-name="my.program.Program2" service-type="SINGLE_THREAD_EXECUTOR"/>
+		<executor-service program-name="my.program.Program3" service-type="FIXED_THREAD_POOL" pool-size="10" />
+		<executor-service program-name="my.program.Program4" service-type="PROVIDED" service-class="my.program.MyExecutorServiceClass"/>
+	</executor-services>
+-->
+    
 </parallelj>
 

@@ -101,7 +101,7 @@
 
 	<listener>
 		<listener-class>
-			org.parallelj.launching.quartz.web.ServersInitializerListener
+			org.parallelj.launching.web.ServersInitializerListener
 		</listener-class>
 	</listener>
 </web-app>

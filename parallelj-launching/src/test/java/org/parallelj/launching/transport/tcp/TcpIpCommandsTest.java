@@ -33,7 +33,6 @@ import org.parallelj.launching.transport.tcp.command.AlList;
 import org.parallelj.launching.transport.tcp.command.AlQuit;
 import org.parallelj.launching.transport.tcp.command.AlSyncLaunch;
 import org.parallelj.launching.transport.tcp.command.RemoteCommand;
-import org.parallelj.launching.transport.tcp.command.SyncLaunch;
 import org.parallelj.launching.transport.tcp.command.TcpCommand;
 import org.parallelj.launching.transport.tcp.command.TcpIpCommands;
 

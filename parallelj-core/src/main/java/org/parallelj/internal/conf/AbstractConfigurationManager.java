@@ -70,6 +70,8 @@ public abstract class AbstractConfigurationManager implements ConfigurationManag
 			inputStreamReader = new InputStreamReader(inputStream);
 			reader = new BufferedReader(inputStreamReader);
 			this.configuration = JAXB.unmarshal(reader, getConfigurationObjectClass());
+		} catch(Exception e) {
+			MessageKind.E0007.format(this.getConfigurationFile(),e);
 		} finally {
 			try {
 				reader.close();

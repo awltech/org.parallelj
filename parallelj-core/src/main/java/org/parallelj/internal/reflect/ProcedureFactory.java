@@ -149,8 +149,13 @@ public abstract class ProcedureFactory {
 			new SubProcessProcedureFactory(), new CallableProcedureFactory(),
 			new RunnableProcedureFactory(), new NoopProcedureFactory() };
 
-	private static ServiceLoader<ProcedureFactory> loader = ServiceLoader
-			.load(ProcedureFactory.class);
+	private static ServiceLoader<ProcedureFactory> loader;
+	static {
+		ServiceLoader<ProcedureFactory> loader = ServiceLoader.load(ProcedureFactory.class, ProcedureFactory.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(ProcedureFactory.class, Thread.currentThread().getContextClassLoader());
+		}
+	}
 
 	public abstract boolean accept(Method method);
 

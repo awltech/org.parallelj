@@ -34,4 +34,11 @@
             <ns2:bean class="org.parallelj.launching.programs.BeginProgram"/>
         </ns2:beans>
     </ns2:servers>
+    
+	<ns2:executor-services>
+		<ns2:executor-service program-name="org.parallelj.Program1" service-type="FIXED_THREAD_POOL" pool-size="10" />
+		<ns2:executor-service program-name="org.parallelj.Program2" service-type="CACHED_THREAD_POOL"/>
+		<ns2:executor-service program-name="org.parallelj.Program3" service-type="SINGLE_THREAD_EXECUTOR"/>
+		<ns2:executor-service program-name="org.parallelj.Program4" service-type="PROVIDED" service-class="conf.TheServiceClass"/>
+	</ns2:executor-services>
 </parallelj>

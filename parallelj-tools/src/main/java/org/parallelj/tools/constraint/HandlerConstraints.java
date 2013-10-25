@@ -47,7 +47,7 @@ import org.parallelj.tools.util.Elements;
  * 
  */
 @SupportedAnnotationTypes({ "org.parallelj.Handler" })
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class HandlerConstraints extends AbstractProcessor {
 
 	@Override

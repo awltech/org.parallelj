@@ -3,12 +3,12 @@ package org.parallelj.launching.errors;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.internal.kernel.procedure.CallableProcedure;
 import org.parallelj.internal.kernel.procedure.RunnableProcedure;
 import org.parallelj.launching.OnError;
-import org.parallelj.launching.errors.IProceduresOnError;
 
 privileged public aspect ProceduresOnErrorManagement {
 
@@ -151,6 +151,21 @@ privileged public aspect ProceduresOnErrorManagement {
 				((IProceduresOnError)process.getProgram()).addProcedureHandledInError(process.getProgram(), process.getContext(), callable.getContext(), callable.getException());			}
 		}
 		proceed(self);
+	}
+	
+	boolean around(org.parallelj.internal.kernel.KJoin self, org.parallelj.internal.kernel.KProcess process)
+		:execution(* org.parallelj.internal.kernel.KJoin+.isEnabled(..))
+		&& this(self) && args(process)
+		&& within(org.parallelj.internal.kernel.loop.KWhileLoop) {
+		
+		try {
+			return proceed(self, process);
+		} catch (Exception e) {
+			((IProceduresOnError)process.getProgram()).addProcedureInError(process.getProgram(), process.getContext(), process.getContext(), e);
+			MessageKind.E0005.format(process.getContext(), e);
+			return false;
+		}
+
 	}
 	 
 }

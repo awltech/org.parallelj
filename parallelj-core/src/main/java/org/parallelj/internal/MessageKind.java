@@ -38,13 +38,13 @@ public enum MessageKind {
 	@Format("Invalid argument [%2$s] for kind [%1$s]")
 	E0001,
 	
-	/**Error: Can't find configuration file.
+	/**Error: Can't find configuration file for [%s]. Make sure [%s] is in the classpath!!.
 	 * 
 	 */
 	@Format("Can't find configuration file for [%s]. Make sure [%s] is in the classpath!!")
 	E0002,
 	
-	/**Error: Can't find configuration file.
+	/**Error: not enough procedures.
 	 * 
 	 */
 	@Format("not enough procedures")
@@ -55,6 +55,24 @@ public enum MessageKind {
 	 */
 	@Format("can't call method [%s] on class [%s]")
 	E0004,
+	
+	/**Error: An error occurred during program execution [%s]
+	 * 
+	 */
+	@Format("An error occurred during program execution [%s]")
+	E0005,
+	
+	/**Error: An error occurred during program execution [%s] on  [%s]
+	 * 
+	 */
+	@Format("An error occurred during program execution [%s] on  [%s]")
+	E0006,
+	
+	/**Error: Can't read configuration file for [%s].
+	 * 
+	 */
+	@Format("Can't read configuration file for [%s].")
+	E0007,
 	
 	/**
 	 * Info: building a program

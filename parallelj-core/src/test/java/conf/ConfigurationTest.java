@@ -23,14 +23,18 @@ package conf;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import org.junit.Test;
 import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
+import org.parallelj.internal.conf.pojos.CExecutor;
 import org.parallelj.internal.conf.pojos.CProcedure;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
+import org.parallelj.internal.conf.pojos.Threadpooltype;
 
 public class ConfigurationTest {
 

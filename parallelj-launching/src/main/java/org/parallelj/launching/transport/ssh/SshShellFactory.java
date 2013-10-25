@@ -168,7 +168,7 @@ public class SshShellFactory implements Factory<Command> {
 								}
 								result = command.process(null, Arrays.copyOfRange(finalArgs, 1, finalArgs.length));
 								} catch (Exception e) {
-									result = LaunchingMessageKind.EQUARTZ0006.format(cmd, e);
+									result = LaunchingMessageKind.ELAUNCH0007.format(cmd, e);
 								}
 							} else {
 								result = command.process(null, new String[]{});

@@ -61,6 +61,7 @@ public privileged aspect KStateMachines {
 			((Adapter) self).occurrence = this.machine.newOccurrence(self);
 		}
 
+		@SuppressWarnings("unchecked")
 		void around(Object self): execution(@org.parallelj.internal.util.sm.Trigger * *(..)) && this(self) {
 			Occurrence occurrence = ((Adapter) self).occurrence;
 			KVertex previous = occurrence.getCurrent();
@@ -73,14 +74,17 @@ public privileged aspect KStateMachines {
 			if (previous != current && current != null) {
 				occurrence.getSupport().fireStateChanded(current.value);
 			}
+			proceed(self);
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void around(Object machine, StateListener listener): execution(* org.parallelj.internal.util.sm.StateMachines.addStateListener(..)) && args(machine, listener, ..) {
 		Occurrence occurrence = ((Adapter) machine).occurrence;
 		occurrence.getSupport().addStateListener(listener);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void around(Object machine, StateListener listener): execution(* org.parallelj.internal.util.sm.StateMachines.removeStateListener(..)) && args(machine, listener, ..) {
 		Occurrence occurrence = ((Adapter) machine).occurrence;
 		occurrence.getSupport().removeStateListener(listener);

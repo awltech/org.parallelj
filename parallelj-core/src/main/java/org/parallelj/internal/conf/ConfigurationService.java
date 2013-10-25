@@ -36,7 +36,10 @@ public class ConfigurationService {
 	}
 
 	private synchronized void initialize() {
-		ServiceLoader<ConfigurationManager> loader = ServiceLoader.load(ConfigurationManager.class);
+		ServiceLoader<ConfigurationManager> loader = ServiceLoader.load(ConfigurationManager.class, ConfigurationService.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(ConfigurationManager.class, Thread.currentThread().getContextClassLoader());
+		}
 		for (ConfigurationManager conf:loader) {
 			conf.reloadConfiguration();
 			configurationManagers.put(conf.getClass(), conf);

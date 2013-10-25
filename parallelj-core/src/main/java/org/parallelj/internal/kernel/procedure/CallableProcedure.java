@@ -30,7 +30,6 @@ import org.parallelj.internal.kernel.KOutputParameter;
 import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.mirror.HandlerLoopPolicy;
 
 /**
  * Represents a procedure bound to a {@link Callable}.
@@ -40,9 +39,9 @@ import org.parallelj.mirror.HandlerLoopPolicy;
  */
 public class CallableProcedure extends KProcedure {
 
-	class CallableCall extends KCall {
+	public class CallableCall extends KCall {
 
-		class CallableCallRunnable implements Runnable {
+		public class CallableCallRunnable implements Runnable {
 			private CallableCall callableCall;
 			
 			public CallableCallRunnable(CallableCall callableCall) {

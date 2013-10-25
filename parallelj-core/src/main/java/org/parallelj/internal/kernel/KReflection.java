@@ -27,14 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.parallelj.internal.MessageKind;
 import org.parallelj.mirror.Event;
@@ -206,7 +200,11 @@ public class KReflection implements Reflection {
 	private KReflection() {
 
 		// load built-in listener from META-INF
-		for (EventListener listener : ServiceLoader.load(EventListener.class)) {
+		ServiceLoader<EventListener> loader = ServiceLoader.load(EventListener.class, KReflection.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(EventListener.class, Thread.currentThread().getContextClassLoader());
+		}
+		for (EventListener listener : loader) {
 			this.listeners.add(listener);
 		}
 	}

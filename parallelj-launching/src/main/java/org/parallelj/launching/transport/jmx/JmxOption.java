@@ -21,7 +21,8 @@
  */
 package org.parallelj.launching.transport.jmx;
 
-import org.quartz.JobDataMap;
+import java.util.Map;
+
 
 /**
  * Define an Option for remote launching using Jmx.
@@ -48,6 +49,6 @@ public interface JmxOption {
 	 * @param jobDataMap
 	 * @param value
 	 */
-	public void process(JobDataMap jobDataMap, String value);
+	public void process(Map<String, Object> jobDataMap, String value);
 
 }
