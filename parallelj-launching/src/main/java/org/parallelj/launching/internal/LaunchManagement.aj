@@ -160,14 +160,24 @@ privileged aspect LaunchManagement {
 		private void initializeExecutors(LaunchImpl<?> launch) {
 			ParalleljConfiguration configuration = (ParalleljConfiguration) ConfigurationService
 					.getConfigurationService().getConfigurationManager()
-					.get(ParalleljConfigurationManager.class).getConfiguration();
-			Map<String, ExecutorService> executors = ((ILaunchExecutors)launch).executors;
-			CExecutors cExecutors = configuration!=null?configuration.getExecutorServices():null;
+					.get(ParalleljConfigurationManager.class)
+					.getConfiguration();
+			Map<String, ExecutorService> executors = ((ILaunchExecutors) launch).executors;
+			CExecutors cExecutors = configuration != null ? configuration
+					.getExecutorServices() : null;
 			if (cExecutors != null) {
-				if(cExecutors.getDefaultServiceType()!=null || cExecutors.getDefaultPoolSize()!=null||cExecutors.getDefaultServiceClass()!=null) {
+				if (cExecutors.getDefaultServiceType() != null
+						|| cExecutors.getDefaultPoolSize() != null
+						|| cExecutors.getDefaultServiceClass() != null) {
 					try {
-						ExecutorService defaultService = ExecutorServiceKind.valueOf(cExecutors.getDefaultServiceType().value()).create(cExecutors.getDefaultPoolSize().intValue(), cExecutors.getDefaultServiceClass());
-						((ILaunchExecutors)launch).defaultExecutor=defaultService;
+						ExecutorService defaultService = ExecutorServiceKind
+								.valueOf(
+										cExecutors.getDefaultServiceType()
+												.value()).create(
+										cExecutors.getDefaultPoolSize()
+												.intValue(),
+										cExecutors.getDefaultServiceClass());
+						((ILaunchExecutors) launch).defaultExecutor = defaultService;
 					} catch (InstantiationException | IllegalAccessException
 							| ClassNotFoundException e) {
 						// Do nothing..
@@ -175,19 +185,46 @@ privileged aspect LaunchManagement {
 						LaunchingMessageKind.ELAUNCH0011.format(e);
 					}
 				}
-				if(cExecutors.getExecutorService() != null) {
-					for(CExecutor cExecutor:cExecutors.getExecutorService()) {
-						if (executors.get(cExecutor.getProgramName()) == null) {
-							String type = cExecutor.getServiceType().value();
-							try {
-								int size = cExecutor.getPoolSize()!=null?cExecutor.getPoolSize().intValue():0;
-								ExecutorService executor = ExecutorServiceKind.valueOf(type).create(size, cExecutor.getServiceClass());
-								executors.put(cExecutor.getProgramName(), executor);
-							} catch (InstantiationException | IllegalAccessException
-									| ClassNotFoundException e) {
-								// Do Nothing..
-							} catch (Exception e) {
-								LaunchingMessageKind.ELAUNCH0012.format(e);
+				if (cExecutors.getExecutorService() != null) {
+					for (CExecutor cExecutor : cExecutors.getExecutorService()) {
+						String[] names = cExecutor.getProgramName().split(",");
+						boolean instanciate = false;
+						for (String name : names) {
+							if (name.length() > 0 && name.trim().length() > 0) {
+								instanciate = true;
+							}
+						}
+						if (instanciate) {
+							ExecutorService executor = null;
+							if (cExecutor.getServiceType() != null) {
+								String type = cExecutor.getServiceType()
+										.value();
+								try {
+									int size = cExecutor.getPoolSize() != null ? cExecutor
+											.getPoolSize().intValue() : 0;
+									executor = ExecutorServiceKind
+											.valueOf(type)
+											.create(size,
+													cExecutor.getServiceClass());
+									boolean foundProgram = false;
+									for (String name : names) {
+										if (name.length() > 0 && name.trim().length() > 0) {
+											executors.put(
+													name,
+													executor);
+											foundProgram = true;
+										}
+									}
+									if (!foundProgram) {
+										executor.shutdown();
+									}
+								} catch (InstantiationException
+										| IllegalAccessException
+										| ClassNotFoundException e) {
+									// Do Nothing..
+								} catch (Exception e) {
+									LaunchingMessageKind.ELAUNCH0012.format(e);
+								}
 							}
 						}
 					}
