@@ -47,7 +47,10 @@ public final class TcpIpCommands {
 	 */
 	private TcpIpCommands() {
 		// Search for available commands
-		final ServiceLoader<TcpCommand> loader = ServiceLoader.load(TcpCommand.class);
+		ServiceLoader<TcpCommand> loader = ServiceLoader.load(TcpCommand.class, TcpIpCommands.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(TcpCommand.class, Thread.currentThread().getContextClassLoader());
+		}
 		for (TcpCommand command:loader) {
 			this.commands.put(command.getType(), command);
 		}

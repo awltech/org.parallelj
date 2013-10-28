@@ -36,8 +36,14 @@ import java.util.ServiceLoader;
  */
 public abstract class ElementBuilderFactory {
 
-	private static ServiceLoader<ElementBuilderFactory> loader = ServiceLoader
-			.load(ElementBuilderFactory.class);
+	private static ServiceLoader<ElementBuilderFactory> loader;
+	
+	static {
+		loader = ServiceLoader.load(ElementBuilderFactory.class, ElementBuilderFactory.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(ElementBuilderFactory.class, Thread.currentThread().getContextClassLoader());
+		}
+	}
 
 	/**
 	 * The factory returns an {@link ElementBuilder} if an element has to be

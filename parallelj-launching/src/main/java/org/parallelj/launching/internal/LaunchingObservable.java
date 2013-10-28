@@ -12,6 +12,10 @@ import org.quartz.JobExecutionContext;
 
 public class LaunchingObservable {
 
+	private static class Holder {
+		private static final LaunchingObservable INSTANCE = new LaunchingObservable();
+	}
+
 	private static class LaunchingListenerComparator implements Comparator<LaunchingListener> {
 
 	    @Override
@@ -23,13 +27,22 @@ public class LaunchingObservable {
 	    	else
 	    		return 0;
 	    }
-    }           
-
+    }
 	
-	private static final ServiceLoader<LaunchingListener> loader = ServiceLoader.load(LaunchingListener.class);
-	private static final List<Class<? extends LaunchingListener>> listenersClasses = new ArrayList<Class<? extends LaunchingListener>>();
+	public static final LaunchingObservable getInstance() {
+		return Holder.INSTANCE;
+	}
 
-	static {
+	private ServiceLoader<LaunchingListener> loader;
+	private List<LaunchingListener> listeners = new ArrayList<LaunchingListener>();
+	
+	private LaunchingObservable() {
+		this.loader = ServiceLoader.load(LaunchingListener.class, LaunchingObservable.class.getClassLoader());
+		if (this.loader==null || this.loader.iterator()==null || !this.loader.iterator().hasNext()) {
+			this.loader = ServiceLoader.load(LaunchingListener.class, Thread.currentThread().getContextClassLoader());
+		}
+		List<Class<? extends LaunchingListener>>  listenersClasses = new ArrayList<Class<? extends LaunchingListener>>();
+		
 		List<LaunchingListener> lst = new ArrayList<LaunchingListener>();
 		// load built-in listener from META-INF
 		for (LaunchingListener listener : loader) {
@@ -40,16 +53,12 @@ public class LaunchingObservable {
 		for (LaunchingListener launchingListener : lst) {
 			listenersClasses.add(launchingListener.getClass()); 
 		}
-	}
-	
-	private List<LaunchingListener> listeners = new ArrayList<LaunchingListener>();
-	
-	public LaunchingObservable() {
+
 		for (Class<? extends LaunchingListener> listenerClass : listenersClasses) {
 			try {
-				listeners.add(listenerClass.newInstance());
+				this.listeners.add(listenerClass.newInstance());
 			} catch (Exception e) {
-				// TODO:
+				// TODO: add message kind
 				e.printStackTrace();
 			}
 		}

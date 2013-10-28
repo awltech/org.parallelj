@@ -47,7 +47,10 @@ public final class JmxCommands {
 	 */
 	private JmxCommands() {
 		// Search for available commands
-		final ServiceLoader<JmxCommand> loader = ServiceLoader.load(JmxCommand.class);
+		ServiceLoader<JmxCommand> loader = ServiceLoader.load(JmxCommand.class, JmxCommands.class.getClassLoader());
+		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
+			loader = ServiceLoader.load(JmxCommand.class, Thread.currentThread().getContextClassLoader());
+		}
 		for (JmxCommand command:loader) {
 			this.commands.put(command.getType(), command);
 		}
