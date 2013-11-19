@@ -100,7 +100,7 @@ privileged aspect LaunchManagement {
 					execution(public Launch Launch+.synchLaunch(..) throws LaunchException)
 						&& this(launch) {
 			proceed(launch);
-			launch.processHelper = Programs.as(launch.jobInstance);
+			launch.processHelper = Programs.as(launch.getJobInstance());
 			launch.getLaunchResult().setStatusCode(ProgramReturnCodes.RUNNING);
 			this.observable.prepareLaunching(launch);
 	
