@@ -98,15 +98,15 @@ public enum LaunchingMessageKind {
 	ILAUNCH0001,
 	
 	/**
-	 * Error occured during default ExecutorService instanciation
+	 * Error occured during default ExecutorService instanciation. Check your configuration...!!
 	 */
-	@Format("Error occured during default ExecutorService instanciation!")
+	@Format("Error occured during default ExecutorService instanciation. Check your configuration...!!")
 	ELAUNCH0011,
 	
 	/**
-	 * Error occured during ExecutorService instanciation
+	 * Error occured during ExecutorService instanciation. Check your configuration...!!
 	 */
-	@Format("Error occured during ExecutorService instanciation!")
+	@Format("Error occured during ExecutorService instanciation!. Check your configuration...!!")
 	ELAUNCH0012,
 	
 	/*

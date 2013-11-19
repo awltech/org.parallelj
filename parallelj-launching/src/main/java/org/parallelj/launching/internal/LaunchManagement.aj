@@ -112,7 +112,7 @@ privileged aspect LaunchManagement {
 					execution(public Launch Launch+.aSynchLaunch() throws LaunchException)
 						&& this(launch) {
 			proceed(launch);
-			launch.processHelper = Programs.as(launch.jobInstance);
+			launch.processHelper = Programs.as(launch.getJobInstance());
 			launch.getLaunchResult().setStatusCode(ProgramReturnCodes.RUNNING);
 			this.observable.prepareLaunching(launch);
 			if (launch.getExecutorService()!=null) {
@@ -170,17 +170,14 @@ privileged aspect LaunchManagement {
 						|| cExecutors.getDefaultPoolSize() != null
 						|| cExecutors.getDefaultServiceClass() != null) {
 					try {
+						int size = cExecutors.getDefaultPoolSize() != null ? cExecutors.getDefaultPoolSize().intValue() : 0;
 						ExecutorService defaultService = ExecutorServiceKind
 								.valueOf(
 										cExecutors.getDefaultServiceType()
 												.value()).create(
-										cExecutors.getDefaultPoolSize()
-												.intValue(),
+										size,
 										cExecutors.getDefaultServiceClass());
 						((ILaunchExecutors) launch).defaultExecutor = defaultService;
-					} catch (InstantiationException | IllegalAccessException
-							| ClassNotFoundException e) {
-						// Do nothing..
 					} catch (Exception e) {
 						LaunchingMessageKind.ELAUNCH0011.format(e);
 					}
@@ -218,10 +215,6 @@ privileged aspect LaunchManagement {
 									if (!foundProgram) {
 										executor.shutdown();
 									}
-								} catch (InstantiationException
-										| IllegalAccessException
-										| ClassNotFoundException e) {
-									// Do Nothing..
 								} catch (Exception e) {
 									LaunchingMessageKind.ELAUNCH0012.format(e);
 								}
