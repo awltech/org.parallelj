@@ -56,6 +56,8 @@ public class KProcess extends KMachine<ProcessState> implements Process, StateLi
 	 * 
 	 */
 	private final KProgram program;
+	
+	private KProcess parentProcess;
 
 	/**
 	 * KDefinition level context
@@ -309,6 +311,14 @@ public class KProcess extends KMachine<ProcessState> implements Process, StateLi
 
 	public Set<KElement> getElementsInError() {
 		return this.elementsInError;
+	}
+
+	public void setParentProcess(KProcess process) {
+		this.parentProcess = process;
+	}
+
+	public KProcess getParentProcess() {
+		return parentProcess;
 	}
 	
 }

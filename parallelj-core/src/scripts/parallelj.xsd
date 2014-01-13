@@ -105,6 +105,7 @@ xmlns="http://parallelj.org">
 		<xs:attribute name="service-type" type="threadpooltype" use="required" />
 		<xs:attribute name="service-class" type="xs:string" use="optional" />
 		<xs:attribute name="pool-size" type="xs:nonNegativeInteger" use="optional" />
+		<xs:attribute name="type" type="executorType" default="CLASS" use="optional" />
 	</xs:complexType>
 	<xs:element name="executor-service" type="CExecutor" />
 
@@ -114,6 +115,13 @@ xmlns="http://parallelj.org">
 			<xs:enumeration value="CACHED_THREAD_POOL" />
 			<xs:enumeration value="SINGLE_THREAD_EXECUTOR" />
 			<xs:enumeration value="PROVIDED" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="executorType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CLASS" />
+			<xs:enumeration value="INSTANCE" />
 		</xs:restriction>
 	</xs:simpleType>
 	

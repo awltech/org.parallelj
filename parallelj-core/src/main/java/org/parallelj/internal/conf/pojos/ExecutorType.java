@@ -13,36 +13,32 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for threadpooltype.
+ * <p>Java class for executorType.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
  * <pre>
- * &lt;simpleType name="threadpooltype">
+ * &lt;simpleType name="executorType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="FIXED_THREAD_POOL"/>
- *     &lt;enumeration value="CACHED_THREAD_POOL"/>
- *     &lt;enumeration value="SINGLE_THREAD_EXECUTOR"/>
- *     &lt;enumeration value="PROVIDED"/>
+ *     &lt;enumeration value="CLASS"/>
+ *     &lt;enumeration value="INSTANCE"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "threadpooltype")
+@XmlType(name = "executorType")
 @XmlEnum
-public enum Threadpooltype {
+public enum ExecutorType {
 
-    FIXED_THREAD_POOL,
-    CACHED_THREAD_POOL,
-    SINGLE_THREAD_EXECUTOR,
-    PROVIDED;
+    CLASS,
+    INSTANCE;
 
     public String value() {
         return name();
     }
 
-    public static Threadpooltype fromValue(String v) {
+    public static ExecutorType fromValue(String v) {
         return valueOf(v);
     }
 

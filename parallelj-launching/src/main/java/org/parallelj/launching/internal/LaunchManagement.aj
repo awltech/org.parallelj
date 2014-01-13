@@ -28,20 +28,18 @@ import java.util.concurrent.ExecutorService;
 import org.parallelj.Programs;
 import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
-import org.parallelj.internal.conf.pojos.CExecutor;
 import org.parallelj.internal.conf.pojos.CExecutors;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
+import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProcessor;
 import org.parallelj.internal.kernel.procedure.CallableProcedure.CallableCall.CallableCallRunnable;
 import org.parallelj.internal.kernel.procedure.RunnableProcedure.RunnableCall.RunnableCallRunnable;
 import org.parallelj.internal.kernel.procedure.SubProcessProcedure.SubProcessCall.SubProcessRunnable;
 import org.parallelj.internal.reflect.ProcessHelperImpl;
-import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.Launch;
 import org.parallelj.launching.LaunchException;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ProgramReturnCodes;
-import org.parallelj.mirror.ExecutorServiceKind;
 import org.parallelj.mirror.ParallelJThreadFactory;
 
 /**
@@ -51,7 +49,7 @@ import org.parallelj.mirror.ParallelJThreadFactory;
  */
 privileged aspect LaunchManagement { 
 	
-	private static Map<KProcessor, LaunchImpl> phl = new ConcurrentHashMap<>(); 
+	private static Map<KProcessor, LaunchImpl<?>> phl = new ConcurrentHashMap<>(); 
 	
 	static privileged public aspect LaunchAdapter percflow(launchInstance() ) {
 	
@@ -67,12 +65,11 @@ privileged aspect LaunchManagement {
 		pointcut launchInstance() : execution(* Launch+.*(..));
 	
 		interface IKProcessorLaunch {}
-		LaunchImpl IKProcessorLaunch.launch;
+		LaunchImpl<?> IKProcessorLaunch.launch;
 		declare parents: KProcessor implements IKProcessorLaunch;
 		
 		interface ILaunchExecutors {}
-		Map<String, ExecutorService> ILaunchExecutors.executors = new ConcurrentHashMap<>();
-		ExecutorService ILaunchExecutors.defaultExecutor = null;
+		ExecutorManager ILaunchExecutors.executorManager;		
 		declare parents: LaunchImpl implements ILaunchExecutors;
 		
 		private LaunchingObservable observable = new LaunchingObservable();
@@ -100,7 +97,7 @@ privileged aspect LaunchManagement {
 					execution(public Launch Launch+.synchLaunch(..) throws LaunchException)
 						&& this(launch) {
 			proceed(launch);
-			launch.processHelper = Programs.as(launch.getJobInstance());
+			launch.processHelper = Programs.as(launch.jobInstance);
 			launch.getLaunchResult().setStatusCode(ProgramReturnCodes.RUNNING);
 			this.observable.prepareLaunching(launch);
 	
@@ -112,7 +109,7 @@ privileged aspect LaunchManagement {
 					execution(public Launch Launch+.aSynchLaunch() throws LaunchException)
 						&& this(launch) {
 			proceed(launch);
-			launch.processHelper = Programs.as(launch.getJobInstance());
+			launch.processHelper = Programs.as(launch.jobInstance);
 			launch.getLaunchResult().setStatusCode(ProgramReturnCodes.RUNNING);
 			this.observable.prepareLaunching(launch);
 			if (launch.getExecutorService()!=null) {
@@ -131,8 +128,8 @@ privileged aspect LaunchManagement {
 			ProcessHelperImpl processHelper = (ProcessHelperImpl)launch.getProcessHelper();
 			KProcessor processor = processHelper.processor;
 			if (processor == null) {
-				if ( ((ILaunchExecutors)launch).defaultExecutor!=null) {
-					processor = new KProcessor(((ILaunchExecutors)launch).defaultExecutor);
+				if ( ((ILaunchExecutors)launch).executorManager!=null && ((ILaunchExecutors)launch).executorManager.getDefaultExecutor()!=null) {
+					processor = new KProcessor(((ILaunchExecutors)launch).executorManager.getDefaultExecutor());
 				} else {
 					processor = new KProcessor(launch.getExecutorService());
 				}
@@ -143,7 +140,9 @@ privileged aspect LaunchManagement {
 			launch.getProcessHelper().join();
 			this.observable.finalizeLaunching(launch);
 			launch.complete();
-			cleanExecutors(launch);
+			if(launch.executorManager!=null) {
+				launch.executorManager.cleanExecutors();
+			}
 			phl.remove(processor);
 			
 			if (launch.getLaunchResult().getStatusCode()!=ProgramReturnCodes.FAILURE
@@ -162,90 +161,21 @@ privileged aspect LaunchManagement {
 					.getConfigurationService().getConfigurationManager()
 					.get(ParalleljConfigurationManager.class)
 					.getConfiguration();
-			Map<String, ExecutorService> executors = ((ILaunchExecutors) launch).executors;
 			CExecutors cExecutors = configuration != null ? configuration
 					.getExecutorServices() : null;
 			if (cExecutors != null) {
-				if (cExecutors.getDefaultServiceType() != null
-						|| cExecutors.getDefaultPoolSize() != null
-						|| cExecutors.getDefaultServiceClass() != null) {
-					try {
-						int size = cExecutors.getDefaultPoolSize() != null ? cExecutors.getDefaultPoolSize().intValue() : 0;
-						ExecutorService defaultService = ExecutorServiceKind
-								.valueOf(
-										cExecutors.getDefaultServiceType()
-												.value()).create(
-										size,
-										cExecutors.getDefaultServiceClass());
-						((ILaunchExecutors) launch).defaultExecutor = defaultService;
-					} catch (Exception e) {
-						LaunchingMessageKind.ELAUNCH0011.format(e);
-					}
-				}
-				if (cExecutors.getExecutorService() != null) {
-					for (CExecutor cExecutor : cExecutors.getExecutorService()) {
-						String[] names = cExecutor.getProgramName().split(",");
-						boolean instanciate = false;
-						for (String name : names) {
-							if (name.length() > 0 && name.trim().length() > 0) {
-								instanciate = true;
-							}
-						}
-						if (instanciate) {
-							ExecutorService executor = null;
-							if (cExecutor.getServiceType() != null) {
-								String type = cExecutor.getServiceType()
-										.value();
-								try {
-									int size = cExecutor.getPoolSize() != null ? cExecutor
-											.getPoolSize().intValue() : 0;
-									executor = ExecutorServiceKind
-											.valueOf(type)
-											.create(size,
-													cExecutor.getServiceClass());
-									boolean foundProgram = false;
-									for (String name : names) {
-										if (name.length() > 0 && name.trim().length() > 0) {
-											executors.put(
-													name,
-													executor);
-											foundProgram = true;
-										}
-									}
-									if (!foundProgram) {
-										executor.shutdown();
-									}
-								} catch (Exception e) {
-									LaunchingMessageKind.ELAUNCH0012.format(e);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		private void cleanExecutors(LaunchImpl<?> launch) {
-			Map<String, ExecutorService> executors = ((ILaunchExecutors)launch).executors;
-			for (String key : executors.keySet()) {
-				executors.get(key).shutdown();
-				executors.remove(key);
-			}
-			if (((ILaunchExecutors)launch).defaultExecutor!=null) {
-				((ILaunchExecutors)launch).defaultExecutor.shutdown();
+				launch.executorManager = new ExecutorManager(cExecutors);
 			}
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	void around(KProcessor kProcessor, SubProcessRunnable runnable):execution(public void submit(..))
-		&& args(runnable)
-		&&this(kProcessor){
-	
-		Adapter context = (Adapter)runnable.getSubProcessCall().getProcess().getContext();
-		LaunchImpl launch = phl.get(kProcessor);
-		if (launch!=null) {
-			ExecutorService service = launch.executors.get(context.getClass().getCanonicalName());
+    void around(KProcessor kProcessor, SubProcessRunnable runnable):execution(public void submit(..))
+                && args(runnable)
+                &&this(kProcessor){
+		LaunchImpl<?> launch = phl.get(kProcessor);
+		KProcess process = runnable.getSubProcessCall().getProcess();
+		if (launch!=null && launch.executorManager!=null) {
+			ExecutorService service = launch.executorManager.get(process);
 			if (service!=null) {
 				kProcessor.submit(runnable, service);
 			} else {
@@ -254,43 +184,40 @@ privileged aspect LaunchManagement {
 		} else {
 			proceed(kProcessor, runnable);
 		}
-}
+    }
+    
+    void around(KProcessor kProcessor, CallableCallRunnable runnable):execution(public void submit(..))
+            && args(runnable)
+            &&this(kProcessor){
+		LaunchImpl<?> launch = phl.get(kProcessor);
+		KProcess process = runnable.getCallableCall().getProcess();
+		if (launch!=null && launch.executorManager!=null) {
+			ExecutorService service = launch.executorManager.get(process);
+			if (service!=null) {
+				kProcessor.submit(runnable, service);
+			} else {
+				proceed(kProcessor, runnable);
+			}
+		} else {
+			proceed(kProcessor, runnable);
+		}
+    }
+    
+    void around(KProcessor kProcessor, RunnableCallRunnable runnable):execution(public void submit(..))
+            && args(runnable)
+            &&this(kProcessor) {
+		LaunchImpl<?> launch = phl.get(kProcessor);
+		KProcess process = runnable.getRunnableCall().getProcess();
+		if (launch!=null && launch.executorManager!=null) {
+			ExecutorService service = launch.executorManager.get(process);
+			if (service!=null) {
+				kProcessor.submit(runnable, service);
+			} else {
+				proceed(kProcessor, runnable);
+			}
+		} else {
+			proceed(kProcessor, runnable);
+		}
+    }
 
-	@SuppressWarnings("rawtypes")
-	void around(KProcessor kProcessor, CallableCallRunnable runnable):execution(public void submit(..))
-		&& args(runnable)
-		&&this(kProcessor){
-		
-		Adapter context = (Adapter)runnable.getCallableCall().getProcess().getContext();
-		LaunchImpl launch = phl.get(kProcessor);
-		if (launch!=null) {
-			ExecutorService service = launch.executors.get(context.getClass().getCanonicalName());
-			if (service!=null) {
-				kProcessor.submit(runnable, service);
-			} else {
-				proceed(kProcessor, runnable);
-			}
-		} else {
-			proceed(kProcessor, runnable);
-		}
-	}
-	
-	@SuppressWarnings("rawtypes")
-	void around(KProcessor kProcessor, RunnableCallRunnable runnable):execution(public void submit(..))
-		&& args(runnable)
-		&&this(kProcessor) {
-		
-		Adapter context = (Adapter)runnable.getRunnableCall().getProcess().getContext();
-		LaunchImpl launch = phl.get(kProcessor);
-		if (launch!=null) {
-			ExecutorService service = launch.executors.get(context.getClass().getCanonicalName());
-			if (service!=null) {
-				kProcessor.submit(runnable, service);
-			} else {
-				proceed(kProcessor, runnable);
-			}
-		} else {
-			proceed(kProcessor, runnable);
-		}
-	}
-}
+ }

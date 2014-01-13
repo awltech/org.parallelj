@@ -10,8 +10,6 @@ import org.parallelj.internal.kernel.KProcedure;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProcessor;
 import org.parallelj.internal.kernel.KProgram;
-import org.parallelj.internal.kernel.procedure.CallableProcedure;
-import org.parallelj.internal.kernel.procedure.RunnableProcedure;
 import org.parallelj.internal.kernel.procedure.SubProcessProcedure;
 import org.parallelj.mirror.Procedure;
 
@@ -61,13 +59,12 @@ public privileged aspect ProcedureCapacityAdapter {
 		for (Procedure procedure : program.getProcedures()) {
 			KProcedure kprocedure = (KProcedure)procedure;
 			Class<?> kprocedureClass = kprocedure.getClass(); 
-			if (kprocedureClass.equals(RunnableProcedure.class) || kprocedureClass.equals(CallableProcedure.class)) {
-				for (CProcedure cProcedure : proceduresConfiguration) {
-					if (kprocedure.getName()!=null && kprocedure.getName().equals(cProcedure.getName())) {
-						kprocedure.setCapacity(cProcedure.getCapacity().shortValue());
-					}
+			for (CProcedure cProcedure : proceduresConfiguration) {
+				if (kprocedure.getName()!=null && kprocedure.getName().equals(cProcedure.getName())) {
+					kprocedure.setCapacity(cProcedure.getCapacity().shortValue());
 				}
-			} else if (kprocedureClass.equals(SubProcessProcedure.class)) {
+			}
+			if (kprocedureClass.equals(SubProcessProcedure.class)) {
 				KProgram subProgram = ((SubProcessProcedure)kprocedure).getSubProgram();
 				setProcedureCapacityFromConfiguration(subProgram, proceduresConfiguration);
 			}

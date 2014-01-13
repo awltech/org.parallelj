@@ -77,6 +77,8 @@ public class SubProcessProcedure extends KProcedure {
 				SubProcessCall.this.start();
 				KProcess sub = SubProcessProcedure.this.subProgram
 						.newProcess(SubProcessCall.this.getContext());
+				
+				sub.setParentProcess(SubProcessCall.this.getProcess());
 
 				if (isPipeline) {
 
