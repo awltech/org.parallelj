@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -44,40 +45,33 @@
 
 	<developers>
 		<developer>
-			<name>Antoine Neveux</name>
-			<email>antoine.neveux@atos.net</email>
-			<id>aneveux</id>
-			<url>https://github.com/aneveux</url>
+			<name>Maxence Vanbésien</name>
+			<email>mvaawl@gmail.com</email>
+			<id>mvanbesien</id>
+			<url>https://github.com/mvanbesien</url>
+			<roles>
+				<role>Team Leader</role>
+				<role>Developer</role>
+			</roles>
 		</developer>
 		<developer>
 			<name>Christophe Wastiaux</name>
 			<email>christophe.wastiaux@atos.net</email>
 			<id>christophe-w</id>
 			<url>https://github.com/christophe-w</url>
+			<roles>
+				<role>Project Leader</role>
+				<role>Developer</role>
+			</roles>
 		</developer>
 		<developer>
 			<name>Abhijit Gurav</name>
 			<email>abhijit.gurav@atos.net</email>
 			<id>abhijit-g</id>
 			<url>https://github.com/abhijit-g</url>
-		</developer>
-		<developer>
-			<name>Pierre Devreux</name>
-			<email>pierre.devreux@atos.net</email>
-			<id>devreux</id>
-			<url>https://github.com/devreux</url>
-		</developer>
-		<developer>
-			<name>Thierry Beucher</name>
-			<email>thierry.beucher@atos.net</email>
-			<id>tbrgit</id>
-			<url>https://github.com/tbrgit</url>
-		</developer>
-		<developer>
-			<name>Thibaut Robert</name>
-			<email>thibaut.robert@atos.net</email>
-			<id>trobert</id>
-			<url>https://github.com/trobert</url>
+			<roles>
+				<role>Developer</role>
+			</roles>
 		</developer>
 	</developers>
 
