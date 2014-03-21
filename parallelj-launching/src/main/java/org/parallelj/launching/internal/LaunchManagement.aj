@@ -40,7 +40,10 @@ import org.parallelj.launching.Launch;
 import org.parallelj.launching.LaunchException;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.ProgramReturnCodes;
+import org.parallelj.launching.internal.LaunchManagement.LaunchAdapter.IKProcessorLaunch;
 import org.parallelj.mirror.ParallelJThreadFactory;
+
+import org.parallelj.launching.executors.ExecutorServiceManager;
 
 /**
  * Implements the synchLaunch(..) and aSynchLaunch(..) methods of Launch.
@@ -69,7 +72,7 @@ privileged aspect LaunchManagement {
 		declare parents: KProcessor implements IKProcessorLaunch;
 		
 		interface ILaunchExecutors {}
-		ExecutorManager ILaunchExecutors.executorManager;		
+		ExecutorServiceManager ILaunchExecutors.executorServiceManager;		
 		declare parents: LaunchImpl implements ILaunchExecutors;
 		
 		private LaunchingObservable observable = new LaunchingObservable();
@@ -128,8 +131,9 @@ privileged aspect LaunchManagement {
 			ProcessHelperImpl processHelper = (ProcessHelperImpl)launch.getProcessHelper();
 			KProcessor processor = processHelper.processor;
 			if (processor == null) {
-				if ( ((ILaunchExecutors)launch).executorManager!=null && ((ILaunchExecutors)launch).executorManager.getDefaultExecutor()!=null) {
-					processor = new KProcessor(((ILaunchExecutors)launch).executorManager.getDefaultExecutor());
+				if ( ((ILaunchExecutors)launch).executorServiceManager!=null 
+						&& ((ILaunchExecutors)launch).executorServiceManager.getDefaultExecutor()!=null) {
+					processor = new KProcessor(((ILaunchExecutors)launch).executorServiceManager.getDefaultExecutor());
 				} else {
 					processor = new KProcessor(launch.getExecutorService());
 				}
@@ -140,8 +144,8 @@ privileged aspect LaunchManagement {
 			launch.getProcessHelper().join();
 			this.observable.finalizeLaunching(launch);
 			launch.complete();
-			if(launch.executorManager!=null) {
-				launch.executorManager.cleanExecutors();
+			if(launch.executorServiceManager!=null) {
+				launch.executorServiceManager.clean();
 			}
 			phl.remove(processor);
 			
@@ -164,7 +168,7 @@ privileged aspect LaunchManagement {
 			CExecutors cExecutors = configuration != null ? configuration
 					.getExecutorServices() : null;
 			if (cExecutors != null) {
-				launch.executorManager = new ExecutorManager(cExecutors);
+				launch.executorServiceManager = new ExecutorServiceManager(cExecutors);
 			}
 		}
 	}
@@ -174,8 +178,8 @@ privileged aspect LaunchManagement {
                 &&this(kProcessor){
 		LaunchImpl<?> launch = phl.get(kProcessor);
 		KProcess process = runnable.getSubProcessCall().getProcess();
-		if (launch!=null && launch.executorManager!=null) {
-			ExecutorService service = launch.executorManager.get(process);
+		if (launch!=null && launch.executorServiceManager!=null) {
+			ExecutorService service = launch.executorServiceManager.get(process);
 			if (service!=null) {
 				kProcessor.submit(runnable, service);
 			} else {
@@ -185,14 +189,14 @@ privileged aspect LaunchManagement {
 			proceed(kProcessor, runnable);
 		}
     }
-    
+
     void around(KProcessor kProcessor, CallableCallRunnable runnable):execution(public void submit(..))
             && args(runnable)
             &&this(kProcessor){
 		LaunchImpl<?> launch = phl.get(kProcessor);
 		KProcess process = runnable.getCallableCall().getProcess();
-		if (launch!=null && launch.executorManager!=null) {
-			ExecutorService service = launch.executorManager.get(process);
+		if (launch!=null && launch.executorServiceManager!=null) {
+			ExecutorService service = launch.executorServiceManager.get(process);
 			if (service!=null) {
 				kProcessor.submit(runnable, service);
 			} else {
@@ -202,14 +206,14 @@ privileged aspect LaunchManagement {
 			proceed(kProcessor, runnable);
 		}
     }
-    
+
     void around(KProcessor kProcessor, RunnableCallRunnable runnable):execution(public void submit(..))
             && args(runnable)
             &&this(kProcessor) {
 		LaunchImpl<?> launch = phl.get(kProcessor);
 		KProcess process = runnable.getRunnableCall().getProcess();
-		if (launch!=null && launch.executorManager!=null) {
-			ExecutorService service = launch.executorManager.get(process);
+		if (launch!=null && launch.executorServiceManager!=null) {
+			ExecutorService service = launch.executorServiceManager.get(process);
 			if (service!=null) {
 				kProcessor.submit(runnable, service);
 			} else {
@@ -218,6 +222,13 @@ privileged aspect LaunchManagement {
 		} else {
 			proceed(kProcessor, runnable);
 		}
+    }
+
+    void around(KProcess kProcess):execution(private void complete(..))
+    	&& this(kProcess) {
+    	proceed(kProcess);
+		LaunchImpl<?> launch = ((IKProcessorLaunch)kProcess.getProcessor()).launch;
+		launch.executorServiceManager.complete(kProcess);
     }
 
  }
