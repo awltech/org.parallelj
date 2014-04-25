@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.launching.internal.spi.CacheableServiceLoader;
 
 public class ExtensionService {
 
@@ -17,9 +18,10 @@ public class ExtensionService {
 	}
 
 	private synchronized void initialize() {
-		ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, ExtensionService.class.getClassLoader());
-		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
-			loader = ServiceLoader.load(Extension.class, Thread.currentThread().getContextClassLoader());
+		ServiceLoader<Extension> loader = CacheableServiceLoader.INSTANCE.load(Extension.class,
+				ExtensionService.class.getClassLoader());
+		if (loader == null || loader.iterator() == null || !loader.iterator().hasNext()) {
+			loader = CacheableServiceLoader.INSTANCE.load(Extension.class, Thread.currentThread().getContextClassLoader());
 		}
 		for (Extension ext : loader) {
 			// Try to load all available extensions
@@ -27,8 +29,7 @@ public class ExtensionService {
 				ext.init();
 				exts.add(ext);
 			} catch (ExtensionException e) {
-				LaunchingMessageKind.EEXT002.format(ext.getClass()
-						.getCanonicalName(), "", e);
+				LaunchingMessageKind.EEXT002.format(ext.getClass().getCanonicalName(), "", e);
 			}
 		}
 	}

@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.parallelj.launching.internal.spi.CacheableServiceLoader;
+
 
 /**
  * Entry point for all available commands for remote launching using Jmx
@@ -47,9 +49,9 @@ public final class JmxCommands {
 	 */
 	private JmxCommands() {
 		// Search for available commands
-		ServiceLoader<JmxCommand> loader = ServiceLoader.load(JmxCommand.class, JmxCommands.class.getClassLoader());
+		ServiceLoader<JmxCommand> loader = CacheableServiceLoader.INSTANCE.load(JmxCommand.class, JmxCommands.class.getClassLoader());
 		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
-			loader = ServiceLoader.load(JmxCommand.class, Thread.currentThread().getContextClassLoader());
+			loader = CacheableServiceLoader.INSTANCE.load(JmxCommand.class, Thread.currentThread().getContextClassLoader());
 		}
 		for (JmxCommand command:loader) {
 			this.commands.put(command.getType(), command);

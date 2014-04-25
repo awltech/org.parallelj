@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import org.parallelj.launching.internal.spi.CacheableServiceLoader;
+
 
 /**
  * Entry point for all available options for Jmx remote launching
@@ -47,9 +49,9 @@ public final class JmxOptions {
 	 */
 	private JmxOptions() {
 		// Search for available commands
-		ServiceLoader<JmxOption> loader = ServiceLoader.load(JmxOption.class, JmxOptions.class.getClassLoader());
+		ServiceLoader<JmxOption> loader = CacheableServiceLoader.INSTANCE.load(JmxOption.class, JmxOptions.class.getClassLoader());
 		if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
-			loader = ServiceLoader.load(JmxOption.class, Thread.currentThread().getContextClassLoader());
+			loader = CacheableServiceLoader.INSTANCE.load(JmxOption.class, Thread.currentThread().getContextClassLoader());
 		}
 		for (JmxOption option:loader) {
 			this.options.add(option);

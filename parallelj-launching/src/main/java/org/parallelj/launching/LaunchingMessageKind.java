@@ -371,7 +371,12 @@ public enum LaunchingMessageKind {
 	 * @Error Error processing [%s].
 	 */
 	@Format("Error processing [%s].")
-	EEXT003;
+	EEXT003, 
+	
+	
+	@Format("Service Loading from ParallelJ Launched enabled with cache: [%s]")
+	ICACHESPI001
+	;
 	
 
 	/**

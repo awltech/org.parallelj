@@ -40,6 +40,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.mina.core.session.IoSession;
 import org.parallelj.launching.LaunchingMessageKind;
+import org.parallelj.launching.internal.spi.CacheableServiceLoader;
 import org.parallelj.launching.parser.ParserException;
 import org.parallelj.launching.remote.RemoteProgram;
 import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
@@ -136,9 +137,9 @@ abstract class AbstractLaunchTcpCommand extends AbstractTcpCommand {
 		if (iOptionClass != null) {
 			if (this.options == null) {
 				this.options = new ArrayList<IOption>();
-				ServiceLoader<? extends IOption> loader = ServiceLoader.load(iOptionClass, AbstractLaunchTcpCommand.class.getClassLoader());
+				ServiceLoader<? extends IOption> loader = CacheableServiceLoader.INSTANCE.load(iOptionClass, AbstractLaunchTcpCommand.class.getClassLoader());
 				if (loader==null || loader.iterator()==null || !loader.iterator().hasNext()) {
-					loader = ServiceLoader.load(iOptionClass, Thread.currentThread().getContextClassLoader());
+					loader = CacheableServiceLoader.INSTANCE.load(iOptionClass, Thread.currentThread().getContextClassLoader());
 				}
 				for (IOption option : loader) {
 					this.options.add(option);

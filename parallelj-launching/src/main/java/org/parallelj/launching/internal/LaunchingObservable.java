@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 import org.parallelj.launching.Launch;
+import org.parallelj.launching.internal.spi.CacheableServiceLoader;
 
 public class LaunchingObservable {
 
@@ -35,9 +36,9 @@ public class LaunchingObservable {
 	private List<LaunchingListener> listeners = new ArrayList<LaunchingListener>();
 	
 	private LaunchingObservable() {
-		this.loader = ServiceLoader.load(LaunchingListener.class, LaunchingObservable.class.getClassLoader());
+		this.loader = CacheableServiceLoader.INSTANCE.load(LaunchingListener.class, LaunchingObservable.class.getClassLoader());
 		if (this.loader==null || this.loader.iterator()==null || !this.loader.iterator().hasNext()) {
-			this.loader = ServiceLoader.load(LaunchingListener.class, Thread.currentThread().getContextClassLoader());
+			this.loader = CacheableServiceLoader.INSTANCE.load(LaunchingListener.class, Thread.currentThread().getContextClassLoader());
 		}
 		List<Class<? extends LaunchingListener>>  listenersClasses = new ArrayList<Class<? extends LaunchingListener>>();
 		

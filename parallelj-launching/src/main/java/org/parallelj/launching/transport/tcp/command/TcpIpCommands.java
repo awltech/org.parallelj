@@ -25,18 +25,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+import org.parallelj.launching.internal.spi.CacheableServiceLoader;
 
 /**
  * Entry point for all available commands for remote launching
- *
+ * 
  */
 public final class TcpIpCommands {
-	
+
 	/**
 	 * Available commands
 	 */
 	private final Map<String, TcpCommand> commands = new HashMap<String, TcpCommand>();
-	
+
 	/**
 	 * The instance of TcpIpCommands
 	 */
@@ -47,8 +48,8 @@ public final class TcpIpCommands {
 	 */
 	private TcpIpCommands() {
 		// Search for available commands
-		final ServiceLoader<TcpCommand> loader = ServiceLoader.load(TcpCommand.class);
-		for (TcpCommand command:loader) {
+		final ServiceLoader<TcpCommand> loader = CacheableServiceLoader.INSTANCE.load(TcpCommand.class);
+		for (TcpCommand command : loader) {
 			this.commands.put(command.getType(), command);
 		}
 	}
