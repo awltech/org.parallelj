@@ -10,7 +10,7 @@
 
 	<groupId>org.parallelj</groupId>
 	<artifactId>parallelj</artifactId>
-	<version>1.4.2-spicaching-SNAPSHOT</version>
+	<version>1.4.2-LSC-SNAPSHOT</version>
 	<name>ParallelJ</name>
 	<packaging>pom</packaging>
 
