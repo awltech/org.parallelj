@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.parallelj.launching.LaunchingMessageKind;
 
 /**
- * Implementation of Layer over ServiceLoader from JDK, with synchronized cache.
+ * Implementation of Layer over ServiceLoader from JDK, with cache.
  * This CacheableService loader is singleton, accessible from INSTANCE literal.
  * 
  * @author mvanbesien
@@ -23,8 +23,9 @@ public enum CacheableServiceLoader {
 
 	/*
 	 * Internal monitor object, for synchronisation
+	 * MVA: Disabled at first, as map is a concurrent one. Need to be reenabled if too many side effects occur.
 	 */
-	private final Object monitor = new Object();
+	// private final Object monitor = new Object();
 
 	/*
 	 * Boolean to tell whether the cache is enabled...
@@ -58,14 +59,14 @@ public enum CacheableServiceLoader {
 	 */
 	@SuppressWarnings("unchecked")
 	private <E> ServiceLoader<E> loadWithCache(Class<E> clazz, ClassLoader classLoader) {
-		synchronized (this.monitor) {
+		//synchronized (this.monitor) {
 			ServiceLoaderIdentifier<E> identifier = new ServiceLoaderIdentifier<E>(clazz, classLoader);
 			if (!this.cache.containsKey(identifier)) {
 				ServiceLoader<E> loader = ServiceLoader.load(clazz, classLoader);
 				this.cache.put(identifier, loader);
 			}
 			return (ServiceLoader<E>) this.cache.get(identifier);
-		}
+		//}
 	}
 
 	/**
@@ -95,8 +96,8 @@ public enum CacheableServiceLoader {
 	}
 
 	public void clear() {
-		synchronized (this.monitor) {
+		//synchronized (this.monitor) {
 			this.cache.clear();
-		}
+		//}
 	}
 }
