@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>parallelj</artifactId>
 		<groupId>org.parallelj</groupId>
-		<version>1.4.2-SNAPSHOT</version>
+		<version>1.4.2-LSC-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>parallelj-jmx</artifactId>
