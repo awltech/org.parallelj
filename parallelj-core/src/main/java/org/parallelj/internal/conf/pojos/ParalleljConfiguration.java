@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
     "servers",
     "executorServices"
 })
-@XmlRootElement(name = "ParalleljConfiguration")
+@XmlRootElement(name = "parallelj")
 public class ParalleljConfiguration {
 
     @XmlElement(required = true)
