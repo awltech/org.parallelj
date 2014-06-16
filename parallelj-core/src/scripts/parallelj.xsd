@@ -31,23 +31,48 @@ xmlns="http://parallelj.org">
 	</xs:complexType>
 	<xs:element name="procedures" type="CProcedures" />
 
-	<xs:complexType name="CTelnet">
-		<xs:attribute name="host" type="xs:string" />
+<!-- 	<xs:complexType name="CTelnet"> -->
+<!-- 		<xs:attribute name="host" type="xs:string" /> -->
+<!-- 		<xs:attribute name="port" type="xs:int" /> -->
+<!-- 	</xs:complexType> -->
+<!-- 	<xs:element name="telnet" type="CTelnet" /> -->
+	
+	<xs:complexType name="CServer">
+		<xs:attribute name="type" type="xs:string"/>
 		<xs:attribute name="port" type="xs:int" />
 	</xs:complexType>
-	<xs:element name="telnet" type="CTelnet" />
+	<xs:element name="server" type="CServer" />
 	
+	<xs:complexType name="CTelnet">
+		<xs:complexContent>
+			<xs:extension base="CServer">
+				<xs:sequence>
+				</xs:sequence>
+				<xs:attribute name="host" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="telnet" type="CTelnet" />
+
 	<xs:complexType name="CJmx">
-		<xs:attribute name="host" type="xs:string" />
-		<xs:attribute name="port" type="xs:int" />
+		<xs:complexContent>
+			<xs:extension base="CServer">
+				<xs:sequence>
+				</xs:sequence>
+				<xs:attribute name="host" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="jmx" type="CJmx" />
 
 	<xs:complexType name="CSsh">
-		<xs:sequence>
-			<xs:element ref="auths" />
-		</xs:sequence>
-		<xs:attribute name="port" type="xs:int" />
+		<xs:complexContent>
+			<xs:extension base="CServer">
+				<xs:sequence>
+					<xs:element ref="auths" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:element name="ssh" type="CSsh" />
 

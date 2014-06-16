@@ -7,7 +7,6 @@ import javax.servlet.ServletContextListener;
 
 import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
-import org.parallelj.internal.conf.pojos.CBean;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
 import org.parallelj.launching.LaunchException;
 import org.parallelj.launching.Launcher;
@@ -100,18 +99,6 @@ public class ServersInitializerListener implements ServletContextListener {
 						sshServer.start();
 					} catch (IOException e) {
 						LaunchingMessageKind.ESSH0001.format(e);
-					}
-				}
-			}
-
-			// Scan all defined Program in parallej.xml
-			if (configuration.getServers().getBeans() != null
-					&& configuration.getServers().getBeans().getBean() != null) {
-				for (CBean bean : configuration.getServers().getBeans()
-						.getBean()) {
-					// Register the Program as MBean
-					if (this.jmxServer != null) {
-						this.jmxServer.registerProgramAsMBean(bean.getClazz());
 					}
 				}
 			}

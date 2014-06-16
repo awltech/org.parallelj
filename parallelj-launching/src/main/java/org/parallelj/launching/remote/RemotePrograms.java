@@ -24,6 +24,7 @@ package org.parallelj.launching.remote;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.parallelj.Program;
 import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.pojos.CBean;
@@ -58,11 +59,13 @@ public final class RemotePrograms {
 				 */
 				try {
 					@SuppressWarnings("unchecked")
-					Class<? extends Adapter> clazz = (Class<? extends Adapter>) Class
+					Class<?> clazz = (Class<?>) Class
 							.forName(bean.getClazz());
 					//
-					this.remotePrograms.add(new RemoteProgram(
-							clazz));
+					if(clazz.isAnnotationPresent(Program.class)) {
+						this.remotePrograms.add(new RemoteProgram((Class<? extends Adapter>)
+								clazz));
+					}
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

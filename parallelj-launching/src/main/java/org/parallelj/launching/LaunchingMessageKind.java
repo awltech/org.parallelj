@@ -375,8 +375,13 @@ public enum LaunchingMessageKind {
 	
 	
 	@Format("Service Loading from ParallelJ Launched enabled with cache: [%s]")
-	ICACHESPI001
-	;
+	ICACHESPI001,
+	
+	@Format("Update configuration successfully done.")
+	ICONF001,
+	
+	@Format("Reload configuration successfully done.")
+	ICONF002;
 	
 
 	/**
