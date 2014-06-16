@@ -30,7 +30,7 @@ import javax.management.MBeanInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
+import org.parallelj.internal.reflect.Adapter;
 import org.parallelj.launching.remote.RemoteProgram;
 
 /**
@@ -51,7 +51,7 @@ public class DynamicLegacyProgramTest {
 	@Test
 	public void testDynamicLegacyProgram_1()
 		throws Exception {
-		Class<? extends org.parallelj.internal.reflect.ProgramAdapter.Adapter> adapterClass = org.parallelj.internal.reflect.ProgramAdapter.Adapter.class;
+		Class<? extends org.parallelj.internal.reflect.Adapter> adapterClass = org.parallelj.internal.reflect.Adapter.class;
 
 		DynamicLegacyProgram result = new DynamicLegacyProgram(new RemoteProgram(adapterClass));
 

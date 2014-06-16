@@ -30,7 +30,7 @@ import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.internal.reflect.ProcessHelperImpl;
-import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
+import org.parallelj.internal.reflect.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.inout.Argument;
 import org.parallelj.launching.inout.ArgumentComparator;

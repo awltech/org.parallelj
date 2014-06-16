@@ -33,13 +33,6 @@ import org.parallelj.internal.reflect.callback.FieldIterable;
 public aspect ProgramAdapter {
 
 	/**
-	 * 
-	 */
-	public static interface Adapter {
-
-	}
-
-	/**
 	 * Inter type declaration in order to link annotated classes and process
 	 * instance.
 	 */

@@ -29,7 +29,7 @@ import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.pojos.CBean;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
-import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
+import org.parallelj.internal.reflect.Adapter;
 
 
 public final class RemotePrograms {

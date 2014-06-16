@@ -48,8 +48,8 @@ import org.parallelj.internal.conf.ConfigurationService;
 import org.parallelj.internal.conf.ParalleljConfigurationManager;
 import org.parallelj.internal.conf.pojos.CBean;
 import org.parallelj.internal.conf.pojos.ParalleljConfiguration;
+import org.parallelj.internal.reflect.Adapter;
 import org.parallelj.internal.reflect.ProgramAdapter;
-import org.parallelj.internal.reflect.ProgramAdapter.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
 import org.parallelj.launching.remote.RemoteProgram;
 import org.parallelj.launching.remote.RemotePrograms;
@@ -223,7 +223,7 @@ public class JmxServer {
 			final String type = fqnName.substring(fqnName.lastIndexOf('.') + 1);
 
 			if (Arrays.asList(clazz.getInterfaces()).contains(
-					ProgramAdapter.Adapter.class)) {
+					Adapter.class)) {
 				final DynamicLegacyProgram dprogram = new DynamicLegacyProgram(
 						remoteProgram);
 				final ObjectName objectName = new ObjectName(String.format(
