@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>parallelj-extensions</artifactId>
 		<groupId>org.parallelj</groupId>
-		<version>1.3.3-SNAPSHOT</version>
+		<version>1.3.3</version>
 	</parent>
 	<artifactId>parallelj-ssh-publickey</artifactId>
 	<name>Parallelj - SSH - PublicKey</name>
