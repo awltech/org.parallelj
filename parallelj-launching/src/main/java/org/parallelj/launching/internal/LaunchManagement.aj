@@ -228,7 +228,9 @@ privileged aspect LaunchManagement {
     	&& this(kProcess) {
     	proceed(kProcess);
 		LaunchImpl<?> launch = ((IKProcessorLaunch)kProcess.getProcessor()).launch;
-		launch.executorServiceManager.complete(kProcess);
+		if(launch.executorServiceManager!=null) {
+			launch.executorServiceManager.complete(kProcess);
+		}
     }
 
  }
