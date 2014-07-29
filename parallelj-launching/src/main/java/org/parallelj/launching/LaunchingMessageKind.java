@@ -385,6 +385,12 @@ public enum LaunchingMessageKind {
 	@Format("Error processing [%s].")
 	EEXT003, 
 	
+	/**
+	 * @Error Incompatible extension [%s] for [%s].
+	 */
+	@Format("Incompatible extension [%s] for [%s].")
+	EEXT004, 
+	
 	
 	@Format("Service Loading from ParallelJ Launched enabled with cache: [%s]")
 	ICACHESPI001,

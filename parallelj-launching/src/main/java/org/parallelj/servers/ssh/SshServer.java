@@ -24,6 +24,7 @@ package org.parallelj.servers.ssh;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.sshd.common.NamedFactory;
@@ -99,10 +100,10 @@ public class SshServer extends Server {
 				// Do nothing
 				LaunchingMessageKind.ESERVER0002.format(this,e);
 			}
+			
 		} else {
 			LaunchingMessageKind.ESERVER0005.format(this,"");
 		}
-		LaunchingMessageKind.ISERVER0004.format(this,"port:"+this.port);
 	}
 	
 	private void processExtension(org.apache.sshd.SshServer sshd2,
@@ -113,6 +114,12 @@ public class SshServer extends Server {
 		String authClassName = properties.getValue();
 		try {
 			Class<?> authClass = Class.forName(authClassName);
+			
+			if(!Arrays.asList(authClass.getInterfaces()).contains(SshAuthExtension.class)) {
+				LaunchingMessageKind.EEXT004.format(authClassName, this);
+				return;
+			}
+			
 			Constructor<?> constructor = authClass.getConstructor(List.class);
 			ServerExtension extension = (ServerExtension)constructor.newInstance(properties.getProperty());
 			extension.parseProperties(properties.getProperty());
