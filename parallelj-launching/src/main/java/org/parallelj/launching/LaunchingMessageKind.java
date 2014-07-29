@@ -116,12 +116,14 @@ public enum LaunchingMessageKind {
 	/**
 	 * Starting TcpIpServer on [%s:%s]
 	 */
+	@Deprecated
 	@Format("Starting the TcpIpServer on [%s:%s]")
 	ITCPIP0001,
 	
 	/**
 	 * Stopping TcpIpServer
 	 */
+	@Deprecated
 	@Format("Stoping the TcpIpServer")
 	ITCPIP0002,
 	
@@ -132,6 +134,7 @@ public enum LaunchingMessageKind {
 	/**
 	 * TcpIpServer can't be started
 	 */
+	@Deprecated
 	@Format("TcpIpServer can't be started")
 	ETCPIP0001,
 	
@@ -142,18 +145,21 @@ public enum LaunchingMessageKind {
 	/**
 	 * Starting the JmxServer on [%s:%s]
 	 */
+	@Deprecated
 	@Format("Starting the JmxServer on [%s:%s]")
 	IJMX0001,
 	
 	/**
 	 * JmxServer started! [%s]
 	 */
+	@Deprecated
 	@Format("JmxServer started! [%s]")
 	IJMX0002,
 	
 	/**
 	 * Stoping the JmxServer
 	 */
+	@Deprecated
 	@Format("Stoping the JmxServer")
 	IJMX0003,
 	
@@ -182,13 +188,14 @@ public enum LaunchingMessageKind {
 	/**
 	 * JmxServer can't be started
 	 */
+	@Deprecated
 	@Format("JmxServer can't be started")
 	EJMX0001,
 	
 	/**
-	 * Can't register any MBeans as JmxServer is not started
+	 * Can't register any MBeans as no Server is started
 	 */
-	@Format("Can't register any MBeans as JmxServer is not started")
+	@Format("Can't register any MBeans no Server is started")
 	EJMX0002,
 	
 	/**
@@ -321,18 +328,21 @@ public enum LaunchingMessageKind {
 	/**
 	 * Starting SshServer on [%s]
 	 */
+	@Deprecated
 	@Format("Starting the SshServer on [%s]")
 	ISSH0001,
 	
 	/**
 	 * SshServer started on [%s]
 	 */
+	@Deprecated
 	@Format("SshServer started on [%s]")
 	ISSH0002,
 	
 	/**
 	 * Stopping SshServer
 	 */
+	@Deprecated
 	@Format("Stopping the SshServer")
 	ISSH0003,
 	
@@ -343,12 +353,14 @@ public enum LaunchingMessageKind {
 	/**
 	 * SshServer can't be started
 	 */
+	@Deprecated
 	@Format("SshServer can't be started")
 	ESSH0001,
 	
 	/**
 	 * SshServer failed to shutdown cleanly
 	 */
+	@Deprecated
 	@Format("SshServer failed to shutdown cleanly")
 	ESSH0002,
 	
@@ -364,7 +376,7 @@ public enum LaunchingMessageKind {
 	/**
 	 * @Error Unable to initialize [%s].
 	 */
-	@Format("Unable to load [%s].")
+	@Format("Unable to initialize [%s].")
 	EEXT002,
 	
 	/**
@@ -381,7 +393,82 @@ public enum LaunchingMessageKind {
 	ICONF001,
 	
 	@Format("Reload configuration successfully done.")
-	ICONF002;
+	ICONF002,
+
+	/**
+	 * Unable to instanciate server [%s]
+	 */
+	@Format("Unable to instanciate server [%s]")
+	ESERVER0001,
+	
+	/**
+	 * Unable to start server  [%s]
+	 */
+	@Format("Unable to start server [%s]")
+	ESERVER0002,
+	
+	/**
+	 * An error occurred when starting server [%s] [%s]
+	 */
+	@Format("An error occurred when starting server [%s] [%s]")
+	ESERVER0003,
+	
+	/**
+	 * An error occured when stopping server [%s]
+	 */
+	@Format("An error occured when stopping server [%s]")
+	ESERVER0004,
+	
+	/**
+	 * Invalid Server configuration [%s]: [%s]
+	 */
+	@Format("Invalid Server configuration [%s] [%s]:[%s]")
+	ESERVER0005,
+	
+	/**
+	 * Invalid extension Server configuration [%s]: [%s]
+	 */
+	@Format("Invalid extension Server configuration [%s] [%s]:[%s]")
+	ESERVER0006,
+	
+	/**
+	 * "Starting server [%s] on [%s]..."
+	 */
+	@Format("Starting server [%s] on [%s]...")
+	ISERVER0001,
+	
+	/**
+	@Format("Starting server [%s] on [%s] [%s]...")
+	 */
+	@Format("Starting server [%s] on [%s] [%s]...")
+	ISERVER0002,
+	
+	/**
+	 * "Server [%s] started"
+	 */
+	@Format("Server [%s] started !")
+	ISERVER0003,
+	
+	/**
+	 * "Server [%s] started ! Info: [%s]"
+	 */
+	@Format("Server [%s] started ! Info: [%s]")
+	ISERVER0004,
+	
+	/**
+	 * "Stopping server [%s]"
+	 */
+	@Format("Stopping server [%s]...")
+	ISERVER0005,
+	
+	/**
+	 * "Server [%s] stopped."
+	 */
+	@Format("Server [%s] stopped.")
+	ISERVER0006//,
+	
+
+;
 	
 
 	/**

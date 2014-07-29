@@ -17,7 +17,7 @@
     <jmx port="9000" host="localhost" />
     <ssh port="22">
     	<auths>
-			<auth type="org.parallelj.ssh.publickey.ParalleljSshPublicKey">
+			<auth type="org.parallelj.ssh.publickey.ParalleljSshPublicKeyLegacy">
 				<property name="server-private-key">src/test/resources/id_rsa</property>
 				<property name="server-authorized-keys">src/test/resources/authorized_keys</property>
 			</auth>

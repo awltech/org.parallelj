@@ -37,6 +37,7 @@ import org.parallelj.launching.LaunchingMessageKind;
 /**
  * Class representing a Parallelj RcpIpServer Server for remote launching 
  */
+@Deprecated
 public class TcpIpServer {
 	private final static String ENCODING = "UTF-8";
 	private static final int BUFFER_READER_SIZE = 2048;

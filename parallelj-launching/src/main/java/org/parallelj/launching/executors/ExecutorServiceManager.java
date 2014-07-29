@@ -51,7 +51,6 @@ public class ExecutorServiceManager {
 	}
 
 	public ExecutorService get(KProcess process) {
-		//System.out.println(this);
 		for (IExecutorServiceType iExecutorServiceType : this.servicesType) {
 			ExecutorService service = iExecutorServiceType.get(process);
 			if(service!=null) {

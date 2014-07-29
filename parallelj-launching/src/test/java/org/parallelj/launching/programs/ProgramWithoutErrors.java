@@ -58,7 +58,6 @@ public class ProgramWithoutErrors {
 		return new Runnable() {
 			@Override
 			public void run() {
-				System.out.println("Setting User code...");
 				ProgramWithoutErrors.this.userErrorCode="USER_RETURN_CODE";
 			}
 		};

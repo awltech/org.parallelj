@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import org.parallelj.launching.LaunchingMessageKind;
 
+@Deprecated
 public class SshServer {
 
 	private org.apache.sshd.SshServer sshd;

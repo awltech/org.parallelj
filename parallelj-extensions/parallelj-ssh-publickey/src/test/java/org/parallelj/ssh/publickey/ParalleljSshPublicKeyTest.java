@@ -39,7 +39,7 @@ import static org.junit.Assert.assertFalse;
 
 public class ParalleljSshPublicKeyTest {
 	
-	private ParalleljSshPublicKey paralleljSshPublicKey;
+	private ParalleljSshPublicKeyLegacy paralleljSshPublicKey;
 	private SshServer sshdServer; 
 	
 	@Test
@@ -88,7 +88,7 @@ public class ParalleljSshPublicKeyTest {
 	@Before
 	public void setUp()
 		throws Exception {
-		this.paralleljSshPublicKey = new ParalleljSshPublicKey();
+		this.paralleljSshPublicKey = new ParalleljSshPublicKeyLegacy();
 		this.sshdServer = new SshServer();
 		
 		assertEquals(this.paralleljSshPublicKey.getType(), ExtendedSshServer.SSH_TYPE);

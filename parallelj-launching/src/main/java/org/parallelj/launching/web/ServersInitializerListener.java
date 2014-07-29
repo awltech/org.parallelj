@@ -36,6 +36,7 @@ import org.parallelj.launching.transport.jmx.JmxServer;
 import org.parallelj.launching.transport.ssh.SshServer;
 import org.parallelj.launching.transport.tcp.TcpIpHandlerAdapter;
 import org.parallelj.launching.transport.tcp.TcpIpServer;
+import org.parallelj.servers.Servers;
 
 /**
  * <p>
@@ -91,8 +92,6 @@ public class ServersInitializerListener implements ServletContextListener {
 						LaunchingMessageKind.ETCPIP0001.format(e);
 					}
 				}
-			} else {
-				LaunchingMessageKind.ETCPIP0001.format();
 			}
 
 			// Initialize a JmxServer
@@ -110,8 +109,6 @@ public class ServersInitializerListener implements ServletContextListener {
 						LaunchingMessageKind.EJMX0001.format(e);
 					}
 				}
-			} else {
-				LaunchingMessageKind.EJMX0001.format();
 			}
 
 			// Initialize a SshServer
@@ -130,6 +127,10 @@ public class ServersInitializerListener implements ServletContextListener {
 					}
 				}
 			}
+			
+			// Start new Servers implementations
+			Servers.getInstance().startServers();
+			
 		} catch (LaunchException e) {
 			LaunchingMessageKind.EWLAUNCH0001.format(e);
 		}
@@ -160,7 +161,9 @@ public class ServersInitializerListener implements ServletContextListener {
 				LaunchingMessageKind.ESSH0002.format(e);
 			}
 		}
-
+		
+		// Stopping new Servers implementations
+		Servers.getInstance().stopServers();
 	}
 
 	public TcpIpServer getTcpIpServer() {
