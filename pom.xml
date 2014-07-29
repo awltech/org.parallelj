@@ -117,6 +117,17 @@
 		<maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
 		<maven.archetype.plugin.version>2.0</maven.archetype.plugin.version>
 		<archetype.packaging.extension.version>2.0</archetype.packaging.extension.version>
+		
+		<!-- JAXB Versions -->
+		<jaxb2-basics-runtime.version>0.6.4</jaxb2-basics-runtime.version>
+		<jaxb2-basics-testing.version>0.6.4</jaxb2-basics-testing.version>
+		<jaxb2-basics-annotate.version>0.6.4</jaxb2-basics-annotate.version>
+
+		<!-- Maven plugin versions -->
+		<maven-jaxb2-plugin.version>0.8.2</maven-jaxb2-plugin.version>
+		<maven-jaxb2-basics-plugin.version>0.6.4</maven-jaxb2-basics-plugin.version>
+		<maven-jaxb2-basics-annotate-plugin.version>0.6.4</maven-jaxb2-basics-annotate-plugin.version>
+		<maven-jaxb2-value-constructor-plugin.version>3.0</maven-jaxb2-value-constructor-plugin.version>
 	</properties>
 
 	<build>
@@ -181,6 +192,28 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-archetype-plugin</artifactId>
 					<version>${maven.archetype.plugin.version}</version>
+				</plugin>
+				
+				<!-- maven-jaxb2 plugins -->
+				<plugin>
+					<groupId>org.jvnet.jaxb2.maven2</groupId>
+					<artifactId>maven-jaxb2-plugin</artifactId>
+					<version>${maven-jaxb2-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.jvnet.jaxb2_commons</groupId>
+					<artifactId>jaxb2-basics</artifactId>
+					<version>${maven-jaxb2-basics-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.jvnet.jaxb2_commons</groupId>
+					<artifactId>jaxb2-basics-annotate</artifactId>
+					<version>${maven-jaxb2-basics-annotate-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.jvnet.jaxb2_commons</groupId>
+					<artifactId>jaxb2-value-constructor</artifactId>
+					<version>${maven-jaxb2-value-constructor-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -356,6 +389,24 @@
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
 				<version>1.2.17</version>
+			</dependency>
+			
+			<!-- maven-jaxb2 plugins dependencies -->
+			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>jaxb2-basics-runtime</artifactId>
+				<version>${jaxb2-basics-runtime.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>jaxb2-basics-testing</artifactId>
+				<version>${jaxb2-basics-testing.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>jaxb2-basics-annotate</artifactId>
+				<version>${jaxb2-basics-annotate.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

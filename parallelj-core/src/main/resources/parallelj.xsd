@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-targetNamespace="http://parallelj.org"
-xmlns="http://parallelj.org">
+<xs:schema 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://parallelj.org"
+	xmlns="http://parallelj.org"
+
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    jaxb:version="2.1"
+    xmlns:annox="http://annox.dev.java.net"
+    jaxb:extensionBindingPrefixes="annox"
+    xmlns:jl="http://annox.dev.java.net/java.lang">
+
 	<!--
 	  To create pojos used for configuration, 
 	  use this command in src/main/resources folder:
@@ -31,56 +39,46 @@ xmlns="http://parallelj.org">
 	</xs:complexType>
 	<xs:element name="procedures" type="CProcedures" />
 
-<!-- 	<xs:complexType name="CTelnet"> -->
-<!-- 		<xs:attribute name="host" type="xs:string" /> -->
-<!-- 		<xs:attribute name="port" type="xs:int" /> -->
-<!-- 	</xs:complexType> -->
-<!-- 	<xs:element name="telnet" type="CTelnet" /> -->
-	
-	<xs:complexType name="CServer">
-		<xs:attribute name="type" type="xs:string"/>
+<!-- -->
+	<xs:complexType name="CTelnet">
+		<xs:attribute name="host" type="xs:string" />
 		<xs:attribute name="port" type="xs:int" />
 	</xs:complexType>
-	<xs:element name="server" type="CServer" />
-	
-	<xs:complexType name="CTelnet">
-		<xs:complexContent>
-			<xs:extension base="CServer">
-				<xs:sequence>
-				</xs:sequence>
-				<xs:attribute name="host" type="xs:string" />
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
 	<xs:element name="telnet" type="CTelnet" />
-
+	
 	<xs:complexType name="CJmx">
-		<xs:complexContent>
-			<xs:extension base="CServer">
-				<xs:sequence>
-				</xs:sequence>
-				<xs:attribute name="host" type="xs:string" />
-			</xs:extension>
-		</xs:complexContent>
+<!-- 
+        <xs:annotation>
+            <xs:appinfo>
+                <annox:annotate>
+                    <jl:Deprecated/>
+                </annox:annotate>
+            </xs:appinfo>
+        </xs:annotation>
+ -->        
+		<xs:attribute name="host" type="xs:string" />
+		<xs:attribute name="port" type="xs:int" />
 	</xs:complexType>
 	<xs:element name="jmx" type="CJmx" />
 
 	<xs:complexType name="CSsh">
-		<xs:complexContent>
-			<xs:extension base="CServer">
-				<xs:sequence>
-					<xs:element ref="auths" />
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
+		<xs:sequence>
+			<xs:element ref="auths" />
+		</xs:sequence>
+		<xs:attribute name="port" type="xs:int" />
 	</xs:complexType>
 	<xs:element name="ssh" type="CSsh" />
-
+<!-- -->
 	<xs:complexType name="CServers">
 		<xs:sequence>
-			<xs:element ref="telnet"/>
-			<xs:element ref="jmx"/>
-			<xs:element ref="ssh"/>
+<!-- -->
+ 			<xs:element ref="telnet"/> 
+ 			<xs:element ref="jmx"/>
+ 			<xs:element ref="ssh"/>
+<!-- -->
+			<xs:choice maxOccurs="unbounded">
+				<xs:element ref="server"/>
+			</xs:choice>
 			<xs:element ref="beans" />
 		</xs:sequence>
 	</xs:complexType>
@@ -98,15 +96,6 @@ xmlns="http://parallelj.org">
 	</xs:complexType>
 	<xs:element name="beans" type="CBeans" />
 	
-	<xs:complexType name="CProperty">
-		<xs:simpleContent>
-			<xs:extension base="xs:string">
-				<xs:attribute type="xs:string" name="name" use="optional" />
-			</xs:extension>
-		</xs:simpleContent>
-	</xs:complexType>
-	<xs:element name="property" type="CProperty"/>
-	
 	<xs:complexType name="CAuth">
 		<xs:sequence>
 			<xs:element ref="property" maxOccurs="unbounded"
@@ -123,6 +112,40 @@ xmlns="http://parallelj.org">
 		</xs:choice>
 	</xs:complexType>
 	<xs:element name="auths" type="CAuths" />
+
+	<xs:complexType name="CProperty">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute type="xs:string" name="name" use="optional" />
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:element name="property" type="CProperty"/>
+	
+	<xs:complexType name="CProperties">
+		<xs:sequence>
+			<xs:element ref="property" maxOccurs="unbounded"
+				minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute  name="name" type="xs:string" />
+		<xs:attribute  name="value" type="xs:string" />
+	</xs:complexType>
+	<xs:element name="properties" type="CProperties"/>
+	
+	<xs:complexType name="CServer">
+		<xs:sequence>
+			<xs:element ref="property" maxOccurs="unbounded"
+				minOccurs="0">
+			</xs:element>
+			<xs:element ref="properties" maxOccurs="unbounded"
+				minOccurs="0">
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string"/>
+		<xs:attribute name="type" type="xs:string"/>
+	</xs:complexType>
+	<xs:element name="server" type="CServer" />
 
 	
 	<xs:complexType name="CExecutor">
