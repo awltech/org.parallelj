@@ -21,16 +21,10 @@
  */
 package org.parallelj.servers.jmx;
 
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.rmi.NoSuchObjectException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
@@ -39,13 +33,9 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
-import javax.management.remote.JMXConnectorServer;
-import javax.management.remote.JMXConnectorServerFactory;
-import javax.management.remote.JMXServiceURL;
 
 import org.parallelj.Program;
 import org.parallelj.internal.conf.pojos.CBean;
-import org.parallelj.internal.conf.pojos.CProperty;
 import org.parallelj.internal.conf.pojos.CServer;
 import org.parallelj.internal.reflect.Adapter;
 import org.parallelj.launching.LaunchingMessageKind;
@@ -56,129 +46,47 @@ import org.parallelj.servers.Server;
 
 /**
  * Class representing a Parallelj JMX Server for remote launching
+ * This implementation doesn't create JMX connector. It only register MBeans at startup
+ * and unregister MBeans at shutdown.
  */
-public class GenericJmxServer extends Server {
+public class MinimalJmxServer extends Server {
 
-	private static final String DEFAULT_SERVER_URL_FORMAT = "service:jmx:rmi://%s/jndi/rmi://%s:%s/server";
 	private static final String DEFAULT_BEAN_NAME_FORMAT = "%s:type=%s";
 
-	private String host;
-	private int port;
-
-	private String serverUrlFormat;
 	private String beanNameFormat;
 
-	private Registry register = null;
 	private MBeanServer mbs = null;
-	private JMXConnectorServer jmxConnectorServer = null;
 	private List<ObjectName> beanNames = new ArrayList<ObjectName>();
-	private String serviceURL;
 
-	public GenericJmxServer(CServer cServer, List<CBean> beans) {
+	public MinimalJmxServer(CServer cServer, List<CBean> beans) {
 		super(cServer, beans);
-		this.serverUrlFormat = DEFAULT_SERVER_URL_FORMAT;
 		this.beanNameFormat = DEFAULT_BEAN_NAME_FORMAT;
-	}
-
-	/**
-	 * Constructor for a JMX Server
-	 * 
-	 * @param host
-	 *            the host ip
-	 * @param port
-	 *            the port the JMX Server to listen to
-	 */
-	public GenericJmxServer(final String host, final int port) {
-		super(null, null);
-		this.host = host;
-		this.port = port;
 	}
 
 	@Override
 	public void start() {
-		try {
-			if (parseProperties()) {
-				LaunchingMessageKind.ISERVER0002.format(this, this.host, this.port);
-				this.mbs = ManagementFactory.getPlatformMBeanServer();
+		if (parseProperties()) {
+			LaunchingMessageKind.ISERVER0001.format(this, "default platform");
+			this.mbs = ManagementFactory.getPlatformMBeanServer();
 
-				final String oldRmiServerName = System
-						.getProperty("java.rmi.server.hostname");
-				System.setProperty("java.rmi.server.hostname", this.host);
-
-				this.register = LocateRegistry.createRegistry(this.port);
-				if (oldRmiServerName == null) {
-					final Properties props = System.getProperties();
-					for (Object key : props.keySet()) {
-						if (key.equals("java.rmi.server.hostname")) {
-							props.remove(key);
-							break;
-						}
-					}
-				} else {
-					System.setProperty("java.rmi.server.hostname",
-							oldRmiServerName);
-				}
-
-				this.serviceURL = String.format(this.serverUrlFormat,
-						this.host, this.host, this.port);
-
-				final JMXServiceURL url = new JMXServiceURL(this.serviceURL);
-				this.jmxConnectorServer = JMXConnectorServerFactory
-						.newJMXConnectorServer(url, null, mbs);
-				this.jmxConnectorServer.start();
-
-				registerMBeans();
-			
-			} else {
-				LaunchingMessageKind.ESERVER0002.format(this);
-			}
-		} catch (IOException e) {
-			LaunchingMessageKind.ESERVER0005.format(this,"");
+			registerMBeans();
+		
+		} else {
+			LaunchingMessageKind.ESERVER0002.format(this);
 		}
-		LaunchingMessageKind.ISERVER0004.format(this,this.serviceURL);
 	}
 
 	@Override
 	public void stop() {
 		LaunchingMessageKind.ISERVER0005.format(this);
 		unRegisterMBeans();
-
-		try {
-			if (this.jmxConnectorServer != null) {
-				this.jmxConnectorServer.stop();
-			}
-		} catch (IOException e) {
-			LaunchingMessageKind.ESERVER0004.format(this, e);
-		}
-		try {
-			UnicastRemoteObject.unexportObject(register, true);
-		} catch (NoSuchObjectException e) {
-			LaunchingMessageKind.ESERVER0004.format(this, e);
-		}
 	}
 
 	@Override
 	protected boolean parseProperties() {
-		for (CProperty property : this.server.getProperty()) {
-			switch (property.getName()) {
-			case "host":
-				this.host = property.getValue();
-				if (this.host == null || this.host.trim().length() == 0) {
-					LaunchingMessageKind.ESERVER0005.format(this, "invalid host value",property.getValue());
-					return false;
-				}
-				break;
-			case "port":
-				try {
-					this.port = Integer.parseInt(property.getValue());
-				} catch (NumberFormatException e) {
-					LaunchingMessageKind.ESERVER0005.format(this, "invalid port value");
-					return false;
-				}
-				break;
-			default:
-				break;
-			}
+		if(this.server.getProperty().size()>0 || this.server.getProperties().size()>0) {
+			LaunchingMessageKind.ESERVER0005.format(this,"");
+			return false;
 		}
 		return true;
 	}
@@ -302,9 +210,5 @@ public class GenericJmxServer extends Server {
 			}
 			beanNames.clear();
 		}
-	}
-
-	public boolean isStarted() {
-		return this.jmxConnectorServer.isActive();
 	}
 }
