@@ -13,8 +13,8 @@
 		<java.source>1.7</java.source>
 		<java.target>1.7</java.target>
 		<parallelj-version>1.4.2</parallelj-version>
-		<aspectj.version>1.7.3</aspectj.version>
-		<ajdtVersion>2.2.3</ajdtVersion>
+		<aspectj.version>1.8.2</aspectj.version>
+		<ajdtVersion>2.2.4</ajdtVersion>
 		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</aspectj.javaagent.location>
 	</properties>
 

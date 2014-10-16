@@ -87,7 +87,7 @@
 
 	<modules>
 		<module>parallelj-core</module>
-		<module>parallelj-tools</module>
+		<!-- <module>parallelj-tools</module>  -->
 		<module>parallelj-archetype</module>
 		<module>parallelj-archetype-web</module>
 		<module>parallelj-jmx</module>
@@ -101,9 +101,9 @@
 	<properties>
 		<java.source>1.7</java.source>
 		<java.target>1.7</java.target>
-		<aspectj.version>1.7.3</aspectj.version>
+		<aspectj.version>1.8.2</aspectj.version>
 		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</aspectj.javaagent.location>
-		<ajdtVersion>2.2.3</ajdtVersion>
+		<ajdtVersion>2.2.4</ajdtVersion>
 		<aspectj.maven.plugin.version>1.2</aspectj.maven.plugin.version>
 		<maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
 		<maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>

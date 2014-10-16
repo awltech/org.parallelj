@@ -58,7 +58,8 @@
 				<configuration>
 					<source>${java.source}</source>
 					<target>${java.target}</target>
-					<proc>none</proc>
+					<compilerArgument>-proc:none</compilerArgument>
+<!-- 					<proc>none</proc> -->
 				</configuration>
 			</plugin>
 			<plugin>
