@@ -24,8 +24,16 @@
 -->
 <parallelj xmlns="http://parallelj.org">
     <servers>
-        <telnet port="10000" host="localhost"/>
-        <jmx port="9000" host="localhost"/>
+    	<!-- Telnet server configuration -->
+		<server name="Telnet" type="org.parallelj.servers.tcp.TcpIpServer">
+			<property name="host">localhost</property>
+			<property name="port">10000</property>
+		</server>
+		
+    	<!-- JMX server configuration. Create a JMX connector and register MBeans. -->
+		<server name="Jmx" type="org.parallelj.servers.jmx.MinimalJmxServer">
+			<property name="host">localhost</property>
+		</server>
         
         <!-- Uncomment this to enable the remote access using the embedded SSH server.
         	WARNING:  
@@ -37,16 +45,17 @@
 				Note: It must be the OpenSsh authorized public keys file of the system.
 		-->
 		<!-- 
-	    <ssh port="22">
-	    	<auths>
-				<auth type="org.parallelj.ssh.publickey.ParalleljSshPublicKey">
-					<property name="server-private-key">/home/user/.ssh/id_rsa</property>
-					<property name="server-authorized-keys">/home/user/.ssh/authorized_keys</property>
-				</auth>
-			</auths>
-		</ssh>
+		<server name="Ssh" type="org.parallelj.servers.ssh.SshServer">
+			<property name="port">23</property>
+			<properties name="authSshPrivateKey"
+			      value="org.parallelj.ssh.publickey.ParalleljSshPublicKey">
+				<property name="server-private-key">u:/.ssh/id_rsa</property>
+				<property name="server-authorized-keys">u:/.ssh/authorized_keys</property>
+			</properties>
+		</server>
 		 -->
 		 
+        <!-- Program full qualified name to be available as JMX beans --> 
         <!-- 
         <beans>
             <bean class=""/>
@@ -54,12 +63,14 @@
          -->
     </servers>
     
-<!--     
-   	<executor-services default-service-type="FIXED_THREAD_POOL" default-pool-size="1">
-		<executor-service program-name="my.program.Program1" service-type="CACHED_THREAD_POOL"/>
-		<executor-service program-name="my.program.Program2" service-type="SINGLE_THREAD_EXECUTOR"/>
-		<executor-service program-name="my.program.Program3" service-type="FIXED_THREAD_POOL" pool-size="10" />
-		<executor-service program-name="my.program.Program4" service-type="PROVIDED" service-class="my.program.MyExecutorServiceClass"/>
+	<!-- Overwrite procedure's capacities of programs --> 
+	<!-- 
+	<procedures>
+		<procedure name="procedure_name" capacity="10" />
+	</procedures>
+	 -->
+
+	<!-- Default executor service type to use to run the Programs -->
+   	<executor-services default-service-type="FIXED_THREAD_POOL" default-pool-size="10">
 	</executor-services>
--->
 </parallelj>

@@ -22,7 +22,7 @@
 package org.parallelj.launching.quartz.web;
 
 import org.junit.*;
-import org.parallelj.launching.web.ServersInitializerListener;
+import org.parallelj.launching.web.LegacyServersInitializerListener;
 
 import static org.junit.Assert.*;
 
@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
  * @version $Revision: 1.0 $
  */
 public class ServersInitializerListenerTest {
-	ServersInitializerListener fixture;
+	LegacyServersInitializerListener fixture;
 	
 	/**
 	 */
@@ -61,7 +61,7 @@ public class ServersInitializerListenerTest {
 	@Before
 	public void setUp()
 		throws Exception {
-		this.fixture = new ServersInitializerListener();
+		this.fixture = new LegacyServersInitializerListener();
 		this.fixture.contextInitialized(null);
 	}
 

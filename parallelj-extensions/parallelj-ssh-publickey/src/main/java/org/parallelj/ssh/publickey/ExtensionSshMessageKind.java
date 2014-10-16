@@ -3,6 +3,7 @@ package org.parallelj.ssh.publickey;
 import org.parallelj.internal.util.Formatter;
 import org.parallelj.internal.util.Formatter.Format;
 
+
 public enum ExtensionSshMessageKind {
 	
 	/**
