@@ -195,7 +195,7 @@
 			<scope>test</scope>
 		</dependency>
 		
-		<!-- maven-jaxb2 dependencies -->
+		<!-- maven-jaxb2 dependencies 
 		<dependency>
 			<groupId>org.jvnet.jaxb2_commons</groupId>
 			<artifactId>jaxb2-basics-runtime</artifactId>
@@ -209,7 +209,7 @@
 			<groupId>org.jvnet.jaxb2_commons</groupId>
 			<artifactId>jaxb2-basics-annotate</artifactId>
 		</dependency>
-		
+		-->
 	</dependencies>
 
 	<reporting>
