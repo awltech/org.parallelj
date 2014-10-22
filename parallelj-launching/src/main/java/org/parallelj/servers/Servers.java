@@ -29,34 +29,38 @@ public enum Servers {
 	}
 	
 	public void startServers() {
-		List<CServer> cServers = configuration.getServers().getServer();
-		List<CBean> beans = configuration.getServers().getBeans().getBean();
-		for (CServer cExtServer : cServers) {
-			String clazz = cExtServer.getType();
-			Server server = null;
-			try {
-				@SuppressWarnings("unchecked")
-				Class<Server> serverClass = (Class<Server>)Class.forName(clazz, true, Servers.class.getClassLoader()); 
-				Constructor<Server> c = serverClass.getConstructor(CServer.class, List.class);
-				server = c.newInstance(cExtServer, beans);
-				this.servers.add(server);
-			} catch (InstantiationException e) {
-				LaunchingMessageKind.ESERVER0001.format(clazz,e);
-			} catch (IllegalAccessException e) {
-				LaunchingMessageKind.ESERVER0001.format(clazz,e);
-			} catch (ClassNotFoundException e) {
-				LaunchingMessageKind.ESERVER0001.format(clazz,e);
-			} catch (NoSuchMethodException e) {
-				LaunchingMessageKind.ESERVER0001.format(clazz,e);
-			} catch (SecurityException e) {
-				LaunchingMessageKind.ESERVER0001.format(clazz,e);
-			} catch (IllegalArgumentException e) {
-				LaunchingMessageKind.ESERVER0001.format(clazz,e);
-			} catch (InvocationTargetException e) {
-				LaunchingMessageKind.ESERVER0001.format(clazz,e);
+		if(configuration.getServers()!=null
+				&& configuration.getServers().getServer()!=null
+				&& configuration.getServers().getBeans()!=null
+				&& configuration.getServers().getBeans().getBean()!=null) {
+			List<CServer> cServers = configuration.getServers().getServer();
+			List<CBean> beans = configuration.getServers().getBeans().getBean();
+			for (CServer cExtServer : cServers) {
+				String clazz = cExtServer.getType();
+				Server server = null;
+				try {
+					@SuppressWarnings("unchecked")
+					Class<Server> serverClass = (Class<Server>)Class.forName(clazz, true, Servers.class.getClassLoader()); 
+					Constructor<Server> c = serverClass.getConstructor(CServer.class, List.class);
+					server = c.newInstance(cExtServer, beans);
+					this.servers.add(server);
+				} catch (InstantiationException e) {
+					LaunchingMessageKind.ESERVER0001.format(clazz,e);
+				} catch (IllegalAccessException e) {
+					LaunchingMessageKind.ESERVER0001.format(clazz,e);
+				} catch (ClassNotFoundException e) {
+					LaunchingMessageKind.ESERVER0001.format(clazz,e);
+				} catch (NoSuchMethodException e) {
+					LaunchingMessageKind.ESERVER0001.format(clazz,e);
+				} catch (SecurityException e) {
+					LaunchingMessageKind.ESERVER0001.format(clazz,e);
+				} catch (IllegalArgumentException e) {
+					LaunchingMessageKind.ESERVER0001.format(clazz,e);
+				} catch (InvocationTargetException e) {
+					LaunchingMessageKind.ESERVER0001.format(clazz,e);
+				}
 			}
 		}
-		
 		// Initialize //J Launcher (in case it's not already initialized)
 		try {
 			Launcher.getLauncher();
