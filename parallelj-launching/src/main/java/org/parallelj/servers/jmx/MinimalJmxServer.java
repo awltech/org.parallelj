@@ -65,6 +65,7 @@ public class MinimalJmxServer extends Server {
 
 	@Override
 	public void start() {
+		try {
 		if (parseProperties()) {
 			LaunchingMessageKind.ISERVER0001.format(this, "default platform");
 			this.mbs = ManagementFactory.getPlatformMBeanServer();
@@ -73,6 +74,9 @@ public class MinimalJmxServer extends Server {
 		
 		} else {
 			LaunchingMessageKind.ESERVER0002.format(this);
+		}
+		} catch (Exception e) {
+			LaunchingMessageKind.ESERVER0005.format(this, "properties");
 		}
 	}
 
@@ -84,7 +88,7 @@ public class MinimalJmxServer extends Server {
 
 	@Override
 	protected boolean parseProperties() {
-		if(this.server.getProperty().size()>0 || this.server.getProperties().size()>0) {
+		if(this.server.getProperty()!=null && this.server.getProperties().size()>0) {
 			LaunchingMessageKind.ESERVER0005.format(this,"");
 			return false;
 		}
