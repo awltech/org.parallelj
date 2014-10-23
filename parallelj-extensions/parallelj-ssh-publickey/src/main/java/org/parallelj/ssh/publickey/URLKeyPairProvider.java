@@ -22,7 +22,7 @@ public class URLKeyPairProvider extends AbstractKeyPairProvider {
 	}
 
 	@Override
-	protected KeyPair[] loadKeys() {
+	public Iterable<KeyPair> loadKeys() {
 		if (!SecurityUtils.isBouncyCastleRegistered()) {
 			throw new IllegalStateException(
 					"BouncyCastle must be registered as a JCE provider");
@@ -47,6 +47,6 @@ public class URLKeyPairProvider extends AbstractKeyPairProvider {
 				ExtensionSshMessageKind.ISH0001.format(key, e);
 			}
 		}
-		return keys.toArray(new KeyPair[keys.size()]);
+		return keys;
 	}
 }

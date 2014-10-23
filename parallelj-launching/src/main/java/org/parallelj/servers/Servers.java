@@ -30,11 +30,13 @@ public enum Servers {
 	
 	public void startServers() {
 		if(configuration.getServers()!=null
-				&& configuration.getServers().getServer()!=null
-				&& configuration.getServers().getBeans()!=null
-				&& configuration.getServers().getBeans().getBean()!=null) {
+				&& configuration.getServers().getServer()!=null) {
 			List<CServer> cServers = configuration.getServers().getServer();
-			List<CBean> beans = configuration.getServers().getBeans().getBean();
+			List<CBean> beans = null;
+			if(configuration.getServers().getBeans()!=null
+					&& configuration.getServers().getBeans().getBean()!=null) {
+				beans = configuration.getServers().getBeans().getBean();
+			}
 			for (CServer cExtServer : cServers) {
 				String clazz = cExtServer.getType();
 				Server server = null;

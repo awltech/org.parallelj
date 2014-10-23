@@ -23,6 +23,7 @@ package org.parallelj.ssh.publickey;
 
 import java.security.KeyPair;
 import java.security.PublicKey;
+import java.util.Iterator;
 
 import org.apache.sshd.SshServer;
 import org.apache.sshd.server.auth.UserAuthPublicKey;
@@ -60,12 +61,16 @@ public class ParalleljSshPublicKeyTest {
 		assertTrue(this.sshdServer.getKeyPairProvider() instanceof URLKeyPairProvider);
 		URLKeyPairProvider urlKeyPairProvider = (URLKeyPairProvider)this.sshdServer.getKeyPairProvider();
 		
-		KeyPair[] keyPairs = urlKeyPairProvider.loadKeys();
+		Iterable<KeyPair> keyPairs = urlKeyPairProvider.loadKeys();
 		assertNotNull(keyPairs);
-		assertEquals(keyPairs.length, 1);
-		
-		assertNotNull(keyPairs[0].getPrivate());
-		assertNotNull(keyPairs[0].getPublic());
+		Iterator<KeyPair> iteratorKeyPair = keyPairs.iterator();
+		assertNotNull(iteratorKeyPair);
+		assertTrue(iteratorKeyPair.hasNext());
+		KeyPair keyPair = iteratorKeyPair.next();
+		assertFalse(iteratorKeyPair.hasNext());
+		assertNotNull(keyPair);
+		assertNotNull(keyPair.getPrivate());
+		assertNotNull(keyPair.getPublic());
 	}	
 
 	@Test
