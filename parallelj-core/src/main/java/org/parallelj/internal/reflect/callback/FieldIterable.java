@@ -23,10 +23,10 @@ package org.parallelj.internal.reflect.callback;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.parallelj.internal.kernel.KProcess;
 import org.parallelj.internal.kernel.callback.Iterable;
-import org.parallelj.internal.reflect.ProgramAdapter;
 
 public class FieldIterable implements Iterable {
 
@@ -41,8 +41,7 @@ public class FieldIterable implements Iterable {
 
 	@Override
 	public Iterator<?> iterator(KProcess process) {
-		Iterator<?> iterator = ProgramAdapter
-				.getIterators(process.getContext()).get(this);
+		Iterator<?> iterator = getIterators(process.getContext()).get(this);
 		if (iterator == null) {
 			// try new one
 			java.lang.Iterable<?> iterable = null;
@@ -59,7 +58,7 @@ public class FieldIterable implements Iterable {
 			if (iterable != null) {
 				iterator = iterable.iterator();
 				if (iterator != null) {
-					ProgramAdapter.getIterators(process.getContext()).put(
+					getIterators(process.getContext()).put(
 							this, iterator);
 				}
 			}
@@ -69,7 +68,7 @@ public class FieldIterable implements Iterable {
 
 	@Override
 	public void close(KProcess process) {
-		ProgramAdapter.getIterators(process.getContext()).remove(this);
+		getIterators(process.getContext()).remove(this);
 	}
 	
 	/**
@@ -93,4 +92,10 @@ public class FieldIterable implements Iterable {
 			
 		return iterable;
 	}
+	
+	public Map<FieldIterable, Iterator<?>> getIterators(Object object) {
+		return null;
+	}
+
+	
 }

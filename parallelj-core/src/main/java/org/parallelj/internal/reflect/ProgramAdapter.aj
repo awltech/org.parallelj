@@ -25,6 +25,7 @@ import java.util.*;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.parallelj.Programs;
 import org.parallelj.Programs.ProcessHelper;
 import org.parallelj.internal.kernel.KProgram;
 import org.parallelj.internal.reflect.callback.FieldIterable;
@@ -36,6 +37,7 @@ public aspect ProgramAdapter {
 	 * Inter type declaration in order to link annotated classes and process
 	 * instance.
 	 */
+	@SuppressWarnings("rawtypes")
 	@XmlTransient
 	public ProcessHelperImpl Adapter.instance;
 
@@ -72,6 +74,19 @@ public aspect ProgramAdapter {
 		return null;
 	}
 
+	Map<FieldIterable, Iterator<?>> around(FieldIterable fieldIterable, Object object): execution(public Map<FieldIterable, Iterator<?>> FieldIterable.getIterators(..))
+		&& target(fieldIterable)
+		&& args(object) {
+	
+		return getIterators(object);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	ProcessHelper around(Object object): execution(public static ProcessHelper Programs+.as(..))
+		&& args(object) {
+		return ProgramAdapter.as(object);
+	}
+	
 	public static privileged aspect PerProgram pertypewithin(@org.parallelj.Program *) {
 
 		KProgram program;
@@ -81,6 +96,7 @@ public aspect ProgramAdapter {
 					.getSignature().getDeclaringType());
 		}
 
+		@SuppressWarnings("rawtypes")
 		after(Object context): execution((@org.parallelj.Program *).new(..)) && this(context) {
 			((Adapter) context).instance = new ProcessHelperImpl(this.program
 					.newProcess(context));

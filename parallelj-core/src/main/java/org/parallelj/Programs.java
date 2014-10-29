@@ -23,7 +23,6 @@ package org.parallelj;
 
 import java.util.concurrent.ExecutorService;
 
-import org.parallelj.internal.reflect.ProgramAdapter;
 import org.parallelj.mirror.Process;
 import org.parallelj.mirror.ProcessState;
 
@@ -132,7 +131,7 @@ public class Programs {
 	 */
 	public static <E> ProcessHelper<E> as(E e)
 			throws IllegalArgumentException {
-		return ProgramAdapter.as(e);
+		return null;
 	}
 
 }
