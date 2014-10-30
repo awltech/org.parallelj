@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -8,11 +9,12 @@
 	</parent>
 
 	<artifactId>parallelj-jmx</artifactId>
-	<name>ParallelJ - JMX Project</name>
 	<packaging>jar</packaging>
 
+	<name>ParallelJ - JMX Project</name>
+
 	<url>http://www.parallelj.org</url>
-	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution. This project contains an abstract layer that allows to use ParallelJ programs through JMX.</description>
+	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
 
 	<licenses>
 		<license>
@@ -31,7 +33,7 @@
 		<dependency>
 			<groupId>org.parallelj</groupId>
 			<artifactId>parallelj-core</artifactId>
-			<version>${project.parent.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -95,40 +97,6 @@
 							<goal>test-compile</goal>
 						</goals>
 					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<inherited>false</inherited>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<configuration>
-					<basedir>${basedir}</basedir>
-					<header>etc/header.txt</header>
-					<quiet>false</quiet>
-					<failIfMissing>true</failIfMissing>
-					<aggregate>true</aggregate>
-					<strictCheck>true</strictCheck>
-					<includes>
-						<include>**/src/**</include>
-					</includes>
-					<useDefaultExcludes>true</useDefaultExcludes>
-					<mapping>
-						<ecmd>XML_STYLE</ecmd>
-						<mwe>XML_STYLE</mwe>
-						<ext>SLASHSTAR_STYLE</ext>
-						<xpt>XML_STYLE</xpt>
-						<java>SLASHSTAR_STYLE</java>
-						<aj>SLASHSTAR_STYLE</aj>
-						<properties>SCRIPT_STYLE</properties>
-						<xml>XML_STYLE</xml>
-					</mapping>
-					<useDefaultMapping>false</useDefaultMapping>
-					<properties>
-						<year>2010, 2011, 2012</year>
-					</properties>
-					<encoding>UTF-8</encoding>
-				</configuration>
-				<executions>
 				</executions>
 			</plugin>
 		</plugins>

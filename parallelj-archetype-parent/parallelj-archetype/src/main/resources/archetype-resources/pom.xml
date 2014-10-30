@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>${groupId}</groupId>
+	<artifactId>${artifactId}</artifactId>
+	<version>${version}</version>
+	<packaging>jar</packaging>
+
+	<properties>
+		<java.source>1.7</java.source>
+		<java.target>1.7</java.target>
+		<aspectj.version>1.8.2</aspectj.version>
+		<ajdt.version>2.2.4</ajdt.version>
+		<parallelj.version>1.5.0-SNAPSHOT</parallelj.version>
+		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</aspectj.javaagent.location>
+	</properties>
+
+	<build>
+		<finalName>${artifactId}</finalName>
+		
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.source}</source>
+					<target>${java.target}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>aspectj-maven-plugin</artifactId>
+				<version>1.7</version>
+				<configuration>
+					<complianceLevel>${java.source}</complianceLevel>
+					<includes>
+						<include>**/*.java</include>
+						<include>**/*.aj</include>
+					</includes>
+					<weaveDependencies>
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-core-api</artifactId>
+						</weaveDependency>
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-core-aspects</artifactId>
+						</weaveDependency>
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-launching-api</artifactId>
+						</weaveDependency>
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-launching-aspects</artifactId>
+						</weaveDependency>
+					</weaveDependencies>
+				</configuration>
+				<executions>
+					<execution>
+						<id>compile_with_aspectj</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-compile_with_aspectj</id>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjrt</artifactId>
+						<version>${aspectj.version}</version>
+					</dependency>
+					<dependency>
+						<groupId>org.aspectj</groupId>
+						<artifactId>aspectjtools</artifactId>
+						<version>${aspectj.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+		</plugins>
+	</build>
+
+	<!-- ======================================== -->
+	<!-- Dependency (management) settings -->
+	<!-- ======================================== -->
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- AOP dependencies. -->
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.parallelj</groupId>
+			<artifactId>parallelj-ssh-publickey</artifactId>
+			<version>${parallelj.version}</version>
+		</dependency>
+	</dependencies>
+</project>

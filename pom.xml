@@ -10,9 +10,10 @@
 
 	<groupId>org.parallelj</groupId>
 	<artifactId>parallelj</artifactId>
-	<version>1.4.2-SNAPSHOT</version>
-	<name>ParallelJ</name>
+	<version>1.5.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
+	<name>ParallelJ</name>
 
 	<url>http://www.parallelj.org/</url>
 	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
@@ -86,16 +87,12 @@
 	</mailingLists>
 
 	<modules>
-		<module>parallelj-core</module>
-		<!-- <module>parallelj-tools</module>  -->
-		<module>parallelj-archetype</module>
-		<module>parallelj-archetype-web</module>
 		<module>parallelj-jmx</module>
-		<module>parallelj-launching</module>
-		<module>parallelj-extensions</module>
-		<module>parallelj-ssh</module>
-		<module>parallelj-legacy-launching</module>
-		<!-- module>parallelj-tracknrestart</module> -->
+		<module>parallelj-ssh-parent</module>
+		<module>parallelj-legacy-launching-parent</module>
+		<module>parallelj-core-parent</module>
+		<module>parallelj-launching-parent</module>
+		<module>parallelj-archetype-parent</module>
 	</modules>
 
 	<properties>
@@ -104,7 +101,7 @@
 		<aspectj.version>1.8.2</aspectj.version>
 		<aspectj.javaagent.location>${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar</aspectj.javaagent.location>
 		<ajdtVersion>2.2.4</ajdtVersion>
-		<aspectj.maven.plugin.version>1.2</aspectj.maven.plugin.version>
+		<aspectj.maven.plugin.version>1.7</aspectj.maven.plugin.version>
 		<maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
 		<maven.eclipse.plugin.version>2.8</maven.eclipse.plugin.version>
 		<maven.license.plugin.version>1.9.0</maven.license.plugin.version>
