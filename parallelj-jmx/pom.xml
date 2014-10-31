@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>parallelj</artifactId>
 		<groupId>org.parallelj</groupId>
-		<version>1.4.2-SNAPSHOT</version>
+		<version>1.5.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>parallelj-jmx</artifactId>
@@ -68,6 +68,37 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
+				<configuration>
+					<complianceLevel>${java.source}</complianceLevel>
+					<includes>
+						<include>**/*.java</include>
+						<include>**/*.aj</include>
+					</includes>
+					<weaveDependencies>
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-core-api</artifactId>
+						</weaveDependency>
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-core-aspects</artifactId>
+						</weaveDependency>
+					</weaveDependencies>
+				</configuration>
+				<executions>
+					<execution>
+						<id>compile_with_aspectj</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>test-compile_with_aspectj</id>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
 				<dependencies>
 					<dependency>
 						<groupId>org.aspectj</groupId>
@@ -80,24 +111,6 @@
 						<version>${aspectj.version}</version>
 					</dependency>
 				</dependencies>
-				<configuration>
-					<source>${java.source}</source>
-					<target>${java.target}</target>
-					<aspectLibraries>
-						<aspectLibrary>
-							<groupId>org.parallelj</groupId>
-							<artifactId>parallelj-core</artifactId>
-						</aspectLibrary>
-					</aspectLibraries>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>test-compile</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
