@@ -31,36 +31,12 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
-			<scope>compile</scope>
+			<scope>aspect</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.parallelj</groupId>
-			<artifactId>parallelj-core-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.parallelj</groupId>
-			<artifactId>parallelj-core-aspects</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.parallelj</groupId>
-			<artifactId>parallelj-launching-api</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.parallelj</groupId>
-			<artifactId>parallelj-launching-aspects</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>

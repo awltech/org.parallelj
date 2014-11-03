@@ -35,20 +35,20 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.parallelj</groupId>
-			<artifactId>parallelj-core-aspects</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
-
+		
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
+			<groupId>org.parallelj</groupId>
+			<artifactId>parallelj-core-aspects</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 

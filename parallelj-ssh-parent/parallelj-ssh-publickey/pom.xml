@@ -35,17 +35,14 @@
 
 		<dependency>
 			<groupId>org.parallelj</groupId>
-			<artifactId>parallelj-ssh-api</artifactId>
+			<artifactId>parallelj-ssh</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.parallelj</groupId>
-			<artifactId>parallelj-ssh-aspects</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk16</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
