@@ -31,7 +31,7 @@
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjrt</artifactId>
-			<scope>aspect</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
