@@ -63,7 +63,9 @@ public class OutBuilderFactory extends AnnotationBasedBuilderFactory {
 
 			Output output = new Output(fieldName, fieldType, readFieldMethod);
 			// Add the output to the KProgram
-			((IProgramInputOutputs)this.getProgram()).addOutput(output);
+			if(this.getProgram() instanceof IProgramInputOutputs) {
+				((IProgramInputOutputs)this.getProgram()).addOutput(output);
+			}
 			
 			return super.complete();
 		}
