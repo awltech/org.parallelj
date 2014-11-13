@@ -52,6 +52,8 @@ public class KHandler extends KProcedure {
 	 * input parameter that will store the {@link KCall} on error.
 	 */
 	KInputParameter onError = new KInputParameter();
+	KInputParameter onErrorContext = new KInputParameter();
+	boolean withContext=false;
 
 	/**
 	 * The Exception handling policy.
@@ -65,9 +67,18 @@ public class KHandler extends KProcedure {
 	 *            the program containing this handler
 	 */
 	public KHandler(KProgram program) {
+		this(program, false);
+	}
+	
+	public KHandler(KProgram program, boolean withContext) {
 		super(program);
+		this.withContext=withContext;
 		this.setType("<handler>");
 		this.addInputParameter(this.onError);
+		if(this.withContext) {
+			this.onErrorContext.index++;
+			this.addInputParameter(this.onErrorContext);
+		}
 		super.setJoin(new KJoin() {
 
 			@Override
@@ -75,6 +86,9 @@ public class KHandler extends KProcedure {
 				KCall c = KHandler.this.getMarking(call.getProcess()).onError
 						.remove(0);
 				KHandler.this.onError.set(call, c.getException());
+				if(KHandler.this.withContext) {
+					KHandler.this.onErrorContext.set(call, c.getContext());
+				}
 			}
 
 			/**

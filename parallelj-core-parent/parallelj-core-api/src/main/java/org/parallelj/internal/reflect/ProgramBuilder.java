@@ -127,7 +127,12 @@ public class ProgramBuilder {
 	}
 
 	public KHandler newHandler(Method method) {
-		KHandler handler = new KHandler(program);
+		KHandler handler = null;
+		if(method.getParameterTypes().length>1) {
+			handler = new KHandler(program, true);
+		} else {
+			handler = new KHandler(program);
+		}
 		handler.setName(method.getName());
 		handler.setType(method.getReturnType().getName());
 		this.procedures.put(handler.getName(), handler);
