@@ -21,6 +21,9 @@
  */
 package org.parallelj.launching.internal;
 
-public interface ILaunchExecutors {
+import org.parallelj.launching.executors.ExecutorServiceManager;
 
+public interface ILaunchExecutors {
+	public ExecutorServiceManager getExecutorServiceManager();
+	public void setExecutorServiceManager(ExecutorServiceManager executorServiceManager);
 }
