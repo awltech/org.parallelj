@@ -57,6 +57,24 @@
 							<groupId>org.parallelj</groupId>
 							<artifactId>parallelj-launching-aspects</artifactId>
 						</weaveDependency>
+						<!-- 
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-legacy-launching-api</artifactId>
+						</weaveDependency>
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-legacy-launching-aspects</artifactId>
+						</weaveDependency>
+						 -->
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-ssh-api</artifactId>
+						</weaveDependency>
+						<weaveDependency>
+							<groupId>org.parallelj</groupId>
+							<artifactId>parallelj-ssh-aspects</artifactId>
+						</weaveDependency>
 					</weaveDependencies>
 				</configuration>
 				<executions>
@@ -89,9 +107,6 @@
 		</plugins>
 	</build>
 
-	<!-- ======================================== -->
-	<!-- Dependency (management) settings -->
-	<!-- ======================================== -->
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
