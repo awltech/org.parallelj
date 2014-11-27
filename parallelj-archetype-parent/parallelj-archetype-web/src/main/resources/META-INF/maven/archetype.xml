@@ -25,7 +25,6 @@
 <archetype>
 	<id>parallelj-archetype-web</id>
 	<resources>
-		<resource>.project</resource>
 		<resource>src/main/resources/META-INF/ParallelJ/.touch</resource>
 		<resource>src/main/resources/log4j.xml</resource>
 		<resource>src/main/resources/parallelj.xml</resource>
