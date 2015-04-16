@@ -31,6 +31,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.parallelj.internal.MessageKind;
 import org.parallelj.internal.util.Classes;
 import org.parallelj.internal.util.sm.Current;
 import org.parallelj.internal.util.sm.Entry;
@@ -132,8 +133,7 @@ public class KStateMachine {
 					KStateMachine.this.current.set(this.self,
 							(current != null) ? current.value : null);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					MessageKind.W0005.format(e.getMessage());
 				}
 			}
 		}
@@ -163,8 +163,7 @@ public class KStateMachine {
 				return (this.guard == null) ? true : (Boolean) this.guard
 						.invoke(((Occurrence) event.getSource()).self);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				MessageKind.W0005.format(e.getMessage());
 			}
 			return true;
 		}
@@ -176,8 +175,7 @@ public class KStateMachine {
 							event.args);
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				MessageKind.W0005.format(e.getMessage());
 			}
 		}
 
@@ -225,8 +223,7 @@ public class KStateMachine {
 					this.entry.invoke(occurrence.self);
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				MessageKind.W0005.format(e.getMessage());
 			}
 		}
 
@@ -236,8 +233,7 @@ public class KStateMachine {
 					this.exit.invoke(occurrence.self);
 				}
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				MessageKind.W0005.format(e.getMessage());
 			}
 		}
 
@@ -286,8 +282,7 @@ public class KStateMachine {
 		try {
 			this.build();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MessageKind.W0005.format(e.getMessage());
 		}
 	}
 

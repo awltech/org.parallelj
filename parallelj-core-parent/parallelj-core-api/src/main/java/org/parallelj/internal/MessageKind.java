@@ -104,6 +104,9 @@ public enum MessageKind {
 	@Format("Operation interrupted [%s]")
 	W0004,
 	
+	@Format("Error occured during State machine management [%s]")
+	W0005,
+	
 	/**
 	 * Info: building a program
 	 */
