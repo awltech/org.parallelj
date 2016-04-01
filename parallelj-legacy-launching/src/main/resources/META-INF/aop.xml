@@ -26,6 +26,5 @@
 		<!-- declare two existing aspects to the weaver -->
 		<aspect name="org.parallelj.launching.quartz.JobsAdapter"/>
     </aspects>
-    <weaver options="-verbose">
-    </weaver>
+    
 </aspectj>

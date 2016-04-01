@@ -31,6 +31,5 @@
 		<aspect name="org.parallelj.launching.internal.LaunchManagement"/>
 		<aspect name="org.parallelj.launching.internal.LaunchManagement.LaunchAdapter"/>
     </aspects>
-    <weaver options="-verbose">
-    </weaver>
+    
 </aspectj>

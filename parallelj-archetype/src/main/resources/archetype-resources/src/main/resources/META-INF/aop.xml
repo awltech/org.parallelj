@@ -1,4 +1,3 @@
 <aspectj>
-	<weaver options="-XmessageHandlerClass:org.parallelj.internal.log.LTWMessageHandler">
-	</weaver>
+
 </aspectj>
