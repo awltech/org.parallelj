@@ -32,11 +32,13 @@
 			<artifactId>parallelj-launching-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<!-- 
 		<dependency>
 			<groupId>org.parallelj</groupId>
 			<artifactId>parallelj-legacy-launching-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		 -->
 	</dependencies>
 
 	<build>

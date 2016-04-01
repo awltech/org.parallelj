@@ -46,7 +46,7 @@
 
 		<dependency>
 			<groupId>org.parallelj</groupId>
-			<artifactId>parallelj-legacy-launching</artifactId>
+			<artifactId>parallelj-launching</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
