@@ -341,11 +341,6 @@
 				<version>1.2</version>
 			</dependency>
 			<dependency>
-				<groupId>org.bouncycastle</groupId>
-				<artifactId>bcprov-jdk16</artifactId>
-				<version>1.46</version>
-			</dependency>
-			<dependency>
 				<groupId>org.jolokia</groupId>
 				<artifactId>jolokia-core</artifactId>
 				<version>1.2.2</version>

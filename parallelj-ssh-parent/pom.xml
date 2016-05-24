@@ -14,7 +14,9 @@
 	<modules>
 		<module>parallelj-ssh-api</module>
 		<module>parallelj-ssh-aspects</module>
-		<module>parallelj-ssh-publickey</module>
+		<module>parallelj-ssh-publickey-common</module>
+		<module>parallelj-ssh-publickey-jdk16</module>
+		<module>parallelj-ssh-publickey-jdk15on</module>
 		<module>parallelj-ssh</module>
 	</modules>
 
