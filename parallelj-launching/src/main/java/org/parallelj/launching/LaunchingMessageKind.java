@@ -355,6 +355,9 @@ public enum LaunchingMessageKind {
 	/*
 	 * Other Error messages
 	 */
+	@Format("Service Loading from ParallelJ Launched enabled with cache: [%s]")
+	ICACHESPI001,
+	
 	/**
 	 * @Info Loading [%s].
 	 */

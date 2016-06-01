@@ -8,7 +8,9 @@
   <artifactId>parallelj-extensions</artifactId>
   <packaging>pom</packaging>
   <modules>
-  	<module>parallelj-ssh-publickey</module>
+  	<module>parallelj-ssh-publickey-common</module>
+  	<module>parallelj-ssh-publickey-jdk15</module>
+  	<module>parallelj-ssh-publickey-jdk15on</module>
   </modules>
   <name>Parallelj - Extensions</name>
 </project>
