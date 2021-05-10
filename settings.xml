@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd"
+          xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <proxies>
+        <!-- YOUR PROXY CONFIGURATION -->
+        <!-- FOR YOUR PRODUCTION SERVERS USAGE: -->
+        <!--
+        <proxy>
+            <id>proxy-prod</id>
+            <port>3128</port>
+            <host>proxy-prod-scl.svc.meshcore.net</host>
+            <nonProxyHosts>127.0.0.1|localhost|*.priv.atos.fr|*.meshcore.net</nonProxyHosts>
+        </proxy>
+        -->
+        <!-- ON YOUR LOCAL MACHINE: -->
+        <!--
+        <proxy>
+            <id>proxy-local</id>
+            <port>3128</port>
+            <host>proxy-internet.localnet</host>
+            <nonProxyHosts>127.0.0.1|localhost|*.priv.atos.fr|*.meshcore.net</nonProxyHosts>
+        </proxy>
+        -->
+    </proxies>
+
+    <!-- Attention: Uncomment the following line to enable the shared cache, only if you use Kazan Shared Runner and you don't have PCI constraints on dependencies. More informations refer to: https://kazan-community.gitlab-pages.kazan.myworldline.com/documentation/gitlab/shared-runners.html#shared-cache 
+-->
+    <!--<localRepository>/shared-cache/m2/repository</localRepository>-->
+
+    <servers>
+
+            <server>
+                <id>parallelj-fwk-releases</id>
+                <username>parallelj-fwk-technical-user</username>
+                <password>{R2WRvcPBFCcH9418xAxU0oX6F3CF94C18YLM/dQEo0klK34JlqTPZFurpoWgzjt7}</password>
+                <configuration>
+                    <!-- Optimize authentication time when downloading.
+                    Find out more: http://maven.apache.org/guides/mini/guide-http-settings.html#Example:_Using_Preemptive_Authentication -->
+                    <wagonProvider>httpclient</wagonProvider>
+                    <httpConfiguration>
+                        <all>
+                            <usePreemptive>true</usePreemptive>
+                        </all>
+                    </httpConfiguration>
+                </configuration>
+            </server>
+            <server>
+                <id>parallelj-fwk-build-releases</id>
+                <username>parallelj-fwk-technical-user</username>
+                <password>{R2WRvcPBFCcH9418xAxU0oX6F3CF94C18YLM/dQEo0klK34JlqTPZFurpoWgzjt7}</password>
+                <configuration>
+                    <wagonProvider>httpclient</wagonProvider>
+                    <httpConfiguration>
+                        <all>
+                            <usePreemptive>true</usePreemptive>
+                        </all>
+                    </httpConfiguration>
+                </configuration>
+            </server>
+            <server>
+                <id>parallelj-fwk-snapshots</id>
+                <username>parallelj-fwk-technical-user</username>
+                <password>{R2WRvcPBFCcH9418xAxU0oX6F3CF94C18YLM/dQEo0klK34JlqTPZFurpoWgzjt7}</password>
+                <configuration>
+                    <wagonProvider>httpclient</wagonProvider>
+                    <httpConfiguration>
+                        <all>
+                            <usePreemptive>true</usePreemptive>
+                        </all>
+                    </httpConfiguration>
+                </configuration>
+            </server>
+            <server>
+                <id>parallelj-fwk-group</id>
+                <username>parallelj-fwk-technical-user</username>
+                <password>{R2WRvcPBFCcH9418xAxU0oX6F3CF94C18YLM/dQEo0klK34JlqTPZFurpoWgzjt7}</password>
+                <configuration>
+                    <wagonProvider>httpclient</wagonProvider>
+                    <httpConfiguration>
+                        <all>
+                            <usePreemptive>true</usePreemptive>
+                        </all>
+                    </httpConfiguration>
+                </configuration>
+            </server>
+    </servers>
+
+        <mirrors>
+            <mirror>
+                <mirrorOf>*</mirrorOf>
+                <url>https://nexus.kazan.priv.atos.fr/repository/parallelj-fwk-group</url>
+                <id>parallelj-fwk-group</id>
+            </mirror>
+        </mirrors>
+
+    <profiles>
+        <profile>
+            <repositories>
+                <repository>
+                    <!-- Find out more: https://help.sonatype.com/repomanager3/formats/maven-repositories -->
+                    <id>central</id>
+                    <url>http://central</url>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <!-- Find out more: https://help.sonatype.com/repomanager3/formats/maven-repositories -->
+                    <id>central</id>
+                    <url>http://central</url>
+                </pluginRepository>
+            </pluginRepositories>
+            <id>kazan-nexus</id>
+            <properties>
+                <scope>releases</scope>
+                <repo-name>parallelj-fwk</repo-name>
+                <releases-repo-url>https://nexus.kazan.priv.atos.fr/repository/parallelj-fwk-${scope}</releases-repo-url>
+                <snapshots-repo-url>https://nexus.kazan.priv.atos.fr/repository/parallelj-fwk-snapshots</snapshots-repo-url>
+            </properties>
+        </profile>
+        <profile>
+            <id>kazan-sonar</id>
+            <properties>
+                <sonar.host.url>https://kazan.myworldline.com/sonarqube</sonar.host.url>
+                <sonar.login>{hP/Dlv+W7FoH+7G28H91O1KDikY5NvkyZTn5DCpGbEVc/xSCV9NiL55Gg3+vX7xNbHwhEfnOLGCp+Q+V8gGzKQ&#61;&#61;}</sonar.login>
+            </properties>
+        </profile>
+    </profiles>
+
+        <activeProfiles>
+            <activeProfile>kazan-nexus</activeProfile>
+            <activeProfile>kazan-sonar</activeProfile>
+        </activeProfiles>
+</settings>

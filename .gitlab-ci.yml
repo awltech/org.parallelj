@@ -1,0 +1,6 @@
+image: registry-testing.kazan.atosworldline.com/kazan/awl-kazan-builder:openjdk8-latest
+
+build:
+  script: "mvn clean deploy -s settings.xml -Dsettings.security=settings-security.xml"
+  tags:
+   - docker-S

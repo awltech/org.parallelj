@@ -15,7 +15,7 @@
 
 	<name>ParallelJ</name>
 
-	<url>http://www.parallelj.org/</url>
+	<url>https://kazan.priv.atos.fr/portal/#/projects/parallelj-fwk</url>
 	<description>ParallelJ is a Java framework for parallel computing. It provides flow modeling and execution.</description>
 	<inceptionYear>2011</inceptionYear>
 
@@ -23,6 +23,20 @@
 		<system>github</system>
 		<url>https://github.com/awltech/org.parallelj/issues</url>
 	</issueManagement>
+
+	<distributionManagement>
+
+		<repository>
+			<id>parallelj-fwk-${scope}</id>
+			<name>ParallelJ private Kazan Release Repository</name>
+			<url>${releases-repo-url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>${repo-name}-snapshots</id>
+			<name>My private Kazan Snapshot Repository</name>
+			<url>${snapshots-repo-url}</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<licenses>
 		<license>
@@ -114,7 +128,7 @@
 		<maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
 		<maven.archetype.plugin.version>2.0</maven.archetype.plugin.version>
 		<archetype.packaging.extension.version>2.0</archetype.packaging.extension.version>
-		
+
 		<!-- JAXB Versions -->
 		<jaxb2-basics-runtime.version>0.6.4</jaxb2-basics-runtime.version>
 		<jaxb2-basics-testing.version>0.6.4</jaxb2-basics-testing.version>
@@ -190,7 +204,7 @@
 					<artifactId>maven-archetype-plugin</artifactId>
 					<version>${maven.archetype.plugin.version}</version>
 				</plugin>
-				
+
 				<!-- maven-jaxb2 plugins -->
 				<plugin>
 					<groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -387,7 +401,7 @@
 				<artifactId>log4j</artifactId>
 				<version>1.2.17</version>
 			</dependency>
-			
+
 			<!-- maven-jaxb2 plugins dependencies -->
 			<dependency>
 				<groupId>org.jvnet.jaxb2_commons</groupId>
